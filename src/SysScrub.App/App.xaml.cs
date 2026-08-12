@@ -13,6 +13,7 @@ using SysScrub.Core.Machine;
 using SysScrub.Core.RegistryCleaning;
 using SysScrub.Core.Rules;
 using SysScrub.Core.Safety;
+using SysScrub.Core.Software;
 
 namespace SysScrub.App;
 
@@ -60,6 +61,9 @@ public partial class App : Application
                 services.AddSingleton<ScanEngine>();
                 services.AddSingleton<CleanEngine>();
 
+                // Yazılım güncelleyici
+                services.AddSingleton<WingetService>();
+
                 // Sürücü zinciri
                 services.AddSingleton<DeviceInventory>();
                 services.AddSingleton<DriverBackup>();
@@ -75,6 +79,7 @@ public partial class App : Application
                 services.AddSingleton<CleanerViewModel>();
                 services.AddSingleton<RegistryViewModel>();
                 services.AddSingleton<DriversViewModel>();
+                services.AddSingleton<SoftwareUpdatesViewModel>();
                 services.AddSingleton<TimelineViewModel>();
                 services.AddTransient<DashboardViewModel>();
 
@@ -109,7 +114,8 @@ public partial class App : Application
                 e.Args.Contains("--autoscan") || e.Args.Contains("--busyshot"),
                 e.Args.Contains("--busyshot"),
                 e.Args.Contains("--regscan"),
-                e.Args.Contains("--devscan"));
+                e.Args.Contains("--devscan"),
+                e.Args.Contains("--wingetscan"));
         }
     }
 
@@ -123,12 +129,22 @@ public partial class App : Application
         bool autoScan,
         bool captureWhileBusy = false,
         bool registryScan = false,
-        bool deviceScan = false)
+        bool deviceScan = false,
+        bool wingetScan = false)
     {
         window.ContentRendered += (_, _) => Dispatcher.BeginInvoke(
             DispatcherPriority.ApplicationIdle,
             async () =>
             {
+                if (wingetScan)
+                {
+                    await Resolve<SoftwareUpdatesViewModel>().CheckCommand.ExecuteAsync(null);
+
+                    await Task.Delay(250);
+                    System.Windows.Input.CommandManager.InvalidateRequerySuggested();
+                    await Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
+                }
+
                 if (deviceScan)
                 {
                     DriversViewModel drivers = Resolve<DriversViewModel>();

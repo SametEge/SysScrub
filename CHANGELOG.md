@@ -7,6 +7,42 @@ Release notları bu dosyanın ilgili sürüm bölümünden otomatik üretilir.
 
 ---
 
+## [0.5.0-alpha] — 2026-08-12
+
+Yazılım güncelleyici çalışır durumda ve sürücü listesi yeniden düzenlendi.
+
+### Eklenenler
+
+- **winget yazılım güncelleyici** — kurulu programların yeni sürümlerini bulur,
+  seçmeli veya toplu günceller. Her satırda ad, paket kimliği, kaynak rozeti
+  (winget / Microsoft Store) ve `kurulu → yeni` sürüm gösterilir
+- **Dile bağlı olmayan çıktı ayrıştırıcısı** — winget'in `upgrade` komutunun JSON
+  çıktısı yok; tablo sabit genişlikli ve başlıklar Windows'un diline göre değişiyor.
+  Ayrıştırıcı başlık ADINA değil, başlık satırındaki sütun başlangıç konumlarına
+  bakıyor. 12 birim testi bunu doğruluyor (gerçek çıktı, Türkçe başlıklar, sütunu
+  tam dolduran sürüm numaraları, ilerleme animasyonu satırları)
+- **Yükseltilmiş süreçte winget bulma** — uygulama yönetici olarak çalıştığı için
+  PATH'teki uygulama takma adı bazı kurulumlarda çözülemiyor; WindowsApps altındaki
+  gerçek dosya da aranıyor
+- **Sürücü listesi yeniden düzenlendi** — sınıfa göre ağaç yerine sürücü başına tek
+  satır: kategori, cihaz adı, kurulu sürüm ve tarih, kullanılabilir sürüm ve tarih.
+  Güncel olanlar altta katlanmış bölümde
+- **DriverStatusMatcher** — envanterle Windows Update sonucunu donanım kimliği
+  üzerinden eşleştirir. Üç durum: güncel, güncelleme var, eski olabilir
+
+### Dürüstlük ayrımı
+
+Sürücülerde "güncel değil" yalnızca Windows Update gerçekten yenisini sunduğunda
+deniyor. Sadece yaşa bakıp eski olduğunu düşündüklerimize "eski olabilir" deniyor
+ve bölüm başlığı da buna göre değişiyor — bilmediğimiz bir şeyi iddia etmiyoruz.
+
+### Düzeltmeler
+
+- Aynı sayfa şablonu iki kez tanımlandığı için uygulama açılmıyordu
+- Cihaz sınıfı ikonları düzeltildi, eksik sınıf adları Türkçeleştirildi
+
+---
+
 ## [0.4.0-alpha] — 2026-08-12
 
 Sürücüler modülünün çekirdeği çalışır durumda: donanım envanteri, sorunlu cihaz

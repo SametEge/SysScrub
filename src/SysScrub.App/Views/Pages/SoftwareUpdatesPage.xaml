@@ -1,0 +1,230 @@
+<UserControl x:Class="SysScrub.App.Views.Pages.SoftwareUpdatesPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:conv="clr-namespace:SysScrub.App.Converters"
+             xmlns:controls="clr-namespace:SysScrub.App.Controls"
+             xmlns:vm="clr-namespace:SysScrub.App.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance vm:SoftwareUpdatesViewModel}">
+
+    <UserControl.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVisibility" />
+        <conv:StringToVisibilityConverter x:Key="StringToVisibility" />
+    </UserControl.Resources>
+
+    <Grid>
+      <Grid Margin="{StaticResource SsPagePadding}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- ==================== Başlık ==================== -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+            <TextBlock Text="Güncellemeler" Style="{StaticResource SsDisplayText}" />
+            <TextBlock Style="{StaticResource SsSecondaryText}" Margin="0,6,0,0"
+                       Text="Kurulu programların yeni sürümlerini winget üzerinden bulur. Her paket kendi yayıncısının kaynağından indirilir." />
+        </StackPanel>
+
+        <!-- ==================== Özet şeridi ==================== -->
+        <Border Grid.Row="1" Style="{StaticResource SsCard}" Margin="0,0,0,14">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Width="44" Height="44" Margin="0,0,16,0"
+                        CornerRadius="{StaticResource SsRadiusControl}"
+                        Background="{DynamicResource SsAccentTint}">
+                    <Path Data="{StaticResource IconUpdates}" Fill="{DynamicResource SsAccent}"
+                          Stretch="Uniform" Width="22" Height="22"
+                          HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding HeadlineText}" Style="{StaticResource SsTitleText}" />
+                    <TextBlock Text="{Binding HeadlineDetail}" Style="{StaticResource SsCaptionText}"
+                               Margin="0,3,0,0" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Button Content="Denetle"
+                            Style="{StaticResource SsSecondaryButton}"
+                            Command="{Binding CheckCommand}"
+                            Margin="0,0,8,0" MinWidth="110" />
+
+                    <Button Content="Seçilenleri güncelle"
+                            Style="{StaticResource SsPrimaryButton}"
+                            Command="{Binding UpdateSelectedCommand}"
+                            MinWidth="176" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ==================== Liste ==================== -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <DockPanel Margin="2,0,2,10"
+                           Visibility="{Binding HasUpdates, Converter={StaticResource BoolToVisibility}}">
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                        <Button Content="Tümünü seç" Style="{StaticResource SsSubtleButton}"
+                                Command="{Binding SelectAllCommand}" MinHeight="26" Padding="9,0" FontSize="11.5" />
+                        <Button Content="Hiçbiri" Style="{StaticResource SsSubtleButton}"
+                                Command="{Binding SelectNoneCommand}" MinHeight="26" Padding="9,0" FontSize="11.5" />
+                    </StackPanel>
+
+                    <TextBlock Text="GÜNCELLENEBİLİR" Style="{StaticResource SsSectionLabel}"
+                               VerticalAlignment="Center" />
+                </DockPanel>
+
+                <ItemsControl ItemsSource="{Binding Updates}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type vm:SoftwareUpdateRowViewModel}">
+                            <Border Padding="14,12" Margin="0,0,0,6"
+                                    CornerRadius="{StaticResource SsRadiusControl}"
+                                    Background="{DynamicResource SsSurfaceRaised}"
+                                    BorderBrush="{DynamicResource SsBorder}"
+                                    BorderThickness="1">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}"
+                                              VerticalAlignment="Center" Margin="0,0,14,0"
+                                              IsEnabled="{Binding CanSelect}" />
+
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Name}" Style="{StaticResource SsBodyText}"
+                                                       FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+
+                                            <Border Style="{StaticResource SsBadge}" Margin="8,0,0,0" Padding="7,1"
+                                                    Background="{DynamicResource SsSurfaceHover}">
+                                                <TextBlock Text="{Binding SourceLabel}" FontSize="10.5"
+                                                           Foreground="{DynamicResource SsTextSecondary}" />
+                                            </Border>
+
+                                            <Border Style="{StaticResource SsBadge}" Margin="6,0,0,0" Padding="7,1"
+                                                    Background="{DynamicResource SsGoodTint}"
+                                                    Visibility="{Binding IsDone, Converter={StaticResource BoolToVisibility}}">
+                                                <TextBlock Text="güncellendi" FontSize="10.5" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource SsGood}" />
+                                            </Border>
+                                        </StackPanel>
+
+                                        <TextBlock Text="{Binding PackageId}" Style="{StaticResource SsMonoText}"
+                                                   FontSize="11" Margin="0,3,12,0" />
+
+                                        <TextBlock Text="{Binding ResultMessage}"
+                                                   Style="{StaticResource SsCaptionText}"
+                                                   Foreground="{DynamicResource SsCaution}"
+                                                   Margin="0,3,0,0" TextWrapping="Wrap" MaxWidth="620"
+                                                   HorizontalAlignment="Left"
+                                                   Visibility="{Binding HasResult, Converter={StaticResource BoolToVisibility}}" />
+                                    </StackPanel>
+
+                                    <!-- Kurulu → yeni sürüm -->
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal"
+                                                VerticalAlignment="Center" Margin="16,0,20,0">
+                                        <TextBlock Text="{Binding InstalledVersion}"
+                                                   Style="{StaticResource SsMonoText}" FontSize="11.5"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock Text="  →  " Style="{StaticResource SsCaptionText}"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding AvailableVersion}"
+                                                   Style="{StaticResource SsMonoText}" FontSize="11.5"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource SsAccentText}"
+                                                   VerticalAlignment="Center" />
+                                    </StackPanel>
+
+                                    <Button Grid.Column="3" Content="Güncelle"
+                                            Style="{StaticResource SsSecondaryButton}"
+                                            MinWidth="96" VerticalAlignment="Center"
+                                            Command="{Binding DataContext.UpdateOneCommand,
+                                                      RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding}"
+                                            Visibility="{Binding IsDone, Converter={StaticResource InverseBoolToVisibility}}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Boş durum -->
+                <Border Style="{StaticResource SsCard}" Padding="40" MaxWidth="560"
+                        HorizontalAlignment="Center" Margin="0,40,0,0"
+                        Visibility="{Binding HasUpdates, Converter={StaticResource InverseBoolToVisibility}}">
+                    <StackPanel HorizontalAlignment="Center">
+                        <Border Width="64" Height="64" CornerRadius="{StaticResource SsRadiusPanel}"
+                                Background="{DynamicResource SsSurfaceHover}" HorizontalAlignment="Center">
+                            <Path Data="{StaticResource IconUpdates}" Fill="{DynamicResource SsTextSecondary}"
+                                  Stretch="Uniform" Width="30" Height="30"
+                                  HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+
+                        <TextBlock Text="{Binding HeadlineText}" Style="{StaticResource SsSubtitleText}"
+                                   HorizontalAlignment="Center" Margin="0,18,0,0" />
+
+                        <TextBlock Style="{StaticResource SsSecondaryText}" TextAlignment="Center" Margin="0,8,0,0"
+                                   Text="Denetle düğmesine bastığında kurulu programlar winget kaynaklarıyla karşılaştırılır." />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- ==================== Durum ==================== -->
+        <Border Grid.Row="3" Style="{StaticResource SsCard}" Margin="0,14,0,0"
+                Background="{DynamicResource SsSurfaceRaised}"
+                Visibility="{Binding StatusMessage, Converter={StaticResource StringToVisibility}}">
+            <TextBlock Text="{Binding StatusMessage}" Style="{StaticResource SsBodyText}" />
+        </Border>
+      </Grid>
+
+      <!-- ==================== İşlem örtüsü ==================== -->
+      <Grid Background="{DynamicResource SsScrim}"
+            Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}">
+          <Border Style="{StaticResource SsCard}" Padding="40,36" MinWidth="380"
+                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                  Effect="{StaticResource SsShadowHigh}">
+              <StackPanel HorizontalAlignment="Center">
+                  <Grid Width="140" Height="140">
+                      <controls:ScanRing Width="140" Height="140" Thickness="11"
+                                         Progress="{Binding ProgressFraction, Mode=OneWay}"
+                                         TrackBrush="{DynamicResource SsSurfaceHover}"
+                                         ProgressBrush="{DynamicResource SsAccentGradient}" />
+                      <TextBlock Text="{Binding ProgressPercentLabel}"
+                                 Style="{StaticResource SsMetricValue}" FontSize="26"
+                                 HorizontalAlignment="Center" VerticalAlignment="Center" />
+                  </Grid>
+
+                  <TextBlock Text="{Binding BusyTitle}" Style="{StaticResource SsTitleText}"
+                             HorizontalAlignment="Center" Margin="0,22,0,0" />
+
+                  <TextBlock Text="{Binding BusyDetail}" Style="{StaticResource SsSecondaryText}"
+                             HorizontalAlignment="Center" TextAlignment="Center"
+                             MaxWidth="320" Margin="0,6,0,0" />
+
+                  <Button Content="İptal" Style="{StaticResource SsSecondaryButton}"
+                          Command="{Binding CancelCommand}" HorizontalAlignment="Center"
+                          MinWidth="120" Margin="0,22,0,0" />
+
+                  <TextBlock Style="{StaticResource SsCaptionText}" HorizontalAlignment="Center"
+                             TextAlignment="Center" MaxWidth="300" Margin="0,10,0,0"
+                             Text="İptal, süren kurulumu kesmez; yalnızca sıradaki paketleri durdurur." />
+              </StackPanel>
+          </Border>
+      </Grid>
+    </Grid>
+
+</UserControl>

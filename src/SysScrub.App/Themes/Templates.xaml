@@ -61,6 +61,10 @@
         <pages:DriversPage />
     </DataTemplate>
 
+    <DataTemplate x:Key="SoftwareUpdatesPageTemplate" DataType="{x:Type vm:NavigationItem}">
+        <pages:SoftwareUpdatesPage />
+    </DataTemplate>
+
     <DataTemplate x:Key="PlaceholderPageTemplate" DataType="{x:Type vm:NavigationItem}">
         <pages:ModulePlaceholderPage />
     </DataTemplate>

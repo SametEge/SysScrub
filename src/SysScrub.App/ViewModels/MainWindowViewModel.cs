@@ -61,7 +61,8 @@ public sealed partial class MainWindowViewModel : ObservableObject
                 Title = "Güncellemeler",
                 IconKey = "IconUpdates",
                 Description = "Kurulu programların yeni sürümlerini winget üzerinden bulur ve toplu günceller.",
-                Phase = 4
+                Phase = 0,
+                TemplateKey = "SoftwareUpdatesPageTemplate"
             },
             new NavigationItem
             {
