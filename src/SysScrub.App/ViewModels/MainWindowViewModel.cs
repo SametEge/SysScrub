@@ -45,7 +45,8 @@ public sealed partial class MainWindowViewModel : ObservableObject
                 Title = "Registry",
                 IconKey = "IconRegistry",
                 Description = "Ölü kayıt defteri girdilerini 12 ayrı tarayıcıyla bulur. Her işlem öncesi .reg yedeği ve geri yükleme noktası alınır.",
-                Phase = 2
+                Phase = 0,
+                TemplateKey = "RegistryPageTemplate"
             },
             new NavigationItem
             {

@@ -9,6 +9,7 @@ using SysScrub.App.ViewModels;
 using SysScrub.App.Views;
 using SysScrub.Core.Cleaning;
 using SysScrub.Core.Machine;
+using SysScrub.Core.RegistryCleaning;
 using SysScrub.Core.Rules;
 using SysScrub.Core.Safety;
 
@@ -58,8 +59,15 @@ public partial class App : Application
                 services.AddSingleton<ScanEngine>();
                 services.AddSingleton<CleanEngine>();
 
+                // Registry zinciri
+                services.AddSingleton<RegistryGuard>();
+                services.AddSingleton<SystemRestorePoint>();
+                services.AddSingleton<RegistryScanEngine>();
+                services.AddSingleton<RegistryCleanEngine>();
+
                 services.AddSingleton<MainWindowViewModel>();
                 services.AddSingleton<CleanerViewModel>();
+                services.AddSingleton<RegistryViewModel>();
                 services.AddSingleton<TimelineViewModel>();
                 services.AddTransient<DashboardViewModel>();
 
@@ -92,7 +100,8 @@ public partial class App : Application
                 window,
                 screenshotPath,
                 e.Args.Contains("--autoscan") || e.Args.Contains("--busyshot"),
-                e.Args.Contains("--busyshot"));
+                e.Args.Contains("--busyshot"),
+                e.Args.Contains("--regscan"));
         }
     }
 
@@ -100,12 +109,33 @@ public partial class App : Application
     /// Geliştirme anahtarı: pencere çizildikten sonra ekran görüntüsünü alıp çıkar.
     /// --autoscan verilirse önce tarama tamamlanır, böylece görüntü dolu ekranı gösterir.
     /// </summary>
-    private void CaptureAndExit(Window window, string screenshotPath, bool autoScan, bool captureWhileBusy = false)
+    private void CaptureAndExit(
+        Window window,
+        string screenshotPath,
+        bool autoScan,
+        bool captureWhileBusy = false,
+        bool registryScan = false)
     {
         window.ContentRendered += (_, _) => Dispatcher.BeginInvoke(
             DispatcherPriority.ApplicationIdle,
             async () =>
             {
+                if (registryScan)
+                {
+                    RegistryViewModel registry = Resolve<RegistryViewModel>();
+                    registry.SelectAllCommand.Execute(null);
+                    await registry.ScanCommand.ExecuteAsync(null);
+
+                    foreach (RegistryScannerNodeViewModel node in registry.Scanners.Where(n => n.HasFindings).Take(2))
+                    {
+                        node.IsExpanded = true;
+                    }
+
+                    await Task.Delay(250);
+                    System.Windows.Input.CommandManager.InvalidateRequerySuggested();
+                    await Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
+                }
+
                 if (autoScan)
                 {
                     CleanerViewModel cleaner = Resolve<CleanerViewModel>();

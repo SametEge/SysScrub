@@ -53,6 +53,10 @@
         <pages:TimelinePage />
     </DataTemplate>
 
+    <DataTemplate x:Key="RegistryPageTemplate" DataType="{x:Type vm:NavigationItem}">
+        <pages:RegistryPage />
+    </DataTemplate>
+
     <DataTemplate x:Key="PlaceholderPageTemplate" DataType="{x:Type vm:NavigationItem}">
         <pages:ModulePlaceholderPage />
     </DataTemplate>

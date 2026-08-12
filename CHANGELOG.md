@@ -7,6 +7,53 @@ Release notları bu dosyanın ilgili sürüm bölümünden otomatik üretilir.
 
 ---
 
+## [0.3.0-alpha] — 2026-08-12
+
+Registry temizleyici çalışır durumda. Modülün tamamı güvenlik katmanı önce
+yazılarak kuruldu; tarayıcılar sonra geldi.
+
+### Eklenenler
+
+- **Yol çözümleyici** — registry değerlerindeki dosya yollarını çözer: tırnaklı,
+  argümanlı, `%değişkenli%`, kaynak indeksli (`shell32.dll,-123`), `@` önekli
+  dolaylı dizeler, `rundll32` çağrıları. Boşluklu tırnaksız yollarda var olan en
+  uzun öneki arar. 32-bit kayıtlar `System32` yazıp dosyayı `SysWOW64`'e koyduğu
+  için ikizini de dener. **Çözemediği durumda "yok" değil "bilinmiyor" der** ve
+  bulgu üretmez — registry temizleyicilerin çalışan kaydı silmesinin bir numaralı
+  sebebi bu ayrımın yapılmaması
+- **Registry guard** — iki katman: yasak ağaçlar (HKLM\SYSTEM, SECURITY, SAM,
+  bileşen bakımı, .NET, Defender, Cryptography, Winlogon, grup ilkeleri) ve izinli
+  kapsam. İzinli kapsam varsayılanı "hayır" yapar. HKCR kabul edilmez: birleştirilmiş
+  görünüm olduğu için hangi kovana yazıldığı belirsiz kalır
+- **12 tarayıcı** — eksik paylaşılan DLL kayıtları, geçersiz uygulama yolları,
+  hedefi olmayan başlangıç kayıtları, MUICache artıkları, kırık yükleyici klasörleri,
+  onaylı kabuk uzantısı artıkları, sahipsiz dosya uzantıları, geçersiz program türleri,
+  kayıp COM bileşenleri, kırık tip kütüphaneleri, ölü kaldırma girdileri, sahipsiz
+  ses olayları. Her bulgu tam anahtar yolunu, neden ölü sayıldığını ve neye işaret
+  ettiğini taşır
+- **.reg yedekleme** — kendi yazıcımız; tüm veri türlerini (string, expand, multi,
+  dword, qword, binary) ve tek değer yedeklemeyi destekler. `reg.exe export` yalnızca
+  anahtarın tamamını alabildiği için kullanılmadı
+- **Sistem geri yükleme noktası** — ikinci güvenlik ağı. Sistem Koruması kapalıysa
+  ya da Windows aynı gün ikinci noktayı reddettiyse durum ayırt edilip bildirilir
+- **Registry ekranı** — tarayıcı bazında bulgular, her tarayıcının ne aradığının
+  açıklaması, ayrıntıda tam anahtar yolu ve gerekçe, işlem örtüsü, sonuç ve geri alma
+- **Komut satırı** — `registry` (kuru çalıştırma), `registry --apply`
+
+### Kapsam kararı
+
+Güvenlik duvarı kuralları tarayıcısı v1'e alınmadı. Kurallar `HKLM\SYSTEM` altında
+duruyor ve en tehlikeli kovana istisna açmak güvenlik katmanını anlamsızlaştırırdı.
+Yerine onaylı kabuk uzantısı tarayıcısı eklendi; tarayıcı sayısı yine 12.
+
+### Düzeltmeler
+
+- HKCU kayıtları iki kez listeleniyordu: WOW64 yönlendirmesi HKCU'da geçerli
+  olmadığı hâlde iki görünüm de taranıyordu. Yönlendirmenin geçerli olduğu yollar
+  ayırt ediliyor, üstüne motorda yinelenen ayıklaması var
+
+---
+
 ## [0.2.1-alpha] — 2026-08-12
 
 ### Düzeltmeler

@@ -1,0 +1,295 @@
+<UserControl x:Class="SysScrub.App.Views.Pages.RegistryPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:conv="clr-namespace:SysScrub.App.Converters"
+             xmlns:controls="clr-namespace:SysScrub.App.Controls"
+             xmlns:vm="clr-namespace:SysScrub.App.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance vm:RegistryViewModel}">
+
+    <UserControl.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVisibility" />
+        <conv:StringToVisibilityConverter x:Key="StringToVisibility" />
+        <conv:RiskBrushConverter x:Key="RiskBrush" />
+        <conv:RiskTintConverter x:Key="RiskTint" />
+    </UserControl.Resources>
+
+    <Grid>
+      <Grid Margin="{StaticResource SsPagePadding}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- ==================== Başlık ==================== -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+            <TextBlock Text="Registry" Style="{StaticResource SsDisplayText}" />
+            <TextBlock Style="{StaticResource SsSecondaryText}" Margin="0,6,0,0"
+                       Text="Kayıt defterinde hedefi kaybolmuş girdileri bulur. Her bulgu neden ölü sayıldığını yazar; silmeden önce görebilirsin." />
+        </StackPanel>
+
+        <!-- ==================== Güvenlik notu ==================== -->
+        <Border Grid.Row="1" Style="{StaticResource SsCard}" Margin="0,0,0,16"
+                Background="{DynamicResource SsInfoTint}"
+                BorderBrush="{DynamicResource SsInfo}">
+            <StackPanel Orientation="Horizontal">
+                <Path Style="{StaticResource SsIcon}" Data="{StaticResource IconStatusInfo}"
+                      Fill="{DynamicResource SsInfo}" VerticalAlignment="Center" />
+                <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
+                    <TextBlock Style="{StaticResource SsBodyText}" FontWeight="SemiBold"
+                               Text="Silmeden önce iki güvenlik ağı kurulur" />
+                    <TextBlock Style="{StaticResource SsCaptionText}" Margin="0,2,0,0"
+                               Text="Silinecek her kaydın .reg yedeği alınır ve sistem geri yükleme noktası oluşturulur. Yedek alınamazsa hiçbir kayıt silinmez." />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- ==================== Durum şeridi ==================== -->
+        <Border Grid.Row="2" Style="{StaticResource SsCard}" Margin="0,0,0,16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <StackPanel Margin="0,0,32,0">
+                        <TextBlock Text="BULUNAN" Style="{StaticResource SsSectionLabel}" />
+                        <TextBlock Text="{Binding FoundLabel}" Style="{StaticResource SsMetricValue}"
+                                   FontSize="26" Margin="0,4,0,0" />
+                    </StackPanel>
+
+                    <StackPanel>
+                        <TextBlock Text="SEÇİLİ" Style="{StaticResource SsSectionLabel}" />
+                        <TextBlock Text="{Binding SelectedLabel}" Style="{StaticResource SsMetricValue}"
+                                   FontSize="26" Margin="0,4,0,0"
+                                   Foreground="{DynamicResource SsAccentText}" />
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Button Content="Taramayı başlat"
+                            Style="{StaticResource SsSecondaryButton}"
+                            Command="{Binding ScanCommand}"
+                            Margin="0,0,8,0" MinWidth="140" />
+
+                    <Button Content="Seçilenleri temizle"
+                            Style="{StaticResource SsPrimaryButton}"
+                            Command="{Binding CleanCommand}"
+                            MinWidth="160" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ==================== Tarayıcı listesi ==================== -->
+        <Border Grid.Row="3" Style="{StaticResource SsCard}" Padding="0">
+            <DockPanel>
+                <Border DockPanel.Dock="Top" Padding="16,12"
+                        BorderBrush="{DynamicResource SsBorder}" BorderThickness="0,0,0,1">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Seçim:" Style="{StaticResource SsCaptionText}"
+                                   VerticalAlignment="Center" Margin="0,0,10,0" />
+                        <Button Content="Önerilen" Style="{StaticResource SsSubtleButton}"
+                                Command="{Binding SelectRecommendedCommand}" MinHeight="28" Padding="10,0" FontSize="12" />
+                        <Button Content="Tümü" Style="{StaticResource SsSubtleButton}"
+                                Command="{Binding SelectAllCommand}" MinHeight="28" Padding="10,0" FontSize="12" />
+                        <Button Content="Hiçbiri" Style="{StaticResource SsSubtleButton}"
+                                Command="{Binding SelectNoneCommand}" MinHeight="28" Padding="10,0" FontSize="12" />
+                    </StackPanel>
+                </Border>
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="8">
+                    <ItemsControl ItemsSource="{Binding Scanners}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type vm:RegistryScannerNodeViewModel}">
+                                <Border Padding="10,9" Margin="0,0,0,2"
+                                        CornerRadius="{StaticResource SsRadiusSmall}">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="Transparent" />
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="{DynamicResource SsSurfaceHover}" />
+                                                </Trigger>
+                                                <DataTrigger Binding="{Binding IsEmpty}" Value="True">
+                                                    <Setter Property="Opacity" Value="0.45" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+
+                                    <StackPanel>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}"
+                                                      VerticalAlignment="Top" Margin="0,1,10,0" />
+
+                                            <StackPanel Grid.Column="1">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding Title}" Style="{StaticResource SsBodyText}" />
+
+                                                    <Border Style="{StaticResource SsBadge}" Margin="8,0,0,0" Padding="7,1"
+                                                            Background="{Binding Risk, Converter={StaticResource RiskTint}}"
+                                                            Visibility="{Binding ShowRiskBadge, Converter={StaticResource BoolToVisibility}}">
+                                                        <TextBlock Text="{Binding RiskLabel}" FontSize="10.5" FontWeight="SemiBold"
+                                                                   Foreground="{Binding Risk, Converter={StaticResource RiskBrush}}" />
+                                                    </Border>
+
+                                                    <Border Style="{StaticResource SsBadge}" Margin="6,0,0,0" Padding="7,1"
+                                                            Background="{DynamicResource SsSurfaceHover}"
+                                                            Visibility="{Binding RequiresAdmin, Converter={StaticResource BoolToVisibility}}">
+                                                        <TextBlock Text="yönetici" FontSize="10.5"
+                                                                   Foreground="{DynamicResource SsTextSecondary}" />
+                                                    </Border>
+                                                </StackPanel>
+
+                                                <TextBlock Text="{Binding Explanation}"
+                                                           Style="{StaticResource SsCaptionText}"
+                                                           Margin="0,3,16,0" MaxWidth="760" HorizontalAlignment="Left" />
+
+                                                <TextBlock Text="{Binding ElevationNote}"
+                                                           Style="{StaticResource SsCaptionText}"
+                                                           Foreground="{DynamicResource SsInfo}" Margin="0,3,0,0"
+                                                           Visibility="{Binding IsBlockedByElevation, Converter={StaticResource BoolToVisibility}}" />
+                                            </StackPanel>
+
+                                            <Button Grid.Column="2" Content="Ayrıntı"
+                                                    Style="{StaticResource SsSubtleButton}"
+                                                    MinHeight="26" Padding="8,0" FontSize="11.5"
+                                                    VerticalAlignment="Top" Margin="0,0,10,0"
+                                                    Visibility="{Binding HasFindings, Converter={StaticResource BoolToVisibility}}"
+                                                    Command="{Binding DataContext.ToggleDetailsCommand,
+                                                              RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                    CommandParameter="{Binding}" />
+
+                                            <TextBlock Grid.Column="3" Text="{Binding CountLabel}"
+                                                       Style="{StaticResource SsBodyText}" FontWeight="SemiBold"
+                                                       VerticalAlignment="Top" MinWidth="86" TextAlignment="Right"
+                                                       Margin="0,1,4,0" />
+                                        </Grid>
+
+                                        <!-- Bulgu ayrıntıları: hangi anahtar, neden ölü, neye işaret ediyordu -->
+                                        <Border Margin="30,10,0,2" Padding="12,10"
+                                                CornerRadius="{StaticResource SsRadiusSmall}"
+                                                Background="{DynamicResource SsSurfaceRaised}"
+                                                Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibility}}">
+                                            <StackPanel>
+                                                <ItemsControl ItemsSource="{Binding Findings}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate DataType="{x:Type vm:RegistryFindingViewModel}">
+                                                            <StackPanel Margin="0,0,0,8">
+                                                                <TextBlock Text="{Binding Path}"
+                                                                           Style="{StaticResource SsMonoText}"
+                                                                           TextTrimming="CharacterEllipsis" />
+                                                                <StackPanel Orientation="Horizontal" Margin="0,1,0,0">
+                                                                    <TextBlock Text="{Binding Reason}"
+                                                                               Style="{StaticResource SsCaptionText}"
+                                                                               Foreground="{DynamicResource SsCaution}" />
+                                                                    <TextBlock Text="  ·  " Style="{StaticResource SsCaptionText}" />
+                                                                    <TextBlock Text="{Binding Target}"
+                                                                               Style="{StaticResource SsCaptionText}"
+                                                                               TextTrimming="CharacterEllipsis"
+                                                                               MaxWidth="620" />
+                                                                </StackPanel>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+
+                                                <TextBlock Text="{Binding TruncationNote}"
+                                                           Style="{StaticResource SsCaptionText}"
+                                                           FontStyle="Italic"
+                                                           Visibility="{Binding TruncationNote, Converter={StaticResource StringToVisibility}}" />
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+
+        <!-- ==================== Durum / sonuç ==================== -->
+        <Border Grid.Row="4" Style="{StaticResource SsCard}" Margin="0,16,0,0"
+                Background="{DynamicResource SsSurfaceRaised}"
+                Visibility="{Binding StatusMessage, Converter={StaticResource StringToVisibility}}">
+            <TextBlock Text="{Binding StatusMessage}" Style="{StaticResource SsBodyText}" />
+        </Border>
+
+        <Border Grid.Row="4" Style="{StaticResource SsCard}" Margin="0,16,0,0"
+                Background="{DynamicResource SsSurfaceRaised}"
+                Visibility="{Binding ResultSummary, Converter={StaticResource StringToVisibility}}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Path Grid.Column="0" Data="{StaticResource IconStatusGood}" Fill="{DynamicResource SsGood}"
+                      Stretch="Uniform" Width="22" Height="22" VerticalAlignment="Center" Margin="0,0,14,0" />
+
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding ResultSummary}" Style="{StaticResource SsSubtitleText}" />
+                    <TextBlock Text="{Binding ResultDetail}" Style="{StaticResource SsCaptionText}" Margin="0,2,0,0" />
+                </StackPanel>
+
+                <Button Grid.Column="2" Content="Geri al"
+                        Style="{StaticResource SsSecondaryButton}"
+                        Command="{Binding UndoCommand}"
+                        VerticalAlignment="Center"
+                        Visibility="{Binding CanUndoLastClean, Converter={StaticResource BoolToVisibility}}" />
+            </Grid>
+        </Border>
+      </Grid>
+
+      <!-- ==================== İşlem örtüsü ==================== -->
+      <Grid Background="{DynamicResource SsScrim}"
+            Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}">
+          <Border Style="{StaticResource SsCard}" Padding="40,36" MinWidth="380"
+                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                  Effect="{StaticResource SsShadowHigh}">
+              <StackPanel HorizontalAlignment="Center">
+                  <Grid Width="150" Height="150">
+                      <controls:ScanRing Width="150" Height="150" Thickness="12"
+                                         Progress="{Binding ProgressFraction, Mode=OneWay}"
+                                         TrackBrush="{DynamicResource SsSurfaceHover}"
+                                         ProgressBrush="{DynamicResource SsAccentGradient}" />
+                      <TextBlock Text="{Binding ProgressPercentLabel}"
+                                 Style="{StaticResource SsMetricValue}" FontSize="28"
+                                 HorizontalAlignment="Center" VerticalAlignment="Center" />
+                  </Grid>
+
+                  <TextBlock Text="{Binding BusyTitle}" Style="{StaticResource SsTitleText}"
+                             HorizontalAlignment="Center" Margin="0,22,0,0" />
+
+                  <TextBlock Text="{Binding BusyDetail}" Style="{StaticResource SsSecondaryText}"
+                             HorizontalAlignment="Center" TextAlignment="Center" Margin="0,6,0,0" />
+
+                  <TextBlock Text="{Binding ProgressLabel}" Style="{StaticResource SsCaptionText}"
+                             HorizontalAlignment="Center" TextAlignment="Center"
+                             TextTrimming="CharacterEllipsis" MaxWidth="320" Margin="0,10,0,0" />
+
+                  <Button Content="İptal" Style="{StaticResource SsSecondaryButton}"
+                          Command="{Binding CancelCommand}" HorizontalAlignment="Center"
+                          MinWidth="120" Margin="0,22,0,0" />
+              </StackPanel>
+          </Border>
+      </Grid>
+    </Grid>
+
+</UserControl>

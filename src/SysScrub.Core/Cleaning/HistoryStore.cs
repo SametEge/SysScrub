@@ -50,6 +50,9 @@ public sealed record HistoryRun
 
     public IReadOnlyList<string> RuleIds { get; init; } = [];
 
+    /// <summary>Registry temizliklerinde geri yüklemede kullanılacak .reg dosyası.</summary>
+    public string? BackupPath { get; init; }
+
     [JsonIgnore]
     public long MeasuredGain => FreeSpaceAfter - FreeSpaceBefore;
 }

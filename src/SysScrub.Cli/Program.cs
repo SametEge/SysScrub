@@ -23,6 +23,7 @@ internal static class Program
                 "rules" => RulesCommand.Run(args),
                 "scan" => await ScanCommand.RunAsync(args),
                 "clean" => await CleanCommand.RunAsync(args),
+                "registry" => await RegistryCommand.RunAsync(args),
                 "history" => HistoryCommand.List(),
                 "undo" => HistoryCommand.Undo(args),
                 "version" => PrintVersion(),
@@ -47,6 +48,7 @@ internal static class Program
         Console.WriteLine("  rules               Yüklü temizleme kurallarını listeler");
         Console.WriteLine("  scan                Temizlenebilir dosyaları tarar, hiçbir şey silmez");
         Console.WriteLine("  clean               Temizler. --apply verilmezse yalnızca ne olacağını gösterir");
+        Console.WriteLine("  registry            Ölü kayıt defteri girdilerini tarar (--apply ile temizler)");
         Console.WriteLine("  history             Geçmiş temizlikleri listeler");
         Console.WriteLine("  undo <kimlik>       Bir temizliği geri alır (karantinadan geri yükler)");
         Console.WriteLine("  version             Sürüm bilgisini yazdırır");
