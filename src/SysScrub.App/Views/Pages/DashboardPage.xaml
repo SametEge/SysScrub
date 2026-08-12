@@ -227,22 +227,44 @@
                 </Border>
             </Grid>
 
-            <!-- ==================== Durum şeridi ==================== -->
+            <!--
+                Yetki uyarısı yalnızca eksik olduğunda görünür. Uygulama normalde
+                yönetici olarak açılır (manifest); bu şerit dev senaryosu ya da
+                yükseltmenin atlandığı durumlar için, ve bilgi değil eylem sunar.
+            -->
             <Border Grid.Row="2" Style="{StaticResource SsCard}" Margin="0,16,0,0"
-                    Background="{DynamicResource SsSurfaceRaised}">
-                <StackPanel Orientation="Horizontal">
-                    <Path Style="{StaticResource SsIcon}"
-                          Data="{StaticResource IconStatusInfo}"
-                          Fill="{DynamicResource SsInfo}" />
-                    <TextBlock Margin="12,0,0,0"
-                               VerticalAlignment="Center"
-                               Style="{StaticResource SsBodyText}"
-                               Text="{Binding ElevationLabel}" />
-                    <TextBlock Margin="8,0,0,0"
-                               VerticalAlignment="Center"
-                               Style="{StaticResource SsCaptionText}"
-                               Text="— sürücü kurulumu, servis durdurma ve sistem önbelleği temizliği yönetici hakkı ister" />
-                </StackPanel>
+                    Background="{DynamicResource SsCautionTint}"
+                    BorderBrush="{DynamicResource SsCaution}"
+                    Visibility="{Binding ShowElevationWarning, Converter={StaticResource BoolToVisibility}}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Path Grid.Column="0"
+                          Style="{StaticResource SsIcon}"
+                          Data="{StaticResource IconStatusCaution}"
+                          Fill="{DynamicResource SsCaution}"
+                          VerticalAlignment="Center" />
+
+                    <StackPanel Grid.Column="1" Margin="12,0,16,0" VerticalAlignment="Center">
+                        <TextBlock Style="{StaticResource SsBodyText}"
+                                   FontWeight="SemiBold"
+                                   Text="Yönetici hakkı olmadan çalışıyor" />
+                        <TextBlock Style="{StaticResource SsCaptionText}"
+                                   Margin="0,2,0,0"
+                                   Text="Windows Update önbelleği, sistem geçici dosyaları ve sürücü işlemleri bu hakkı ister — bunlar genelde en çok yer kazandıranlar." />
+                    </StackPanel>
+
+                    <Button Grid.Column="2"
+                            Content="Yönetici olarak yeniden başlat"
+                            Style="{StaticResource SsSecondaryButton}"
+                            VerticalAlignment="Center"
+                            Command="{Binding RestartElevatedCommand}"
+                            Visibility="{Binding CanRestartElevated, Converter={StaticResource BoolToVisibility}}" />
+                </Grid>
             </Border>
         </Grid>
     </ScrollViewer>

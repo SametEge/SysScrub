@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using SysScrub.App.Services;
 using SysScrub.Core.Formatting;
 using SysScrub.Core.Machine;
 
@@ -18,6 +19,7 @@ public sealed partial class DashboardViewModel : ObservableObject, IDisposable
 {
     private readonly SystemInfoService _systemInfo;
     private readonly MainWindowViewModel _shell;
+    private readonly ElevationService _elevation;
 
     [ObservableProperty]
     private string _osLabel = string.Empty;
@@ -29,10 +31,15 @@ public sealed partial class DashboardViewModel : ObservableObject, IDisposable
     private string _uptimeLabel = string.Empty;
 
     [ObservableProperty]
-    private string _elevationLabel = string.Empty;
-
-    [ObservableProperty]
     private bool _isElevated;
+
+    /// <summary>
+    /// Yönetici hakkı varken uyarı göstermiyoruz: her şey yolundayken kullanıcıya
+    /// "her şey yolunda" demek gereksiz gürültü. Yalnızca eksik olduğunda konuşuyoruz.
+    /// </summary>
+    public bool ShowElevationWarning => !IsElevated;
+
+    public bool CanRestartElevated => !IsElevated && _elevation.CanRestart;
 
     [ObservableProperty]
     private string _systemDriveName = "—";
@@ -58,10 +65,15 @@ public sealed partial class DashboardViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private double _memoryUsedRatio;
 
-    public DashboardViewModel(SystemInfoService systemInfo, CleanerViewModel cleaner, MainWindowViewModel shell)
+    public DashboardViewModel(
+        SystemInfoService systemInfo,
+        CleanerViewModel cleaner,
+        MainWindowViewModel shell,
+        ElevationService elevation)
     {
         _systemInfo = systemInfo;
         _shell = shell;
+        _elevation = elevation;
         Cleaner = cleaner;
         Drives = [];
 
@@ -116,6 +128,9 @@ public sealed partial class DashboardViewModel : ObservableObject, IDisposable
     };
 
     [RelayCommand]
+    private void RestartElevated() => _elevation.TryRestartElevated();
+
+    [RelayCommand]
     private void OpenCleaner()
     {
         _shell.SelectedItem = _shell.Items.FirstOrDefault(i => i.TemplateKey == "CleanerPageTemplate")
@@ -142,7 +157,8 @@ public sealed partial class DashboardViewModel : ObservableObject, IDisposable
         MachineLabel = snapshot.MachineName;
         UptimeLabel = DurationText.HumanizeUptime(snapshot.Uptime);
         IsElevated = snapshot.IsElevated;
-        ElevationLabel = snapshot.IsElevated ? "Yönetici olarak çalışıyor" : "Sınırlı yetkiyle çalışıyor";
+        OnPropertyChanged(nameof(ShowElevationWarning));
+        OnPropertyChanged(nameof(CanRestartElevated));
 
         if (snapshot.SystemDrive is { } system)
         {

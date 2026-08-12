@@ -47,6 +47,7 @@ public partial class App : Application
             {
                 services.AddSingleton<SystemInfoService>();
                 services.AddSingleton<ThemeService>();
+                services.AddSingleton<ElevationService>();
 
                 // Temizlik zinciri: kural kümesi bir kez yüklenir, motorlar onu paylaşır.
                 services.AddSingleton<PathResolver>();
