@@ -1,17 +1,23 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using SysScrub.Core.Formatting;
 using SysScrub.Core.Machine;
 
 namespace SysScrub.App.ViewModels;
 
 /// <summary>
-/// Panel. Faz 0'da yalnızca gerçekten okuyabildiğimiz veriyi gösterir —
-/// tarama, sürücü ve disk sağlığı sayıları uydurulmaz, "henüz ölçülmedi" olarak durur.
+/// Panel. Yalnızca gerçekten ölçebildiğimiz veriyi gösterir; henüz gelmemiş
+/// modüllerin sayıları uydurulmaz.
+///
+/// Temizlik kartı, Temizleyici ekranıyla aynı görünüm modelini paylaşır: burada
+/// başlatılan tarama oraya geçtiğinde hazır bekliyor olur, iki kez taranmaz.
 /// </summary>
-public sealed partial class DashboardViewModel : ObservableObject
+public sealed partial class DashboardViewModel : ObservableObject, IDisposable
 {
     private readonly SystemInfoService _systemInfo;
+    private readonly MainWindowViewModel _shell;
 
     [ObservableProperty]
     private string _osLabel = string.Empty;
@@ -52,14 +58,81 @@ public sealed partial class DashboardViewModel : ObservableObject
     [ObservableProperty]
     private double _memoryUsedRatio;
 
-    public DashboardViewModel(SystemInfoService systemInfo)
+    public DashboardViewModel(SystemInfoService systemInfo, CleanerViewModel cleaner, MainWindowViewModel shell)
     {
         _systemInfo = systemInfo;
+        _shell = shell;
+        Cleaner = cleaner;
         Drives = [];
+
+        // Temizleyici tarama bitirdiğinde halkanın ve sayacın da güncellenmesi gerekiyor.
+        Cleaner.PropertyChanged += OnCleanerChanged;
+
         Refresh();
     }
 
+    /// <summary>Temizleyici ekranıyla paylaşılan görünüm modeli.</summary>
+    public CleanerViewModel Cleaner { get; }
+
     public ObservableCollection<DriveRow> Drives { get; }
+
+    // ---------------------------------------------------------------- temizlik kartı
+
+    public bool HasScanned => Cleaner.Stage is CleanerStage.Reviewing or CleanerStage.Finished;
+
+    public bool IsScanning => Cleaner.Stage == CleanerStage.Scanning;
+
+    /// <summary>Halkanın dolum oranı: tarama sırasında gerçek ilerleme, bittiğinde tam tur.</summary>
+    public double ScanRingProgress => Cleaner.Stage switch
+    {
+        CleanerStage.Scanning => Cleaner.ProgressFraction,
+        CleanerStage.Reviewing or CleanerStage.Finished => 1d,
+        _ => 0d
+    };
+
+    public string ScanValueLabel => Cleaner.Stage switch
+    {
+        CleanerStage.Scanning => Cleaner.FoundLabel,
+        CleanerStage.Reviewing or CleanerStage.Finished => Cleaner.FoundLabel,
+        _ => "—"
+    };
+
+    public string ScanCaption => Cleaner.Stage switch
+    {
+        CleanerStage.Scanning => "taranıyor...",
+        CleanerStage.Reviewing when Cleaner.FoundFiles == 0 => "temizlenecek bir şey yok",
+        CleanerStage.Reviewing or CleanerStage.Finished => $"{Cleaner.FoundFiles:N0} dosya temizlenebilir",
+        _ => "henüz taranmadı"
+    };
+
+    public string ScanHint => Cleaner.Stage switch
+    {
+        CleanerStage.Scanning => "Tarama sürüyor. Dosyalar yalnızca listeleniyor, hiçbir şey silinmiyor.",
+        CleanerStage.Reviewing when Cleaner.FoundFiles > 0 =>
+            "Ne silineceğine sen karar ver. Temizleyici ekranında kural kural inceleyebilirsin.",
+        CleanerStage.Reviewing => "Sistem temiz görünüyor.",
+        CleanerStage.Finished => "Temizlik tamamlandı. Ayrıntılar Zaman tüneli ekranında.",
+        _ => "Tarama, dosyaları listeler ama hiçbir şey silmez. Ne silineceğine sen karar verirsin."
+    };
+
+    [RelayCommand]
+    private void OpenCleaner()
+    {
+        _shell.SelectedItem = _shell.Items.FirstOrDefault(i => i.TemplateKey == "CleanerPageTemplate")
+                              ?? _shell.SelectedItem;
+    }
+
+    private void OnCleanerChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        OnPropertyChanged(nameof(HasScanned));
+        OnPropertyChanged(nameof(IsScanning));
+        OnPropertyChanged(nameof(ScanRingProgress));
+        OnPropertyChanged(nameof(ScanValueLabel));
+        OnPropertyChanged(nameof(ScanCaption));
+        OnPropertyChanged(nameof(ScanHint));
+    }
+
+    public void Dispose() => Cleaner.PropertyChanged -= OnCleanerChanged;
 
     public void Refresh()
     {

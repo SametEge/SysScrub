@@ -104,6 +104,12 @@ public partial class App : Application
                 if (autoScan)
                 {
                     await Resolve<CleanerViewModel>().ScanCommand.ExecuteAsync(null);
+
+                    // Komut durumları yeniden sorgulanmadan görüntü alınırsa butonlar
+                    // devre dışıymış gibi çıkıyor; yerleşmesini bekliyoruz.
+                    await Task.Delay(250);
+                    System.Windows.Input.CommandManager.InvalidateRequerySuggested();
+                    await Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
                 }
 
                 WindowCapture.Save(window, screenshotPath);
