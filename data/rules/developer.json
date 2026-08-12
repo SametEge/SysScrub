@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "id": "dev.npm.cache",
+      "category": "Developer",
+      "group": "Node.js",
+      "name": { "tr": "npm / yarn / pnpm önbelleği", "en": "npm / yarn / pnpm cache" },
+      "explanation": {
+        "tr": "İndirilmiş paket arşivleri. Silinince sonraki kurulumlar internetten yeniden indirir; çevrimdışı çalışıyorsan temizleme.",
+        "en": "Downloaded package archives. Later installs re-download them, so skip this if you work offline."
+      },
+      "risk": "safe",
+      "defaultEnabled": false,
+      "roots": [
+        { "base": "RoamingAppData", "path": "npm-cache" },
+        { "base": "LocalAppData", "path": "npm-cache" },
+        { "base": "LocalAppData", "path": "Yarn/Cache" },
+        { "base": "LocalAppData", "path": "pnpm/store" }
+      ],
+      "deleteMode": "permanent"
+    },
+    {
+      "id": "dev.nuget.cache",
+      "category": "Developer",
+      "group": ".NET",
+      "name": { "tr": "NuGet paket önbelleği", "en": "NuGet package cache" },
+      "explanation": {
+        "tr": "İndirilmiş NuGet paketleri ve HTTP önbelleği. Onlarca gigabayta ulaşabilir; sonraki derlemede yeniden indirilir.",
+        "en": "Downloaded NuGet packages and HTTP cache. Can reach tens of gigabytes and is re-downloaded on the next build."
+      },
+      "risk": "safe",
+      "defaultEnabled": false,
+      "roots": [
+        { "base": "UserProfile", "path": ".nuget/packages" },
+        { "base": "LocalAppData", "path": "NuGet/v3-cache" },
+        { "base": "LocalAppData", "path": "NuGet/plugins-cache" },
+        { "base": "LocalAppData", "path": "Temp/NuGetScratch" }
+      ],
+      "deleteMode": "permanent"
+    },
+    {
+      "id": "dev.visualstudio.cache",
+      "category": "Developer",
+      "group": "Visual Studio",
+      "name": { "tr": "Visual Studio önbelleği", "en": "Visual Studio cache" },
+      "explanation": {
+        "tr": "Bileşen modeli önbelleği ve geçici dosyalar. Bozulduğunda Visual Studio eklentileri kaybolur; temizlemek düzeltir.",
+        "en": "Component model cache and temporary files. When corrupted Visual Studio loses extensions, and clearing it fixes that."
+      },
+      "risk": "safe",
+      "defaultEnabled": false,
+      "blockingProcesses": ["devenv"],
+      "roots": [
+        { "base": "LocalAppData", "path": "Microsoft/VisualStudio/*/ComponentModelCache" },
+        { "base": "LocalAppData", "path": "Microsoft/VisualStudio/*/ProjectAssemblies" }
+      ],
+      "deleteMode": "permanent"
+    },
+    {
+      "id": "dev.python.cache",
+      "category": "Developer",
+      "group": "Python",
+      "name": { "tr": "pip önbelleği", "en": "pip cache" },
+      "explanation": {
+        "tr": "İndirilmiş Python paket arşivleri. Sonraki kurulumda yeniden indirilir.",
+        "en": "Downloaded Python package archives. Re-downloaded on the next install."
+      },
+      "risk": "safe",
+      "defaultEnabled": false,
+      "roots": [{ "base": "LocalAppData", "path": "pip/cache" }],
+      "deleteMode": "permanent"
+    },
+    {
+      "id": "dev.jvm.cache",
+      "category": "Developer",
+      "group": "JVM",
+      "name": { "tr": "Gradle ve Maven önbelleği", "en": "Gradle and Maven cache" },
+      "explanation": {
+        "tr": "İndirilmiş Java bağımlılıkları ve Gradle derleme önbelleği. Sonraki derlemede yeniden indirilir.",
+        "en": "Downloaded Java dependencies and the Gradle build cache. Re-downloaded on the next build."
+      },
+      "risk": "safe",
+      "defaultEnabled": false,
+      "roots": [
+        { "base": "UserProfile", "path": ".gradle/caches" },
+        { "base": "UserProfile", "path": ".m2/repository" }
+      ],
+      "deleteMode": "permanent"
+    },
+    {
+      "id": "dev.rust.go.cache",
+      "category": "Developer",
+      "group": "Rust ve Go",
+      "name": { "tr": "Cargo ve Go modül önbelleği", "en": "Cargo and Go module cache" },
+      "explanation": {
+        "tr": "İndirilmiş Rust crate'leri ve Go modülleri. Sonraki derlemede yeniden indirilir.",
+        "en": "Downloaded Rust crates and Go modules. Re-downloaded on the next build."
+      },
+      "risk": "safe",
+      "defaultEnabled": false,
+      "roots": [
+        { "base": "UserProfile", "path": ".cargo/registry/cache" },
+        { "base": "UserProfile", "path": "go/pkg/mod/cache/download" }
+      ],
+      "deleteMode": "permanent"
+    }
+  ]
+}

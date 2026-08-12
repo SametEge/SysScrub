@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "id": "privacy.recent.items",
+      "category": "Privacy",
+      "group": "Son kullanılanlar",
+      "name": { "tr": "Son kullanılan dosyalar listesi", "en": "Recent files list" },
+      "explanation": {
+        "tr": "Windows'un açtığın dosyaları hatırladığı liste. Dosyaların silinmez, yalnızca 'son kullanılanlar' listesi boşalır.",
+        "en": "The list Windows keeps of files you opened. Your files are not deleted, only the recent list is cleared."
+      },
+      "risk": "safe",
+      "defaultEnabled": false,
+      "roots": [
+        { "base": "RoamingAppData", "path": "Microsoft/Windows/Recent" }
+      ],
+      "include": ["**/*.lnk"],
+      "deleteMode": "quarantine"
+    },
+    {
+      "id": "privacy.jumplists",
+      "category": "Privacy",
+      "group": "Son kullanılanlar",
+      "name": { "tr": "Görev çubuğu atlama listeleri", "en": "Taskbar jump lists" },
+      "explanation": {
+        "tr": "Görev çubuğundaki simgelere sağ tıklayınca çıkan 'son açılanlar' listeleri.",
+        "en": "The 'recent' entries you see when right-clicking taskbar icons."
+      },
+      "risk": "safe",
+      "defaultEnabled": false,
+      "roots": [
+        { "base": "RoamingAppData", "path": "Microsoft/Windows/Recent/AutomaticDestinations" },
+        { "base": "RoamingAppData", "path": "Microsoft/Windows/Recent/CustomDestinations" }
+      ],
+      "deleteMode": "quarantine"
+    },
+    {
+      "id": "privacy.clipboard.history",
+      "category": "Privacy",
+      "group": "Pano ve arama",
+      "name": { "tr": "Pano geçmişi", "en": "Clipboard history" },
+      "explanation": {
+        "tr": "Windows+V ile açılan pano geçmişinde tutulan kopyalanmış içerikler.",
+        "en": "Copied content kept in the clipboard history opened with Windows+V."
+      },
+      "risk": "safe",
+      "defaultEnabled": false,
+      "roots": [
+        { "base": "LocalAppData", "path": "Microsoft/Windows/Clipboard" }
+      ],
+      "deleteMode": "quarantine"
+    },
+    {
+      "id": "privacy.search.history",
+      "category": "Privacy",
+      "group": "Pano ve arama",
+      "name": { "tr": "Windows arama geçmişi", "en": "Windows search history" },
+      "explanation": {
+        "tr": "Başlat menüsünde yaptığın aramaların yerel geçmişi ve önbelleği.",
+        "en": "Local history and cache of the searches you typed in the Start menu."
+      },
+      "risk": "safe",
+      "defaultEnabled": false,
+      "roots": [
+        { "base": "LocalAppData", "path": "Packages/Microsoft.Windows.Search_cw5n1h2txyewy/LocalState/AppIconCache" }
+      ],
+      "deleteMode": "quarantine"
+    }
+  ]
+}

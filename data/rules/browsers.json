@@ -1,0 +1,150 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "id": "browser.chromium.cache",
+      "category": "Browsers",
+      "group": "Chromium tabanlı tarayıcılar",
+      "name": { "tr": "Sayfa önbelleği", "en": "Page cache" },
+      "explanation": {
+        "tr": "Chrome, Edge, Brave, Opera ve Vivaldi'nin indirdiği resim, betik ve stil dosyaları. Silinince sayfalar bir kez daha yavaş açılır, sonra normale döner. Oturumların ve parolaların etkilenmez.",
+        "en": "Images, scripts and stylesheets downloaded by Chrome, Edge, Brave, Opera and Vivaldi. Pages load once slowly after cleaning, then return to normal. Your logins and passwords are untouched."
+      },
+      "risk": "safe",
+      "defaultEnabled": true,
+      "blockingProcesses": ["chrome", "msedge", "brave", "opera", "vivaldi"],
+      "roots": [
+        { "base": "LocalAppData", "path": "Google/Chrome/User Data/*/Cache" },
+        { "base": "LocalAppData", "path": "Google/Chrome/User Data/*/Code Cache" },
+        { "base": "LocalAppData", "path": "Google/Chrome/User Data/*/GPUCache" },
+        { "base": "LocalAppData", "path": "Google/Chrome/User Data/*/DawnGraphiteCache" },
+        { "base": "LocalAppData", "path": "Google/Chrome/User Data/*/DawnWebGPUCache" },
+        { "base": "LocalAppData", "path": "Google/Chrome/User Data/ShaderCache" },
+        { "base": "LocalAppData", "path": "Google/Chrome/User Data/GrShaderCache" },
+
+        { "base": "LocalAppData", "path": "Microsoft/Edge/User Data/*/Cache" },
+        { "base": "LocalAppData", "path": "Microsoft/Edge/User Data/*/Code Cache" },
+        { "base": "LocalAppData", "path": "Microsoft/Edge/User Data/*/GPUCache" },
+        { "base": "LocalAppData", "path": "Microsoft/Edge/User Data/ShaderCache" },
+        { "base": "LocalAppData", "path": "Microsoft/Edge/User Data/GrShaderCache" },
+
+        { "base": "LocalAppData", "path": "BraveSoftware/Brave-Browser/User Data/*/Cache" },
+        { "base": "LocalAppData", "path": "BraveSoftware/Brave-Browser/User Data/*/Code Cache" },
+        { "base": "LocalAppData", "path": "BraveSoftware/Brave-Browser/User Data/*/GPUCache" },
+
+        { "base": "LocalAppData", "path": "Vivaldi/User Data/*/Cache" },
+        { "base": "LocalAppData", "path": "Vivaldi/User Data/*/Code Cache" },
+        { "base": "LocalAppData", "path": "Vivaldi/User Data/*/GPUCache" },
+
+        { "base": "RoamingAppData", "path": "Opera Software/Opera Stable/Cache" },
+        { "base": "RoamingAppData", "path": "Opera Software/Opera GX Stable/Cache" },
+        { "base": "LocalAppData", "path": "Opera Software/Opera Stable/Cache" },
+        { "base": "LocalAppData", "path": "Opera Software/Opera GX Stable/Cache" }
+      ],
+      "deleteMode": "permanent"
+    },
+    {
+      "id": "browser.chromium.serviceworker",
+      "category": "Browsers",
+      "group": "Chromium tabanlı tarayıcılar",
+      "name": { "tr": "Service worker önbelleği", "en": "Service worker cache" },
+      "explanation": {
+        "tr": "Web uygulamalarının çevrimdışı çalışmak için sakladığı veriler. Silinince web uygulamaları içeriği yeniden indirir.",
+        "en": "Data web apps store to work offline. After cleaning they re-download their content."
+      },
+      "risk": "safe",
+      "blockingProcesses": ["chrome", "msedge", "brave", "opera", "vivaldi"],
+      "roots": [
+        { "base": "LocalAppData", "path": "Google/Chrome/User Data/*/Service Worker/CacheStorage" },
+        { "base": "LocalAppData", "path": "Google/Chrome/User Data/*/Service Worker/ScriptCache" },
+        { "base": "LocalAppData", "path": "Microsoft/Edge/User Data/*/Service Worker/CacheStorage" },
+        { "base": "LocalAppData", "path": "Microsoft/Edge/User Data/*/Service Worker/ScriptCache" },
+        { "base": "LocalAppData", "path": "BraveSoftware/Brave-Browser/User Data/*/Service Worker/CacheStorage" }
+      ],
+      "deleteMode": "permanent"
+    },
+    {
+      "id": "browser.chromium.cookies",
+      "category": "Browsers",
+      "group": "Chromium tabanlı tarayıcılar",
+      "name": { "tr": "Çerezler ve oturumlar", "en": "Cookies and sessions" },
+      "explanation": {
+        "tr": "UYARI: bu silinirse girdiğin sitelerden çıkış yapmış olursun ve her yerde yeniden oturum açman gerekir. Parolaların silinmez, sadece açık oturumlar kapanır.",
+        "en": "WARNING: cleaning this signs you out of the sites you use and you will have to log in again everywhere. Saved passwords are not deleted, only active sessions end."
+      },
+      "risk": "caution",
+      "defaultEnabled": false,
+      "blockingProcesses": ["chrome", "msedge", "brave", "opera", "vivaldi"],
+      "roots": [
+        { "base": "LocalAppData", "path": "Google/Chrome/User Data/*/Network" },
+        { "base": "LocalAppData", "path": "Microsoft/Edge/User Data/*/Network" },
+        { "base": "LocalAppData", "path": "BraveSoftware/Brave-Browser/User Data/*/Network" }
+      ],
+      "include": ["Cookies", "Cookies-journal"],
+      "recursive": false,
+      "deleteMode": "quarantine"
+    },
+    {
+      "id": "browser.chromium.history",
+      "category": "Browsers",
+      "group": "Chromium tabanlı tarayıcılar",
+      "name": { "tr": "Gezinme geçmişi", "en": "Browsing history" },
+      "explanation": {
+        "tr": "UYARI: ziyaret ettiğin sayfaların geçmişi ve adres çubuğu önerileri silinir. Yer imleri etkilenmez.",
+        "en": "WARNING: your visited page history and address bar suggestions are removed. Bookmarks are not affected."
+      },
+      "risk": "caution",
+      "defaultEnabled": false,
+      "blockingProcesses": ["chrome", "msedge", "brave", "opera", "vivaldi"],
+      "roots": [
+        { "base": "LocalAppData", "path": "Google/Chrome/User Data/*" },
+        { "base": "LocalAppData", "path": "Microsoft/Edge/User Data/*" },
+        { "base": "LocalAppData", "path": "BraveSoftware/Brave-Browser/User Data/*" }
+      ],
+      "include": ["History", "History-journal", "Top Sites", "Visited Links"],
+      "recursive": false,
+      "deleteMode": "quarantine"
+    },
+    {
+      "id": "browser.firefox.cache",
+      "category": "Browsers",
+      "group": "Firefox ve türevleri",
+      "name": { "tr": "Sayfa önbelleği", "en": "Page cache" },
+      "explanation": {
+        "tr": "Firefox, LibreWolf ve Waterfox'un disk önbelleği. Silinince sayfalar bir kez daha yavaş açılır. Oturumların etkilenmez.",
+        "en": "Disk cache of Firefox, LibreWolf and Waterfox. Pages load once slowly after cleaning. Your logins are untouched."
+      },
+      "risk": "safe",
+      "blockingProcesses": ["firefox", "librewolf", "waterfox"],
+      "roots": [
+        { "base": "LocalAppData", "path": "Mozilla/Firefox/Profiles/*/cache2" },
+        { "base": "LocalAppData", "path": "Mozilla/Firefox/Profiles/*/startupCache" },
+        { "base": "LocalAppData", "path": "Mozilla/Firefox/Profiles/*/thumbnails" },
+        { "base": "LocalAppData", "path": "Mozilla/Firefox/Profiles/*/jumpListCache" },
+        { "base": "LocalAppData", "path": "LibreWolf/Profiles/*/cache2" },
+        { "base": "LocalAppData", "path": "Waterfox/Profiles/*/cache2" }
+      ],
+      "deleteMode": "permanent"
+    },
+    {
+      "id": "browser.firefox.cookies",
+      "category": "Browsers",
+      "group": "Firefox ve türevleri",
+      "name": { "tr": "Çerezler ve oturumlar", "en": "Cookies and sessions" },
+      "explanation": {
+        "tr": "UYARI: silinirse tüm sitelerden çıkış yapmış olursun. Kayıtlı parolalar silinmez.",
+        "en": "WARNING: cleaning this signs you out of every site. Saved passwords are not deleted."
+      },
+      "risk": "caution",
+      "defaultEnabled": false,
+      "blockingProcesses": ["firefox", "librewolf", "waterfox"],
+      "roots": [
+        { "base": "RoamingAppData", "path": "Mozilla/Firefox/Profiles/*" },
+        { "base": "RoamingAppData", "path": "LibreWolf/Profiles/*" }
+      ],
+      "include": ["cookies.sqlite", "cookies.sqlite-wal", "sessionstore.jsonlz4"],
+      "recursive": false,
+      "deleteMode": "quarantine"
+    }
+  ]
+}

@@ -15,14 +15,20 @@ namespace SysScrub.App.Services;
 internal static class WindowCapture
 {
     private const string Switch = "--screenshot=";
+    private const string PageSwitch = "--page=";
 
-    public static string? PathFromArgs(IReadOnlyList<string> args)
+    public static string? PathFromArgs(IReadOnlyList<string> args) => ValueOf(args, Switch);
+
+    /// <summary>Ekran görüntüsü alınırken hangi modülün açık olacağı.</summary>
+    public static string? PageFromArgs(IReadOnlyList<string> args) => ValueOf(args, PageSwitch);
+
+    private static string? ValueOf(IReadOnlyList<string> args, string prefix)
     {
         foreach (string arg in args)
         {
-            if (arg.StartsWith(Switch, StringComparison.OrdinalIgnoreCase))
+            if (arg.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
             {
-                return arg[Switch.Length..];
+                return arg[prefix.Length..];
             }
         }
 

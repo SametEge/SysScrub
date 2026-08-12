@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "id": "game.steam.downloading",
+      "category": "Gaming",
+      "group": "Steam",
+      "name": { "tr": "Yarım kalmış indirmeler", "en": "Interrupted downloads" },
+      "explanation": {
+        "tr": "İptal edilmiş veya takılmış Steam indirmelerinin parçaları. Kurulu oyunlarına dokunulmaz; devam eden bir indirme varsa Steam'i kapatıp temizle.",
+        "en": "Fragments of cancelled or stuck Steam downloads. Installed games are untouched; close Steam first if a download is in progress."
+      },
+      "risk": "caution",
+      "defaultEnabled": false,
+      "blockingProcesses": ["steam"],
+      "roots": [
+        { "base": "ProgramFilesX86", "path": "Steam/steamapps/downloading" },
+        { "base": "ProgramFilesX86", "path": "Steam/steamapps/temp" }
+      ],
+      "deleteMode": "permanent"
+    },
+    {
+      "id": "game.steam.cache",
+      "category": "Gaming",
+      "group": "Steam",
+      "name": { "tr": "Steam önbelleği", "en": "Steam cache" },
+      "explanation": {
+        "tr": "Steam istemcisinin mağaza ve kütüphane görselleri için tuttuğu önbellek ile günlükler. Oyunların ve oturumun etkilenmez.",
+        "en": "Cache the Steam client keeps for store and library artwork, plus logs. Your games and session are unaffected."
+      },
+      "risk": "safe",
+      "blockingProcesses": ["steam"],
+      "roots": [
+        { "base": "ProgramFilesX86", "path": "Steam/appcache/httpcache" },
+        { "base": "ProgramFilesX86", "path": "Steam/logs" },
+        { "base": "LocalAppData", "path": "Steam/htmlcache" }
+      ],
+      "deleteMode": "permanent"
+    },
+    {
+      "id": "game.epic.cache",
+      "category": "Gaming",
+      "group": "Epic Games",
+      "name": { "tr": "Epic Games önbelleği", "en": "Epic Games cache" },
+      "explanation": {
+        "tr": "Epic başlatıcısının web önbelleği ve günlükleri. Kurulu oyunlar etkilenmez.",
+        "en": "Web cache and logs of the Epic launcher. Installed games are unaffected."
+      },
+      "risk": "safe",
+      "blockingProcesses": ["EpicGamesLauncher"],
+      "roots": [
+        { "base": "LocalAppData", "path": "EpicGamesLauncher/Saved/webcache" },
+        { "base": "LocalAppData", "path": "EpicGamesLauncher/Saved/webcache_4147" },
+        { "base": "LocalAppData", "path": "EpicGamesLauncher/Saved/Logs" }
+      ],
+      "deleteMode": "permanent"
+    },
+    {
+      "id": "game.battlenet.cache",
+      "category": "Gaming",
+      "group": "Battle.net",
+      "name": { "tr": "Battle.net önbelleği", "en": "Battle.net cache" },
+      "explanation": {
+        "tr": "Blizzard başlatıcısının önbelleği. Bozulduğunda başlatıcı açılmaz; temizlemek bunu düzeltir.",
+        "en": "Cache of the Blizzard launcher. When corrupted the launcher fails to start, and clearing it fixes that."
+      },
+      "risk": "safe",
+      "blockingProcesses": ["Battle.net", "Agent"],
+      "roots": [
+        { "base": "ProgramData", "path": "Battle.net/Cache" },
+        { "base": "LocalAppData", "path": "Battle.net/Cache" }
+      ],
+      "deleteMode": "permanent"
+    },
+    {
+      "id": "game.ea.cache",
+      "category": "Gaming",
+      "group": "EA ve Ubisoft",
+      "name": { "tr": "EA / Ubisoft başlatıcı önbelleği", "en": "EA / Ubisoft launcher cache" },
+      "explanation": {
+        "tr": "EA App ve Ubisoft Connect'in geçici verisi ve günlükleri.",
+        "en": "Temporary data and logs of the EA App and Ubisoft Connect."
+      },
+      "risk": "safe",
+      "blockingProcesses": ["EADesktop", "upc", "UbisoftConnect"],
+      "roots": [
+        { "base": "LocalAppData", "path": "Electronic Arts/EA Desktop/Cache" },
+        { "base": "LocalAppData", "path": "Electronic Arts/EA Desktop/Logs" },
+        { "base": "LocalAppData", "path": "Ubisoft Game Launcher/cache" },
+        { "base": "LocalAppData", "path": "Ubisoft Game Launcher/logs" }
+      ],
+      "deleteMode": "permanent"
+    }
+  ]
+}

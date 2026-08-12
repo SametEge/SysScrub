@@ -12,6 +12,16 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
     <PackageReference Include="System.Management" Version="8.0.0" />
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="8.0.1" />
+  </ItemGroup>
+
+  <!--
+    Temizleme kuralları koda gömülü değil, veri. Derlemeye kaynak olarak eklenir ki
+    tek dosya yayınında da yanlarında taşınsınlar; kullanıcı isterse aynı kimlikli
+    kuralı %ProgramData%\SysScrub\rules altında ezebilir.
+  -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\data\rules\*.json" LogicalName="SysScrub.Core.Rules.Definitions.%(Filename).json" />
   </ItemGroup>
 
 </Project>

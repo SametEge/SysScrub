@@ -7,7 +7,10 @@ using Serilog;
 using SysScrub.App.Services;
 using SysScrub.App.ViewModels;
 using SysScrub.App.Views;
-using SysScrub.Core.System;
+using SysScrub.Core.Cleaning;
+using SysScrub.Core.Machine;
+using SysScrub.Core.Rules;
+using SysScrub.Core.Safety;
 
 namespace SysScrub.App;
 
@@ -45,7 +48,18 @@ public partial class App : Application
                 services.AddSingleton<SystemInfoService>();
                 services.AddSingleton<ThemeService>();
 
+                // Temizlik zinciri: kural kümesi bir kez yüklenir, motorlar onu paylaşır.
+                services.AddSingleton<PathResolver>();
+                services.AddSingleton<SafetyGuard>();
+                services.AddSingleton(_ => new RuleLoader().Load());
+                services.AddSingleton<QuarantineStore>();
+                services.AddSingleton<HistoryStore>();
+                services.AddSingleton<ScanEngine>();
+                services.AddSingleton<CleanEngine>();
+
                 services.AddSingleton<MainWindowViewModel>();
+                services.AddSingleton<CleanerViewModel>();
+                services.AddSingleton<TimelineViewModel>();
                 services.AddTransient<DashboardViewModel>();
 
                 services.AddSingleton<MainWindow>();
@@ -60,21 +74,38 @@ public partial class App : Application
         Log.Information("SysScrub başlatıldı, sürüm {Version}", GetType().Assembly.GetName().Version);
 
         MainWindow window = Resolve<MainWindow>();
+
+        if (WindowCapture.PageFromArgs(e.Args) is { } pageTitle)
+        {
+            MainWindowViewModel viewModel = Resolve<MainWindowViewModel>();
+            viewModel.SelectedItem = viewModel.Items
+                .FirstOrDefault(i => i.Title.Equals(pageTitle, StringComparison.OrdinalIgnoreCase))
+                ?? viewModel.SelectedItem;
+        }
+
         window.Show();
 
         if (WindowCapture.PathFromArgs(e.Args) is { } screenshotPath)
         {
-            CaptureAndExit(window, screenshotPath);
+            CaptureAndExit(window, screenshotPath, e.Args.Contains("--autoscan"));
         }
     }
 
-    /// <summary>Geliştirme anahtarı: pencere çizildikten sonra ekran görüntüsünü alıp çıkar.</summary>
-    private void CaptureAndExit(Window window, string screenshotPath)
+    /// <summary>
+    /// Geliştirme anahtarı: pencere çizildikten sonra ekran görüntüsünü alıp çıkar.
+    /// --autoscan verilirse önce tarama tamamlanır, böylece görüntü dolu ekranı gösterir.
+    /// </summary>
+    private void CaptureAndExit(Window window, string screenshotPath, bool autoScan)
     {
         window.ContentRendered += (_, _) => Dispatcher.BeginInvoke(
             DispatcherPriority.ApplicationIdle,
-            () =>
+            async () =>
             {
+                if (autoScan)
+                {
+                    await Resolve<CleanerViewModel>().ScanCommand.ExecuteAsync(null);
+                }
+
                 WindowCapture.Save(window, screenshotPath);
                 Log.Information("Ekran görüntüsü yazıldı: {Path}", screenshotPath);
                 Shutdown();

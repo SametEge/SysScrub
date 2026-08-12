@@ -1,0 +1,178 @@
+<UserControl x:Class="SysScrub.App.Views.Pages.TimelinePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:conv="clr-namespace:SysScrub.App.Converters"
+             xmlns:vm="clr-namespace:SysScrub.App.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance vm:TimelineViewModel}">
+
+    <UserControl.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVisibility" />
+        <conv:StringToVisibilityConverter x:Key="StringToVisibility" />
+    </UserControl.Resources>
+
+    <Grid Margin="{StaticResource SsPagePadding}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <DockPanel>
+                <Button DockPanel.Dock="Right"
+                        Content="Yenile"
+                        Style="{StaticResource SsSecondaryButton}"
+                        Command="{Binding RefreshCommand}"
+                        VerticalAlignment="Bottom" />
+
+                <StackPanel>
+                    <TextBlock Text="Zaman tüneli" Style="{StaticResource SsDisplayText}" />
+                    <TextBlock Style="{StaticResource SsSecondaryText}" Margin="0,6,0,0"
+                               Text="Sistemde yapılan her değişikliğin kaydı. Karantinaya alınan temizlikler buradan geri alınabilir." />
+                </StackPanel>
+            </DockPanel>
+        </StackPanel>
+
+        <Border Grid.Row="1" Style="{StaticResource SsCard}" Margin="0,0,0,16"
+                Background="{DynamicResource SsSurfaceRaised}"
+                Visibility="{Binding QuarantineLabel, Converter={StaticResource StringToVisibility}}">
+            <StackPanel Orientation="Horizontal">
+                <Path Data="{StaticResource IconStatusInfo}" Fill="{DynamicResource SsInfo}"
+                      Stretch="Uniform" Width="18" Height="18" VerticalAlignment="Center" />
+                <TextBlock Text="{Binding QuarantineLabel}" Style="{StaticResource SsBodyText}"
+                           Margin="12,0,0,0" VerticalAlignment="Center" />
+            </StackPanel>
+        </Border>
+
+        <!-- Boş durum: ekranı boş bırakmak yerine ne olacağını anlat -->
+        <Border Grid.Row="2" Style="{StaticResource SsCard}" Padding="40"
+                MaxWidth="560" VerticalAlignment="Center" HorizontalAlignment="Center"
+                Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVisibility}}">
+            <StackPanel HorizontalAlignment="Center">
+                <Border Width="64" Height="64" CornerRadius="{StaticResource SsRadiusPanel}"
+                        Background="{DynamicResource SsSurfaceHover}" HorizontalAlignment="Center">
+                    <Path Data="{StaticResource IconTimeline}" Fill="{DynamicResource SsTextSecondary}"
+                          Stretch="Uniform" Width="30" Height="30"
+                          HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+                <TextBlock Text="Geçmiş boş" Style="{StaticResource SsSubtitleText}"
+                           HorizontalAlignment="Center" Margin="0,18,0,0" />
+                <TextBlock Text="{Binding EmptyMessage}" Style="{StaticResource SsSecondaryText}"
+                           TextAlignment="Center" Margin="0,8,0,0" />
+            </StackPanel>
+        </Border>
+
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding Entries}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type vm:TimelineEntryViewModel}">
+                        <Border Style="{StaticResource SsCard}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Grid.Column="0" Width="40" Height="40"
+                                            CornerRadius="{StaticResource SsRadiusControl}"
+                                            Background="{DynamicResource SsSurfaceHover}"
+                                            Margin="0,0,14,0">
+                                        <Path Data="{StaticResource IconCleaner}"
+                                              Fill="{DynamicResource SsTextSecondary}"
+                                              Stretch="Uniform" Width="19" Height="19"
+                                              HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Title}" Style="{StaticResource SsSubtitleText}" />
+                                            <Border Style="{StaticResource SsBadge}" Margin="10,0,0,0" Padding="8,2"
+                                                    Background="{DynamicResource SsSurfaceHover}">
+                                                <TextBlock Text="{Binding StateLabel}" FontSize="11"
+                                                           Foreground="{DynamicResource SsTextSecondary}" />
+                                            </Border>
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding TimeLabel}" Style="{StaticResource SsCaptionText}"
+                                                   Margin="0,2,0,0" />
+                                        <TextBlock Text="{Binding DetailLabel}" Style="{StaticResource SsCaptionText}"
+                                                   Margin="0,2,0,0" />
+                                    </StackPanel>
+
+                                    <TextBlock Grid.Column="2" Text="{Binding GainLabel}"
+                                               Style="{StaticResource SsMetricValue}" FontSize="22"
+                                               VerticalAlignment="Center" Margin="0,0,18,0" />
+
+                                    <Button Grid.Column="3" Content="Ayrıntı"
+                                            Style="{StaticResource SsSubtleButton}"
+                                            VerticalAlignment="Center"
+                                            Margin="0,0,8,0"
+                                            Command="{Binding DataContext.ToggleDetailsCommand,
+                                                      RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding}" />
+
+                                    <Button Grid.Column="4" Content="Geri al"
+                                            Style="{StaticResource SsSecondaryButton}"
+                                            VerticalAlignment="Center"
+                                            Visibility="{Binding CanUndo, Converter={StaticResource BoolToVisibility}}"
+                                            Command="{Binding DataContext.UndoCommand,
+                                                      RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding}" />
+                                </Grid>
+
+                                <!-- Ayrıntı: hangi dosyaya ne olduğu -->
+                                <StackPanel Margin="54,14,0,0"
+                                            Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibility}}">
+                                    <Rectangle Style="{StaticResource SsSeparator}" Margin="0,0,0,10" />
+
+                                    <ItemsControl ItemsSource="{Binding Items}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate DataType="{x:Type vm:TimelineItemViewModel}">
+                                                <Grid Margin="0,0,0,4">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <TextBlock Grid.Column="0" Text="{Binding Path}"
+                                                               Style="{StaticResource SsMonoText}"
+                                                               TextTrimming="CharacterEllipsis" />
+
+                                                    <TextBlock Grid.Column="1" Text="{Binding SizeLabel}"
+                                                               Style="{StaticResource SsCaptionText}"
+                                                               Margin="14,0" MinWidth="70" TextAlignment="Right" />
+
+                                                    <TextBlock Grid.Column="2" Text="{Binding OutcomeLabel}"
+                                                               MinWidth="180">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock" BasedOn="{StaticResource SsCaptionText}">
+                                                                <Style.Triggers>
+                                                                    <!-- Silinemeyen ve atlanan öğeler gözden kaçmasın. -->
+                                                                    <DataTrigger Binding="{Binding IsProblem}" Value="True">
+                                                                        <Setter Property="Foreground" Value="{DynamicResource SsCaution}" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+
+</UserControl>

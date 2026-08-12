@@ -37,7 +37,8 @@ public sealed partial class MainWindowViewModel : ObservableObject
                 Title = "Temizleyici",
                 IconKey = "IconCleaner",
                 Description = "Windows, tarayıcı ve uygulama artıklarını kural tabanlı tarar. Her silme karantinaya alınır ve geri alınabilir.",
-                Phase = 1
+                Phase = 0,
+                TemplateKey = "CleanerPageTemplate"
             },
             new NavigationItem
             {
@@ -93,7 +94,8 @@ public sealed partial class MainWindowViewModel : ObservableObject
                 Title = "Zaman tüneli",
                 IconKey = "IconTimeline",
                 Description = "Sistemde yapılan her değişikliğin kronolojik kaydı. Herhangi bir noktaya tek tıkla dönülür.",
-                Phase = 1
+                Phase = 0,
+                TemplateKey = "TimelinePageTemplate"
             }
         ];
 

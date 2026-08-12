@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SysScrub.Core.Formatting;
-using SysScrub.Core.System;
+using SysScrub.Core.Machine;
 
 namespace SysScrub.App.ViewModels;
 

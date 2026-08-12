@@ -1,15 +1,13 @@
-using SysScrub.Core.Formatting;
-using SysScrub.Core.System;
+using SysScrub.Cli.Commands;
 
 namespace SysScrub.Cli;
 
 /// <summary>
 /// Komut satırı arayüzü. Zamanlanmış/sessiz temizlik ve teknisyen raporu buradan çalışır.
-/// Faz 0'da yalnızca sistem özetini yazdırır; temizlik komutları Faz 1'de eklenecek.
 /// </summary>
 internal static class Program
 {
-    private static int Main(string[] args)
+    private static async Task<int> Main(string[] args)
     {
         if (args.Length == 0 || args[0] is "-h" or "--help" or "help")
         {
@@ -17,50 +15,47 @@ internal static class Program
             return 0;
         }
 
-        return args[0].ToLowerInvariant() switch
+        try
         {
-            "info" => PrintSystemInfo(),
-            "version" => PrintVersion(),
-            _ => UnknownCommand(args[0])
-        };
+            return args[0].ToLowerInvariant() switch
+            {
+                "info" => InfoCommand.Run(),
+                "rules" => RulesCommand.Run(args),
+                "scan" => await ScanCommand.RunAsync(args),
+                "clean" => await CleanCommand.RunAsync(args),
+                "history" => HistoryCommand.List(),
+                "undo" => HistoryCommand.Undo(args),
+                "version" => PrintVersion(),
+                _ => UnknownCommand(args[0])
+            };
+        }
+        catch (OperationCanceledException)
+        {
+            Console.Error.WriteLine("İşlem iptal edildi.");
+            return 130;
+        }
     }
 
     private static void PrintUsage()
     {
         Console.WriteLine("SysScrub komut satırı");
         Console.WriteLine();
-        Console.WriteLine("Kullanım: sysscrub <komut>");
+        Console.WriteLine("Kullanım: sysscrub-cli <komut> [seçenekler]");
         Console.WriteLine();
         Console.WriteLine("Komutlar:");
-        Console.WriteLine("  info       Sistem özetini yazdırır");
-        Console.WriteLine("  version    Sürüm bilgisini yazdırır");
+        Console.WriteLine("  info                Sistem özetini yazdırır");
+        Console.WriteLine("  rules               Yüklü temizleme kurallarını listeler");
+        Console.WriteLine("  scan                Temizlenebilir dosyaları tarar, hiçbir şey silmez");
+        Console.WriteLine("  clean               Temizler. --apply verilmezse yalnızca ne olacağını gösterir");
+        Console.WriteLine("  history             Geçmiş temizlikleri listeler");
+        Console.WriteLine("  undo <kimlik>       Bir temizliği geri alır (karantinadan geri yükler)");
+        Console.WriteLine("  version             Sürüm bilgisini yazdırır");
         Console.WriteLine();
-        Console.WriteLine("Temizlik komutları (clean, scan, report) Faz 1 ile geliyor.");
-    }
-
-    private static int PrintSystemInfo()
-    {
-        SystemSnapshot snapshot = new SystemInfoService().Capture();
-
-        Console.WriteLine(snapshot.OperatingSystem);
-        Console.WriteLine($"Makine       : {snapshot.MachineName}");
-        Console.WriteLine($"Açık kalma   : {DurationText.Humanize(snapshot.Uptime)}");
-        Console.WriteLine($"Yetki        : {(snapshot.IsElevated ? "yönetici" : "sınırlı")}");
-        Console.WriteLine($"Bellek       : {ByteSize.Format(snapshot.Memory.UsedBytes)} / {ByteSize.Format(snapshot.Memory.TotalBytes)}");
-        Console.WriteLine($"Veri klasörü : {AppPaths.DataDirectory}{(AppPaths.IsPortable ? "  (taşınabilir mod)" : string.Empty)}");
-        Console.WriteLine();
-        Console.WriteLine("Diskler:");
-
-        foreach (DriveSnapshot drive in snapshot.Drives)
-        {
-            string warning = drive.IsCriticallyFull ? "   ← %90 üzeri dolu" : string.Empty;
-
-            Console.WriteLine(
-                $"  {drive.Name,-4} {drive.Label,-20} " +
-                $"{ByteSize.Format(drive.FreeBytes),10} boş / {ByteSize.Format(drive.TotalBytes),10}{warning}");
-        }
-
-        return 0;
+        Console.WriteLine("Seçenekler:");
+        Console.WriteLine("  --all               Varsayılan kapalı kuralları da dahil et");
+        Console.WriteLine("  --apply             clean komutunda gerçekten sil (varsayılan: kuru çalıştırma)");
+        Console.WriteLine("  --yes               Onay sorma");
+        Console.WriteLine("  --verbose           Ayrıntı göster (kural kökleri / en büyük dosyalar)");
     }
 
     private static int PrintVersion()
@@ -73,7 +68,7 @@ internal static class Program
     private static int UnknownCommand(string command)
     {
         Console.Error.WriteLine($"Bilinmeyen komut: {command}");
-        Console.Error.WriteLine("Komut listesi için: sysscrub --help");
+        Console.Error.WriteLine("Komut listesi için: sysscrub-cli --help");
         return 1;
     }
 }

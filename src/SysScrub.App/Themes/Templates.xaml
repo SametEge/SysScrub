@@ -45,6 +45,14 @@
         <pages:DashboardPage />
     </DataTemplate>
 
+    <DataTemplate x:Key="CleanerPageTemplate" DataType="{x:Type vm:NavigationItem}">
+        <pages:CleanerPage />
+    </DataTemplate>
+
+    <DataTemplate x:Key="TimelinePageTemplate" DataType="{x:Type vm:NavigationItem}">
+        <pages:TimelinePage />
+    </DataTemplate>
+
     <DataTemplate x:Key="PlaceholderPageTemplate" DataType="{x:Type vm:NavigationItem}">
         <pages:ModulePlaceholderPage />
     </DataTemplate>
