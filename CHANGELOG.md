@@ -7,6 +7,31 @@ Release notları bu dosyanın ilgili sürüm bölümünden otomatik üretilir.
 
 ---
 
+## [0.2.1-alpha] — 2026-08-12
+
+### Düzeltmeler
+
+- **Temizlik sırasında uygulama yanıt vermiyordu.** Silme baştan sona eşzamanlı
+  dosya sistemi işi (`File.Delete`, `File.Move`, kabuk çağrıları) ve hiçbir bekleme
+  noktası gerçekten geri dönmüyordu; iş arayüz iş parçacığında çalıştığı için pencere
+  on binlerce dosya boyunca donuyordu. Silme artık havuz iş parçacığına alınıyor.
+- **İlerleme dosya başına raporlanıyordu.** 60.000 dosya, arayüze 60.000 gönderi
+  demekti. Rapor sıklığı sınırlandı; kural değişimlerinde ve bitişte her zaman raporlanıyor.
+- Yetki uyarısı, yönetici hakkı varken de gösteriliyordu; artık yalnızca eksikken
+  çıkıyor ve tek tıkla yükseltme sunuyor.
+
+### Eklenenler
+
+- **İşlem örtüsü** — tarama ve temizlik sırasında ekranı kaplayan ilerleme kartı:
+  gerçek yüzde halkası, işlenen dosya sayısı, o ana kadar kurtarılan alan, hangi
+  kuralda olunduğu ve iptal düğmesi. Altındaki listeye yanlışlıkla tıklanmasını da engeller.
+- Yönetici hakkı gerektiren kurallar, taranamadıklarında sebebini satırın kendisinde
+  yazıyor; işaretli ama boyutsuz satır bozukmuş gibi görünmüyor
+- Panel'deki temizlik kartı Temizleyici ile aynı görünüm modelini paylaşıyor:
+  orada başlatılan tarama diğer ekranda hazır bekliyor
+
+---
+
 ## [0.2.0-alpha] — 2026-08-12
 
 Temizleyici çalışır durumda. Tarama, seçim, silme, karantina ve geri alma zinciri

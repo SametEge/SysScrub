@@ -54,15 +54,25 @@ public sealed class CleanEngine
 
         var state = new CleanState(runId, options, _quarantine);
         int total = selection.Sum(r => r.Count);
+        var reporter = new ThrottledProgress(progress);
 
-        foreach (RuleScanResult result in selection)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
+        // Silme baştan sona eşzamanlı dosya sistemi işi: File.Delete, File.Move, kabuk çağrıları.
+        // Çağıran arayüz iş parçacığı olduğu için burada havuza geçilmezse uygulama
+        // on binlerce dosya boyunca yanıt vermez.
+        await Task.Run(
+            async () =>
+            {
+                foreach (RuleScanResult result in selection)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
 
-            await CleanRuleAsync(result, state, options, progress, total, cancellationToken).ConfigureAwait(false);
-        }
+                    await CleanRuleAsync(result, state, options, reporter, total, cancellationToken)
+                        .ConfigureAwait(false);
+                }
 
-        state.QuarantineSession?.Commit();
+                state.QuarantineSession?.Commit();
+            },
+            cancellationToken).ConfigureAwait(false);
 
         stopwatch.Stop();
 
@@ -103,7 +113,7 @@ public sealed class CleanEngine
         RuleScanResult result,
         CleanState state,
         CleanOptions options,
-        IProgress<CleanProgress>? progress,
+        ThrottledProgress reporter,
         int total,
         CancellationToken cancellationToken)
     {
@@ -130,13 +140,7 @@ public sealed class CleanEngine
 
             CleanItem(item, rule, state, options, recycleBatch);
 
-            progress?.Report(new CleanProgress
-            {
-                CurrentRule = rule.Name.Resolve(),
-                Processed = state.Processed,
-                Total = total,
-                BytesFreed = state.BytesFreed
-            });
+            reporter.Report(Snapshot(rule, state, total));
         }
 
         if (recycleBatch.Count > 0 && !options.DryRun)
@@ -147,6 +151,47 @@ public sealed class CleanEngine
         if (rule.RemoveEmptyDirectories && options.RemoveEmptyDirectories && !options.DryRun)
         {
             RemoveEmptyDirectories(result, state);
+        }
+
+        // Kural bittiğinde kısıtlamayı atlayıp raporla: son durum her zaman görünmeli.
+        reporter.Report(Snapshot(rule, state, total), force: true);
+    }
+
+    private static CleanProgress Snapshot(CleaningRule rule, CleanState state, int total) => new()
+    {
+        CurrentRule = rule.Name.Resolve(),
+        Processed = state.Processed,
+        Total = total,
+        BytesFreed = state.BytesFreed
+    };
+
+    /// <summary>
+    /// İlerlemeyi dosya başına raporlamak, on binlerce dosyada arayüze aynı sayıda
+    /// gönderi kuyruklar ve pencereyi kilitler. Rapor sıklığı sınırlanıyor.
+    /// </summary>
+    private sealed class ThrottledProgress(IProgress<CleanProgress>? inner)
+    {
+        private const int MinimumIntervalMs = 80;
+
+        private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
+        private long _lastReportMs = -MinimumIntervalMs;
+
+        public void Report(CleanProgress value, bool force = false)
+        {
+            if (inner is null)
+            {
+                return;
+            }
+
+            long now = _stopwatch.ElapsedMilliseconds;
+
+            if (!force && now - _lastReportMs < MinimumIntervalMs)
+            {
+                return;
+            }
+
+            _lastReportMs = now;
+            inner.Report(value);
         }
     }
 
@@ -454,7 +499,7 @@ public sealed class CleanEngine
             state.Items);
     }
 
-    private long GetSystemDriveFreeBytes() => _systemInfo.Capture().SystemDrive?.FreeBytes ?? 0;
+    private long GetSystemDriveFreeBytes() => _systemInfo.GetSystemDriveFreeBytes();
 
     /// <summary>Tek bir temizlik çalıştırmasının değişken durumu.</summary>
     private sealed class CleanState(Guid runId, CleanOptions options, QuarantineStore store)

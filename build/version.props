@@ -2,9 +2,9 @@
 
   <!-- Tüm projelerin sürüm numarası buradan gelir. build/make-release.ps1 bu dosyayı günceller. -->
   <PropertyGroup>
-    <SysScrubVersion>0.2.0</SysScrubVersion>
+    <SysScrubVersion>0.2.1</SysScrubVersion>
     <SysScrubVersionSuffix>alpha</SysScrubVersionSuffix>
-    <SysScrubAssemblyVersion>0.2.0.0</SysScrubAssemblyVersion>
+    <SysScrubAssemblyVersion>0.2.1.0</SysScrubAssemblyVersion>
   </PropertyGroup>
 
 </Project>

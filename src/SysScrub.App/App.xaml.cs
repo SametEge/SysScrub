@@ -88,7 +88,11 @@ public partial class App : Application
 
         if (WindowCapture.PathFromArgs(e.Args) is { } screenshotPath)
         {
-            CaptureAndExit(window, screenshotPath, e.Args.Contains("--autoscan"));
+            CaptureAndExit(
+                window,
+                screenshotPath,
+                e.Args.Contains("--autoscan") || e.Args.Contains("--busyshot"),
+                e.Args.Contains("--busyshot"));
         }
     }
 
@@ -96,7 +100,7 @@ public partial class App : Application
     /// Geliştirme anahtarı: pencere çizildikten sonra ekran görüntüsünü alıp çıkar.
     /// --autoscan verilirse önce tarama tamamlanır, böylece görüntü dolu ekranı gösterir.
     /// </summary>
-    private void CaptureAndExit(Window window, string screenshotPath, bool autoScan)
+    private void CaptureAndExit(Window window, string screenshotPath, bool autoScan, bool captureWhileBusy = false)
     {
         window.ContentRendered += (_, _) => Dispatcher.BeginInvoke(
             DispatcherPriority.ApplicationIdle,
@@ -104,13 +108,25 @@ public partial class App : Application
             {
                 if (autoScan)
                 {
-                    await Resolve<CleanerViewModel>().ScanCommand.ExecuteAsync(null);
+                    CleanerViewModel cleaner = Resolve<CleanerViewModel>();
 
-                    // Komut durumları yeniden sorgulanmadan görüntü alınırsa butonlar
-                    // devre dışıymış gibi çıkıyor; yerleşmesini bekliyoruz.
-                    await Task.Delay(250);
-                    System.Windows.Input.CommandManager.InvalidateRequerySuggested();
-                    await Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
+                    if (captureWhileBusy)
+                    {
+                        // Taramayı bekletmeden başlat ki örtü ekranı iş üstünde yakalansın.
+                        cleaner.SelectAllCommand.Execute(null);
+                        _ = cleaner.ScanCommand.ExecuteAsync(null);
+                        await Task.Delay(60);
+                    }
+                    else
+                    {
+                        await cleaner.ScanCommand.ExecuteAsync(null);
+
+                        // Komut durumları yeniden sorgulanmadan görüntü alınırsa butonlar
+                        // devre dışıymış gibi çıkıyor; yerleşmesini bekliyoruz.
+                        await Task.Delay(250);
+                        System.Windows.Input.CommandManager.InvalidateRequerySuggested();
+                        await Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
+                    }
                 }
 
                 WindowCapture.Save(window, screenshotPath);

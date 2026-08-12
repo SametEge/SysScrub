@@ -49,6 +49,14 @@ public sealed partial class CleanerViewModel : ObservableObject
     [ObservableProperty]
     private string _progressLabel = string.Empty;
 
+    /// <summary>Örtü ekranındaki başlık: "Taranıyor" / "Temizleniyor".</summary>
+    [ObservableProperty]
+    private string _busyTitle = string.Empty;
+
+    /// <summary>Örtü ekranındaki sayaç satırı.</summary>
+    [ObservableProperty]
+    private string _busyDetail = string.Empty;
+
     [ObservableProperty]
     private long _foundBytes;
 
@@ -107,6 +115,8 @@ public sealed partial class CleanerViewModel : ObservableObject
 
     public bool CanEditSelection => Stage is CleanerStage.Ready or CleanerStage.Reviewing or CleanerStage.Finished;
 
+    public string ProgressPercentLabel => $"%{Math.Round(ProgressFraction * 100)}";
+
     public string FoundLabel => FoundFiles == 0 ? "—" : ByteSize.Format(FoundBytes);
 
     public string SelectedLabel => SelectedBytes == 0 ? "—" : ByteSize.Format(SelectedBytes);
@@ -124,6 +134,9 @@ public sealed partial class CleanerViewModel : ObservableObject
         ProgressFraction = 0;
         FoundBytes = 0;
         FoundFiles = 0;
+        BusyTitle = "Taranıyor";
+        BusyDetail = "kurallar hazırlanıyor...";
+        ProgressLabel = string.Empty;
 
         foreach (RuleNodeViewModel rule in AllRules)
         {
@@ -145,6 +158,11 @@ public sealed partial class CleanerViewModel : ObservableObject
             ProgressLabel = report.CurrentRule;
             FoundBytes = report.BytesFound;
             FoundFiles = report.FilesFound;
+
+            BusyDetail = report.FilesFound == 0
+                ? $"{report.CompletedRules}/{report.TotalRules} kural tarandı"
+                : $"{report.FilesFound:N0} dosya · {ByteSize.Format(report.BytesFound)} bulundu";
+
             OnPropertyChanged(nameof(FoundLabel));
         });
 
@@ -194,6 +212,9 @@ public sealed partial class CleanerViewModel : ObservableObject
         Stage = CleanerStage.Cleaning;
         ProgressFraction = 0;
         StatusMessage = string.Empty;
+        BusyTitle = "Temizleniyor";
+        BusyDetail = $"0 / {selection.Sum(s => s.Count):N0} dosya";
+        ProgressLabel = string.Empty;
 
         _cancellation = new CancellationTokenSource();
 
@@ -201,6 +222,8 @@ public sealed partial class CleanerViewModel : ObservableObject
         {
             ProgressFraction = report.Fraction;
             ProgressLabel = report.CurrentRule;
+            BusyDetail = $"{report.Processed:N0} / {report.Total:N0} dosya · " +
+                         $"{ByteSize.Format(report.BytesFreed)} kurtarıldı";
         });
 
         try
@@ -244,6 +267,7 @@ public sealed partial class CleanerViewModel : ObservableObject
     private void Cancel()
     {
         _cancellation?.Cancel();
+        BusyDetail = "iptal ediliyor...";
         StatusMessage = "İptal ediliyor...";
     }
 
@@ -432,4 +456,6 @@ public sealed partial class CleanerViewModel : ObservableObject
     }
 
     partial void OnStageChanged(CleanerStage value) => RefreshCommandStates();
+
+    partial void OnProgressFractionChanged(double value) => OnPropertyChanged(nameof(ProgressPercentLabel));
 }

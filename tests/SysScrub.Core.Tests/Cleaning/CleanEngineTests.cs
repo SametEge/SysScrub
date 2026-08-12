@@ -197,6 +197,53 @@ public sealed class CleanEngineTests : IDisposable
         }
     }
 
+    // ------------------------------------------------------------------ arayüzü kilitlememe
+
+    [Fact]
+    public async Task SilmeCagiranIsParcacigindaCalismaz()
+    {
+        // Silme baştan sona eşzamanlı dosya işi. Çağıran iş parçacığında çalışırsa
+        // arayüz on binlerce dosya boyunca donar — bu testin yakaladığı şey o.
+        for (int i = 0; i < 50; i++)
+        {
+            WriteFile($"cache/dosya{i}.tmp", 10);
+        }
+
+        int callerThread = Environment.CurrentManagedThreadId;
+        int workerThread = 0;
+
+        var probe = new CallbackProgress<CleanProgress>(_ => workerThread = Environment.CurrentManagedThreadId);
+
+        ScanReport report = await _scanner.ScanAsync(
+            new RuleSet([Rule("cache", DeleteMode.Permanent)], []), new ScanOptions());
+
+        await _engine.CleanAsync(report.WithFindings, new CleanOptions(), probe);
+
+        Assert.NotEqual(0, workerThread);
+        Assert.NotEqual(callerThread, workerThread);
+    }
+
+    [Fact]
+    public async Task IlerlemeDosyaBasinaRaporlanmaz()
+    {
+        // 500 dosya için 500 arayüz gönderisi pencereyi kilitliyordu.
+        for (int i = 0; i < 500; i++)
+        {
+            WriteFile($"cache/dosya{i}.tmp", 10);
+        }
+
+        int reportCount = 0;
+        var probe = new CallbackProgress<CleanProgress>(_ => Interlocked.Increment(ref reportCount));
+
+        ScanReport report = await _scanner.ScanAsync(
+            new RuleSet([Rule("cache", DeleteMode.Permanent)], []), new ScanOptions());
+
+        CleanResult result = await _engine.CleanAsync(report.WithFindings, new CleanOptions(), probe);
+
+        Assert.Equal(500, result.Deleted);
+        Assert.InRange(reportCount, 1, 50);
+    }
+
     // ------------------------------------------------------------------ geçmiş
 
     [Fact]

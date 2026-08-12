@@ -24,6 +24,24 @@ public sealed class SystemInfoService
         };
     }
 
+    /// <summary>
+    /// Yalnızca sistem diskinin boş alanı. Temizlik öncesi/sonrası ölçüm için tam
+    /// anlık görüntü almak gereksiz pahalı — bu sorgu tek bir sürücüye dokunuyor.
+    /// </summary>
+    public long GetSystemDriveFreeBytes()
+    {
+        try
+        {
+            string? root = Path.GetPathRoot(Environment.SystemDirectory);
+
+            return root is null ? 0 : new DriveInfo(root).AvailableFreeSpace;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException)
+        {
+            return 0;
+        }
+    }
+
     private static IReadOnlyList<DriveSnapshot> ReadDrives()
     {
         var result = new List<DriveSnapshot>();
