@@ -7,6 +7,42 @@ Release notları bu dosyanın ilgili sürüm bölümünden otomatik üretilir.
 
 ---
 
+## [0.4.0-alpha] — 2026-08-12
+
+Sürücüler modülünün çekirdeği çalışır durumda: donanım envanteri, sorunlu cihaz
+tespiti, eski sürücü listesi, Windows Update sorgusu ve sürücü yedekleme.
+
+### Eklenenler
+
+- **Donanım envanteri** — `Win32_PnPEntity` ve `Win32_PnPSignedDriver` birleştirilerek
+  her cihazın adı, sınıfı, üreticisi, sürücü sürümü, tarihi, sağlayıcısı, INF dosyası,
+  imza durumu ve donanım kimlikleri okunur. Cihaz sınıfları Türkçeleştirilmiş
+- **Sorunlu cihaz tespiti** — Aygıt Yöneticisi sorun kodları Türkçe açıklamaya çevrilir
+  ("Sürücü yüklü değil", "Cihaz bir sorun bildirdiği için Windows onu durdurdu").
+  Sorunlu cihazı olan gruplar listede üstte ve açık gelir
+- **Eski sürücü listesi** — iki yıldan eski üretici sürücüleri, yaşıyla birlikte.
+  Microsoft'un genel sürücüleri bu listeye girmez; onların eski olması normal
+- **Windows Update sürücü araması** — WUA COM arayüzü üzerinden çevrimiçi sorgu.
+  Sürücü güncellemeleri grup ilkesi veya Windows ayarıyla kapatılmışsa bu ayırt
+  edilip söylenir; boş sonucu "sürücülerin güncel" diye göstermek yanıltıcı olurdu
+- **Sürücü yedekleme** — `pnputil /export-driver` ile tüm üçüncü parti sürücü
+  paketleri tarih damgalı klasöre aktarılır
+- **DriverStore envanteri** — `pnputil /enum-drivers` ayrıştırıcısı; çıktı
+  yerelleştirilmiş olduğu için etiket adı yerine alan sırası kullanılır
+- **Sürücüler ekranı** — özet sayaçlar, sorunlu cihaz kartı, eski sürücü listesi,
+  sınıfa göre gruplanmış tüm cihazlar, işlem örtüsü
+- **Komut satırı** — `drivers`, `drivers --problems`, `drivers --updates`,
+  `drivers --backup`, `drivers --verbose`
+
+### Kapsam notu
+
+Güncelleme kaynağı yalnızca Windows Update. Oradan gelen her sürücü WHQL imzalı ve
+Microsoft tarafından o donanıma uygun bulunmuş. Üçüncü parti sürücü aynası
+tutulmuyor — DriverBooster tarzı uygulamaları güvenilmez yapan şey tam olarak o.
+Microsoft Update Catalog ve üretici uç noktaları bir sonraki fazda geliyor.
+
+---
+
 ## [0.3.0-alpha] — 2026-08-12
 
 Registry temizleyici çalışır durumda. Modülün tamamı güvenlik katmanı önce

@@ -57,6 +57,10 @@
         <pages:RegistryPage />
     </DataTemplate>
 
+    <DataTemplate x:Key="DriversPageTemplate" DataType="{x:Type vm:NavigationItem}">
+        <pages:DriversPage />
+    </DataTemplate>
+
     <DataTemplate x:Key="PlaceholderPageTemplate" DataType="{x:Type vm:NavigationItem}">
         <pages:ModulePlaceholderPage />
     </DataTemplate>

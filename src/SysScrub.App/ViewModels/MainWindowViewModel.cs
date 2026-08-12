@@ -53,7 +53,8 @@ public sealed partial class MainWindowViewModel : ObservableObject
                 Title = "Sürücüler",
                 IconKey = "IconDrivers",
                 Description = "Donanım envanteri, eski sürücü tespiti ve güncelleme. Kaynaklar Microsoft ve üreticinin resmi kanalları.",
-                Phase = 3
+                Phase = 0,
+                TemplateKey = "DriversPageTemplate"
             },
             new NavigationItem
             {

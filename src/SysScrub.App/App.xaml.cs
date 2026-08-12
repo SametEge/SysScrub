@@ -8,6 +8,7 @@ using SysScrub.App.Services;
 using SysScrub.App.ViewModels;
 using SysScrub.App.Views;
 using SysScrub.Core.Cleaning;
+using SysScrub.Core.Drivers;
 using SysScrub.Core.Machine;
 using SysScrub.Core.RegistryCleaning;
 using SysScrub.Core.Rules;
@@ -59,6 +60,11 @@ public partial class App : Application
                 services.AddSingleton<ScanEngine>();
                 services.AddSingleton<CleanEngine>();
 
+                // Sürücü zinciri
+                services.AddSingleton<DeviceInventory>();
+                services.AddSingleton<DriverBackup>();
+                services.AddSingleton<WindowsUpdateDriverSource>();
+
                 // Registry zinciri
                 services.AddSingleton<RegistryGuard>();
                 services.AddSingleton<SystemRestorePoint>();
@@ -68,6 +74,7 @@ public partial class App : Application
                 services.AddSingleton<MainWindowViewModel>();
                 services.AddSingleton<CleanerViewModel>();
                 services.AddSingleton<RegistryViewModel>();
+                services.AddSingleton<DriversViewModel>();
                 services.AddSingleton<TimelineViewModel>();
                 services.AddTransient<DashboardViewModel>();
 
@@ -101,7 +108,8 @@ public partial class App : Application
                 screenshotPath,
                 e.Args.Contains("--autoscan") || e.Args.Contains("--busyshot"),
                 e.Args.Contains("--busyshot"),
-                e.Args.Contains("--regscan"));
+                e.Args.Contains("--regscan"),
+                e.Args.Contains("--devscan"));
         }
     }
 
@@ -114,12 +122,23 @@ public partial class App : Application
         string screenshotPath,
         bool autoScan,
         bool captureWhileBusy = false,
-        bool registryScan = false)
+        bool registryScan = false,
+        bool deviceScan = false)
     {
         window.ContentRendered += (_, _) => Dispatcher.BeginInvoke(
             DispatcherPriority.ApplicationIdle,
             async () =>
             {
+                if (deviceScan)
+                {
+                    DriversViewModel drivers = Resolve<DriversViewModel>();
+                    await drivers.LoadCommand.ExecuteAsync(null);
+
+                    await Task.Delay(250);
+                    System.Windows.Input.CommandManager.InvalidateRequerySuggested();
+                    await Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
+                }
+
                 if (registryScan)
                 {
                     RegistryViewModel registry = Resolve<RegistryViewModel>();
