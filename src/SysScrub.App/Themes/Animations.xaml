@@ -1,0 +1,43 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+
+    <!--
+        Hareket dili. Tek yerden yönetilir ki "animasyonları azalt" ayarı açıldığında
+        süreleri sıfırlamak tek noktadan yapılabilsin (MotionService).
+    -->
+
+    <Duration x:Key="SsDurationFast">0:0:0.12</Duration>
+    <Duration x:Key="SsDurationNormal">0:0:0.22</Duration>
+    <Duration x:Key="SsDurationSlow">0:0:0.4</Duration>
+
+    <CubicEase x:Key="SsEaseOut" EasingMode="EaseOut" />
+    <CubicEase x:Key="SsEaseInOut" EasingMode="EaseInOut" />
+    <QuarticEase x:Key="SsEaseOutStrong" EasingMode="EaseOut" />
+    <BackEase x:Key="SsEaseOvershoot" EasingMode="EaseOut" Amplitude="0.3" />
+
+    <!-- Sayfa girişi: aşağıdan hafif kayarak belirme. -->
+    <Storyboard x:Key="SsPageEnter">
+        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                         From="0" To="1"
+                         Duration="{StaticResource SsDurationNormal}"
+                         EasingFunction="{StaticResource SsEaseOut}" />
+        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                         From="12" To="0"
+                         Duration="{StaticResource SsDurationNormal}"
+                         EasingFunction="{StaticResource SsEaseOutStrong}" />
+    </Storyboard>
+
+    <!-- Kart girişi: liste öğeleri için, gecikme kod tarafından kademelendirilir. -->
+    <Storyboard x:Key="SsCardEnter">
+        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                         From="0" To="1"
+                         Duration="{StaticResource SsDurationNormal}"
+                         EasingFunction="{StaticResource SsEaseOut}" />
+        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                         From="8" To="0"
+                         Duration="{StaticResource SsDurationNormal}"
+                         EasingFunction="{StaticResource SsEaseOutStrong}" />
+    </Storyboard>
+
+</ResourceDictionary>

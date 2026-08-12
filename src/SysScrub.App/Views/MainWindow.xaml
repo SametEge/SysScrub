@@ -1,0 +1,104 @@
+<ui:FluentWindow x:Class="SysScrub.App.Views.MainWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                 xmlns:vm="clr-namespace:SysScrub.App.ViewModels"
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 mc:Ignorable="d"
+                 Title="SysScrub"
+                 Width="1280" Height="820"
+                 MinWidth="{StaticResource SsWindowMinWidth}"
+                 MinHeight="{StaticResource SsWindowMinHeight}"
+                 WindowStartupLocation="CenterScreen"
+                 ExtendsContentIntoTitleBar="True"
+                 WindowBackdropType="Mica"
+                 Background="Transparent"
+                 d:DataContext="{d:DesignInstance vm:MainWindowViewModel}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <ui:TitleBar Grid.Row="0"
+                     Title="SysScrub"
+                     Height="{StaticResource SsTitleBarHeight}" />
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- ==================== Yan navigasyon ==================== -->
+            <Border Grid.Column="0"
+                    Width="{StaticResource SsNavWidth}"
+                    Background="{DynamicResource SsSurfaceTranslucent}"
+                    BorderBrush="{DynamicResource SsBorder}"
+                    BorderThickness="0,0,1,0">
+
+                <DockPanel Margin="0,0,0,12">
+
+                    <!-- Marka -->
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="20,4,16,16">
+                        <Image Source="pack://application:,,,/Assets/SysScrub.ico"
+                               Width="26" Height="26"
+                               RenderOptions.BitmapScalingMode="HighQuality" />
+                        <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                            <TextBlock Text="SysScrub"
+                                       Style="{StaticResource SsSubtitleText}"
+                                       LineHeight="18" />
+                            <TextBlock Text="Windows bakım aracı"
+                                       Style="{StaticResource SsCaptionText}"
+                                       FontSize="11" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Alt bölüm -->
+                    <StackPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+                        <Rectangle Style="{StaticResource SsSeparator}" Margin="16,8" />
+
+                        <ListBox Style="{StaticResource SsNavList}"
+                                 ItemsSource="{Binding FooterItems}"
+                                 SelectedItem="{Binding SelectedFooterItem}"
+                                 ItemTemplate="{StaticResource NavItemTemplate}" />
+
+                        <Button Style="{StaticResource SsSubtleButton}"
+                                Command="{Binding CycleThemeCommand}"
+                                Content="{Binding ThemeLabel}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Left"
+                                Margin="16,4,16,0"
+                                Padding="10,0"
+                                FontSize="12"
+                                MinHeight="30" />
+
+                        <TextBlock Text="{Binding VersionLabel}"
+                                   Style="{StaticResource SsCaptionText}"
+                                   Margin="26,10,16,0"
+                                   FontSize="11" />
+                    </StackPanel>
+
+                    <StackPanel DockPanel.Dock="Top" Margin="24,0,16,6">
+                        <TextBlock Text="MODÜLLER" Style="{StaticResource SsSectionLabel}" />
+                    </StackPanel>
+
+                    <ListBox Style="{StaticResource SsNavList}"
+                             ItemsSource="{Binding Items}"
+                             SelectedItem="{Binding SelectedItem}"
+                             ItemTemplate="{StaticResource NavItemTemplate}" />
+
+                </DockPanel>
+            </Border>
+
+            <!-- ==================== İçerik ==================== -->
+            <ContentControl Grid.Column="1"
+                            Content="{Binding CurrentItem}"
+                            ContentTemplateSelector="{StaticResource PageTemplateSelector}"
+                            Focusable="False" />
+        </Grid>
+    </Grid>
+
+</ui:FluentWindow>

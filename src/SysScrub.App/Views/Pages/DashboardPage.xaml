@@ -1,0 +1,225 @@
+<UserControl x:Class="SysScrub.App.Views.Pages.DashboardPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:SysScrub.App.Controls"
+             xmlns:vm="clr-namespace:SysScrub.App.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance vm:DashboardViewModel}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Grid Margin="{StaticResource SsPagePadding}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- ==================== Başlık ==================== -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,24">
+                <TextBlock Text="Panel" Style="{StaticResource SsDisplayText}" />
+                <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                    <TextBlock Text="{Binding OsLabel}" Style="{StaticResource SsSecondaryText}" />
+                    <TextBlock Text="  ·  " Style="{StaticResource SsSecondaryText}" />
+                    <TextBlock Text="{Binding MachineLabel}" Style="{StaticResource SsSecondaryText}" />
+                    <TextBlock Text="  ·  " Style="{StaticResource SsSecondaryText}" />
+                    <TextBlock Text="{Binding UptimeLabel}" Style="{StaticResource SsSecondaryText}" />
+                </StackPanel>
+            </StackPanel>
+
+            <!-- ==================== Bento ızgara ==================== -->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.35*" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="16" />
+                    <!-- Kalan yüksekliği disk listesi alır; sağ sütunda boşluk kalmasın. -->
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!-- Tarama kartı — sayfanın ana eylemi -->
+                <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Style="{StaticResource SsCard}">
+                    <StackPanel>
+                        <TextBlock Text="TEMİZLİK" Style="{StaticResource SsSectionLabel}" />
+
+                        <Grid Height="212" Margin="0,20,0,16">
+                            <controls:ScanRing Width="200" Height="200"
+                                               Thickness="16"
+                                               Progress="0"
+                                               TrackBrush="{DynamicResource SsSurfaceHover}"
+                                               ProgressBrush="{DynamicResource SsAccentGradient}" />
+
+                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <TextBlock Text="—"
+                                           Style="{StaticResource SsMetricValue}"
+                                           FontSize="40"
+                                           HorizontalAlignment="Center" />
+                                <TextBlock Text="henüz taranmadı"
+                                           Style="{StaticResource SsCaptionText}"
+                                           HorizontalAlignment="Center"
+                                           Margin="0,2,0,0" />
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Style="{StaticResource SsSecondaryText}"
+                                   HorizontalAlignment="Center"
+                                   TextAlignment="Center"
+                                   Margin="8,0,8,18"
+                                   Text="Tarama, dosyaları listeler ama hiçbir şey silmez. Ne silineceğine sen karar verirsin." />
+
+                        <Button Content="Taramayı başlat"
+                                Style="{StaticResource SsPrimaryButton}"
+                                MinHeight="{StaticResource SsControlHeightLarge}"
+                                IsEnabled="False"
+                                ToolTip="Temizleyici motoru Faz 1'de devreye giriyor." />
+
+                        <TextBlock Text="Temizleyici motoru Faz 1'de geliyor"
+                                   Style="{StaticResource SsCaptionText}"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,8,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Sistem diski -->
+                <Border Grid.Row="0" Grid.Column="2" Style="{StaticResource SsCard}">
+                    <StackPanel>
+                        <DockPanel>
+                            <Border DockPanel.Dock="Right"
+                                    Style="{StaticResource SsBadge}"
+                                    Background="{DynamicResource SsAccentTint}">
+                                <TextBlock Text="{Binding SystemDriveName}"
+                                           Foreground="{DynamicResource SsAccentText}"
+                                           FontSize="11"
+                                           FontWeight="SemiBold" />
+                            </Border>
+                            <TextBlock Text="SİSTEM DİSKİ" Style="{StaticResource SsSectionLabel}" />
+                        </DockPanel>
+
+                        <TextBlock Text="{Binding SystemDriveFree}"
+                                   Style="{StaticResource SsMetricValue}"
+                                   Margin="0,14,0,0" />
+                        <TextBlock Text="boş alan" Style="{StaticResource SsCaptionText}" />
+
+                        <ProgressBar Value="{Binding SystemDriveUsedRatio, Mode=OneWay}"
+                                     Maximum="1"
+                                     Height="6"
+                                     Margin="0,16,0,8"
+                                     Background="{DynamicResource SsSurfaceHover}"
+                                     Foreground="{DynamicResource SsAccent}"
+                                     BorderThickness="0" />
+
+                        <TextBlock Text="{Binding SystemDriveDetail}" Style="{StaticResource SsCaptionText}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Bellek -->
+                <Border Grid.Row="0" Grid.Column="4" Style="{StaticResource SsCard}">
+                    <StackPanel>
+                        <TextBlock Text="BELLEK" Style="{StaticResource SsSectionLabel}" />
+
+                        <TextBlock Text="{Binding MemoryLabel}"
+                                   Style="{StaticResource SsMetricValue}"
+                                   Margin="0,14,0,0" />
+                        <TextBlock Text="kullanımda" Style="{StaticResource SsCaptionText}" />
+
+                        <ProgressBar Value="{Binding MemoryUsedRatio, Mode=OneWay}"
+                                     Maximum="1"
+                                     Height="6"
+                                     Margin="0,16,0,8"
+                                     Background="{DynamicResource SsSurfaceHover}"
+                                     Foreground="{DynamicResource SsAccent}"
+                                     BorderThickness="0" />
+
+                        <TextBlock Text="{Binding MemoryDetail}" Style="{StaticResource SsCaptionText}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Sürücüler listesi -->
+                <Border Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3" Style="{StaticResource SsCard}">
+                    <StackPanel>
+                        <TextBlock Text="DİSKLER" Style="{StaticResource SsSectionLabel}" Margin="0,0,0,12" />
+
+                        <ItemsControl ItemsSource="{Binding Drives}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type vm:DriveRow}">
+                                    <Grid Margin="0,0,0,14">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="44" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+
+                                        <TextBlock Grid.Row="0" Grid.Column="0"
+                                                   Text="{Binding Name}"
+                                                   Style="{StaticResource SsSubtitleText}"
+                                                   VerticalAlignment="Center" />
+
+                                        <TextBlock Grid.Row="0" Grid.Column="1"
+                                                   Text="{Binding Label}"
+                                                   Style="{StaticResource SsBodyText}"
+                                                   VerticalAlignment="Center" />
+
+                                        <TextBlock Grid.Row="0" Grid.Column="2"
+                                                   Text="{Binding Detail}"
+                                                   Style="{StaticResource SsCaptionText}"
+                                                   VerticalAlignment="Center" />
+
+                                        <ProgressBar Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                                                     Value="{Binding UsedRatio, Mode=OneWay}"
+                                                     Maximum="1"
+                                                     Height="5"
+                                                     Margin="0,8,0,0"
+                                                     Background="{DynamicResource SsSurfaceHover}"
+                                                     Foreground="{DynamicResource SsAccent}"
+                                                     BorderThickness="0">
+                                            <ProgressBar.Style>
+                                                <Style TargetType="ProgressBar">
+                                                    <Style.Triggers>
+                                                        <!-- %90 üstü doluluk uyarı rengine geçer: bu bir durum, eylem değil. -->
+                                                        <DataTrigger Binding="{Binding IsCriticallyFull}" Value="True">
+                                                            <Setter Property="Foreground" Value="{DynamicResource SsCaution}" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </ProgressBar.Style>
+                                        </ProgressBar>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- ==================== Durum şeridi ==================== -->
+            <Border Grid.Row="2" Style="{StaticResource SsCard}" Margin="0,16,0,0"
+                    Background="{DynamicResource SsSurfaceRaised}">
+                <StackPanel Orientation="Horizontal">
+                    <Path Style="{StaticResource SsIcon}"
+                          Data="{StaticResource IconStatusInfo}"
+                          Fill="{DynamicResource SsInfo}" />
+                    <TextBlock Margin="12,0,0,0"
+                               VerticalAlignment="Center"
+                               Style="{StaticResource SsBodyText}"
+                               Text="{Binding ElevationLabel}" />
+                    <TextBlock Margin="8,0,0,0"
+                               VerticalAlignment="Center"
+                               Style="{StaticResource SsCaptionText}"
+                               Text="— sürücü kurulumu, servis durdurma ve sistem önbelleği temizliği yönetici hakkı ister" />
+                </StackPanel>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+
+</UserControl>

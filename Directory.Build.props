@@ -1,0 +1,32 @@
+<Project>
+
+  <Import Project="$(MSBuildThisFileDirectory)build\version.props" />
+
+  <PropertyGroup>
+    <LangVersion>12.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <Platforms>AnyCPU;x64</Platforms>
+    <NeutralLanguage>tr</NeutralLanguage>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Authors>Samet Ege</Authors>
+    <Company>SysScrub</Company>
+    <Product>SysScrub</Product>
+    <Copyright>Copyright (c) 2026 Samet Ege</Copyright>
+    <RepositoryUrl>https://github.com/SametEge/SysScrub</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Version Condition="'$(SysScrubVersionSuffix)' == ''">$(SysScrubVersion)</Version>
+    <Version Condition="'$(SysScrubVersionSuffix)' != ''">$(SysScrubVersion)-$(SysScrubVersionSuffix)</Version>
+    <AssemblyVersion>$(SysScrubAssemblyVersion)</AssemblyVersion>
+    <FileVersion>$(SysScrubAssemblyVersion)</FileVersion>
+    <InformationalVersion>$(Version)</InformationalVersion>
+  </PropertyGroup>
+
+</Project>

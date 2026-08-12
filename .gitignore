@@ -1,0 +1,31 @@
+# ---------------------------------------------------------------- .NET
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+*.user
+*.suo
+*.userprefs
+.vs/
+.vscode/
+.idea/
+*.dotCover
+
+# Derleme ara çıktıları — dist/ bilerek dışarıda bırakılmadı, o depoya giriyor.
+build/out/
+
+# ---------------------------------------------------------------- Araçlar
+.claude/
+*.log
+TestResults/
+coverage*.xml
+*.coverage
+
+# ---------------------------------------------------------------- Windows
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# ---------------------------------------------------------------- Yerel çalışma dosyaları
+*.local.json
+scratch/

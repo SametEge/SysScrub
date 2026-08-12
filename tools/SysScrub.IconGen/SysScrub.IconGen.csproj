@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Marka görsellerini üreten geliştirme aracı. Uygulamayla birlikte dağıtılmaz.
+    Çalıştırma: build/generate-assets.ps1
+    Ürettikleri: src/SysScrub.App/Assets/SysScrub.ico, docs/assets/*.png, installer/assets/*.bmp
+  -->
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>SysScrub.IconGen</RootNamespace>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+</Project>

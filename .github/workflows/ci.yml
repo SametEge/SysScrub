@@ -1,0 +1,44 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['**/*.md', 'docs/**']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Derle ve test et
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: .NET 8 kur
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: NuGet önbelleği
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Build.props') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Paketleri geri yükle
+        run: dotnet restore SysScrub.sln
+
+      - name: Derle
+        run: dotnet build SysScrub.sln --configuration Release --no-restore
+
+      - name: Testleri çalıştır
+        run: dotnet test SysScrub.sln --configuration Release --no-build --verbosity normal
+
+      - name: Marka görselleri güncel mi
+        # İkon üreteci kaynak kod; ürettiği dosyalar depoya işlenmiş olmalı.
+        run: |
+          dotnet run --project tools/SysScrub.IconGen --configuration Release --no-build
+          git diff --exit-code -- src/SysScrub.App/Assets docs/assets installer/assets

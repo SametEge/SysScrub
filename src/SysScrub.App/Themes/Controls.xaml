@@ -1,0 +1,269 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+
+    <!--
+        Kontrol stilleri. Renkler DynamicResource ile bağlanır: tema değişince
+        çalışma anında yeniden çözülürler, uygulama yeniden başlatılmaz.
+    -->
+
+    <!-- ==================== İkon ==================== -->
+    <Style x:Key="SsIcon" TargetType="Path">
+        <Setter Property="Fill" Value="{DynamicResource SsTextSecondary}" />
+        <Setter Property="Stretch" Value="Uniform" />
+        <Setter Property="Width" Value="{StaticResource SsIconSize}" />
+        <Setter Property="Height" Value="{StaticResource SsIconSize}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+    </Style>
+
+    <!-- ==================== Kart ==================== -->
+    <Style x:Key="SsCard" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource SsSurface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource SsBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource SsRadiusCard}" />
+        <Setter Property="Padding" Value="{StaticResource SsCardPadding}" />
+    </Style>
+
+    <Style x:Key="SsCardRaised" TargetType="Border" BasedOn="{StaticResource SsCard}">
+        <Setter Property="Background" Value="{DynamicResource SsSurfaceRaised}" />
+    </Style>
+
+    <!-- ==================== Butonlar ==================== -->
+
+    <!-- Ortak şablon: içerik + odak halkası. Her buton varyantı bunu paylaşır. -->
+    <ControlTemplate x:Key="SsButtonTemplate" TargetType="ButtonBase">
+        <Grid>
+            <Border x:Name="Bd"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="{StaticResource SsRadiusControl}"
+                    SnapsToDevicePixels="True">
+                <ContentPresenter x:Name="Content"
+                                  Margin="{TemplateBinding Padding}"
+                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                  RecognizesAccessKey="True"
+                                  TextElement.Foreground="{TemplateBinding Foreground}" />
+            </Border>
+
+            <!-- Odak halkası her zaman görünür olmalı: klavyeyle gezinen kullanıcı kaybolmasın. -->
+            <Border x:Name="FocusRing"
+                    Margin="-3"
+                    BorderBrush="{DynamicResource SsAccent}"
+                    BorderThickness="2"
+                    CornerRadius="11"
+                    Visibility="Collapsed"
+                    IsHitTestVisible="False" />
+        </Grid>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+                <Setter TargetName="FocusRing" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <!--
+                Devre dışı hâlde vurgu rengini soldurmak çamurlu bir kahverengi üretiyor.
+                Bunun yerine tamamen nötr yüzeye düşüyoruz: "kapalı" olduğu net okunuyor.
+            -->
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SsSurfaceRaised}" />
+                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource SsBorder}" />
+                <Setter TargetName="Content" Property="TextElement.Foreground" Value="{DynamicResource SsTextDisabled}" />
+                <Setter Property="Cursor" Value="Arrow" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <Style x:Key="SsButtonBase" TargetType="ButtonBase">
+        <Setter Property="Template" Value="{StaticResource SsButtonTemplate}" />
+        <Setter Property="FontFamily" Value="{StaticResource SsFontText}" />
+        <Setter Property="FontSize" Value="{StaticResource SsFontSizeBody}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="MinHeight" Value="{StaticResource SsControlHeight}" />
+        <Setter Property="Padding" Value="16,0" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+    </Style>
+
+    <!-- Birincil: sayfadaki tek ana eylem. Vurgu rengi yalnızca burada dolgu olarak kullanılır. -->
+    <Style x:Key="SsPrimaryButton" TargetType="Button" BasedOn="{StaticResource SsButtonBase}">
+        <Setter Property="Background" Value="{DynamicResource SsAccent}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource SsOnAccent}" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource SsAccentHover}" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{DynamicResource SsAccentPressed}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="SsSecondaryButton" TargetType="Button" BasedOn="{StaticResource SsButtonBase}">
+        <Setter Property="Background" Value="{DynamicResource SsSurfaceRaised}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource SsBorder}" />
+        <Setter Property="Foreground" Value="{DynamicResource SsText}" />
+        <Setter Property="FontWeight" Value="Normal" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource SsSurfaceHover}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource SsBorderStrong}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="SsSubtleButton" TargetType="Button" BasedOn="{StaticResource SsButtonBase}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource SsTextSecondary}" />
+        <Setter Property="FontWeight" Value="Normal" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource SsSurfaceHover}" />
+                <Setter Property="Foreground" Value="{DynamicResource SsText}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="SsIconButton" TargetType="Button" BasedOn="{StaticResource SsSubtleButton}">
+        <Setter Property="Width" Value="36" />
+        <Setter Property="Height" Value="36" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+
+    <!-- Yıkıcı eylem: silme, kaldırma. Semantik "kötü" rengiyle, vurguyla karışmasın diye çerçeveli. -->
+    <Style x:Key="SsDangerButton" TargetType="Button" BasedOn="{StaticResource SsButtonBase}">
+        <Setter Property="Background" Value="{DynamicResource SsDangerTint}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource SsDanger}" />
+        <Setter Property="Foreground" Value="{DynamicResource SsDanger}" />
+    </Style>
+
+    <!-- ==================== Rozet ==================== -->
+    <Style x:Key="SsBadge" TargetType="Border">
+        <Setter Property="CornerRadius" Value="{StaticResource SsRadiusPill}" />
+        <Setter Property="Padding" Value="10,3" />
+        <Setter Property="Background" Value="{DynamicResource SsSurfaceRaised}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- ==================== Ayırıcı ==================== -->
+    <Style x:Key="SsSeparator" TargetType="Rectangle">
+        <Setter Property="Height" Value="1" />
+        <Setter Property="Fill" Value="{DynamicResource SsBorder}" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+    </Style>
+
+    <!-- ==================== Yan navigasyon ==================== -->
+    <Style x:Key="SsNavItem" TargetType="ListBoxItem">
+        <Setter Property="Foreground" Value="{DynamicResource SsTextSecondary}" />
+        <Setter Property="FontFamily" Value="{StaticResource SsFontText}" />
+        <Setter Property="FontSize" Value="{StaticResource SsFontSizeBody}" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="8,1" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                    <Grid>
+                        <Border x:Name="Bd"
+                                Background="Transparent"
+                                CornerRadius="{StaticResource SsRadiusControl}"
+                                MinHeight="38"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter VerticalAlignment="Center" />
+                        </Border>
+
+                        <!-- Seçili göstergesi: solda vurgu çubuğu. Renk körlüğünde de okunur. -->
+                        <Border x:Name="Indicator"
+                                Width="3" Height="18"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Margin="0"
+                                CornerRadius="{StaticResource SsRadiusPill}"
+                                Background="{DynamicResource SsAccent}"
+                                Opacity="0" />
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SsSurfaceHover}" />
+                            <Setter Property="Foreground" Value="{DynamicResource SsText}" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SsSurfaceRaised}" />
+                            <Setter TargetName="Indicator" Property="Opacity" Value="1" />
+                            <Setter Property="Foreground" Value="{DynamicResource SsText}" />
+                            <Setter Property="FontWeight" Value="SemiBold" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource SsAccent}" />
+                            <Setter TargetName="Bd" Property="BorderThickness" Value="2" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SsNavList" TargetType="ListBox">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="ItemContainerStyle" Value="{StaticResource SsNavItem}" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+        <Setter Property="KeyboardNavigation.DirectionalNavigation" Value="Cycle" />
+    </Style>
+
+    <!-- ==================== İnce kaydırma çubuğu ==================== -->
+    <Style x:Key="SsScrollThumb" TargetType="Thumb">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Thumb">
+                    <Border Background="{DynamicResource SsBorderStrong}"
+                            CornerRadius="{StaticResource SsRadiusPill}"
+                            Margin="3,0" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="ScrollBar">
+        <Setter Property="Width" Value="10" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Opacity" Value="0.55" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ScrollBar">
+                    <Track x:Name="PART_Track" IsDirectionReversed="True">
+                        <Track.Thumb>
+                            <Thumb Style="{StaticResource SsScrollThumb}" />
+                        </Track.Thumb>
+                        <Track.IncreaseRepeatButton>
+                            <RepeatButton Command="ScrollBar.PageDownCommand" Opacity="0" />
+                        </Track.IncreaseRepeatButton>
+                        <Track.DecreaseRepeatButton>
+                            <RepeatButton Command="ScrollBar.PageUpCommand" Opacity="0" />
+                        </Track.DecreaseRepeatButton>
+                    </Track>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Opacity" Value="1" />
+                <Setter Property="Width" Value="12" />
+            </Trigger>
+            <Trigger Property="Orientation" Value="Horizontal">
+                <Setter Property="Width" Value="Auto" />
+                <Setter Property="Height" Value="10" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+</ResourceDictionary>

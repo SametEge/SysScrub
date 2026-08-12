@@ -1,0 +1,103 @@
+name: release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Yayınlanacak etiket (ör. v0.1.0-alpha)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Paketle ve yayınla
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: .NET 8 kur
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Sürüm numarasını çıkar
+        id: version
+        shell: pwsh
+        run: |
+          $tag = if ($env:GITHUB_REF -like 'refs/tags/*') {
+            $env:GITHUB_REF -replace '^refs/tags/', ''
+          } else {
+            '${{ github.event.inputs.tag }}'
+          }
+          $version = $tag -replace '^v', ''
+          "tag=$tag" | Out-File $env:GITHUB_OUTPUT -Append
+          "version=$version" | Out-File $env:GITHUB_OUTPUT -Append
+          Write-Host "Yayınlanacak sürüm: $version"
+
+      - name: Testleri çalıştır
+        run: dotnet test SysScrub.sln --configuration Release
+
+      - name: Inno Setup kur
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe")) {
+            choco install innosetup --no-progress -y
+          }
+
+      - name: Paketleri üret
+        shell: pwsh
+        run: ./build/publish.ps1 -SelfContained
+
+      - name: Küçük taşınabilir arşivi hazırla
+        shell: pwsh
+        run: |
+          $v = '${{ steps.version.outputs.version }}'
+          Compress-Archive -Path build/out/fdd/* -DestinationPath "build/out/SysScrub-$v-portable-min.zip" -Force
+
+      - name: Yayın klasörünü topla
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path artifacts -Force | Out-Null
+          Copy-Item dist/SysScrub-Setup-*.exe artifacts/ -ErrorAction SilentlyContinue
+          Copy-Item build/out/*.zip artifacts/ -ErrorAction SilentlyContinue
+
+          # Bütünlük doğrulaması: indiren herkes dosyanın bozulmadığını kontrol edebilsin.
+          Get-ChildItem artifacts -File | ForEach-Object {
+            $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash
+            "$hash  $($_.Name)"
+          } | Set-Content artifacts/SHA256SUMS.txt -Encoding utf8
+
+          Get-ChildItem artifacts | Format-Table Name, Length -AutoSize
+
+      - name: Release notlarını çıkar
+        id: notes
+        shell: pwsh
+        run: |
+          $v = '${{ steps.version.outputs.version }}'
+          $changelog = Get-Content CHANGELOG.md -Raw
+
+          # CHANGELOG'da bu sürümün başlığından bir sonraki başlığa kadar olan bölüm.
+          $pattern = "(?ms)^## \[$([regex]::Escape($v))\].*?\r?\n(.*?)(?=^## \[|\z)"
+          $match = [regex]::Match($changelog, $pattern)
+
+          $notes = if ($match.Success) { $match.Groups[1].Value.Trim() } else {
+            "Bu sürüm için CHANGELOG girdisi bulunamadı."
+          }
+
+          $notes | Set-Content release-notes.md -Encoding utf8
+          Write-Host $notes
+
+      - name: Release yayınla
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: SysScrub ${{ steps.version.outputs.version }}
+          body_path: release-notes.md
+          prerelease: ${{ contains(steps.version.outputs.version, '-') }}
+          files: artifacts/*
+          fail_on_unmatched_files: true

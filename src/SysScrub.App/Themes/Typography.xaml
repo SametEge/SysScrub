@@ -1,0 +1,88 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+
+    <!--
+        Tipografi ölçeği. Windows 11'de Segoe UI Variable var, yoksa Segoe UI'ya düşer.
+        Sayısal göstergelerde tabular rakam kullanılır: animasyonlu sayaçlarda
+        rakamlar farklı genişlikte olduğu için değer zıplar, bu onu engeller.
+    -->
+
+    <FontFamily x:Key="SsFontDisplay">Segoe UI Variable Display, Segoe UI, Segoe UI Variable Text</FontFamily>
+    <FontFamily x:Key="SsFontText">Segoe UI Variable Text, Segoe UI</FontFamily>
+    <FontFamily x:Key="SsFontMono">Cascadia Mono, Consolas, Courier New</FontFamily>
+
+    <sys:Double x:Key="SsFontSizeDisplay">28</sys:Double>
+    <sys:Double x:Key="SsFontSizeTitle">20</sys:Double>
+    <sys:Double x:Key="SsFontSizeSubtitle">16</sys:Double>
+    <sys:Double x:Key="SsFontSizeBody">14</sys:Double>
+    <sys:Double x:Key="SsFontSizeCaption">12</sys:Double>
+
+    <!-- ==================== Metin stilleri ==================== -->
+
+    <Style x:Key="SsDisplayText" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource SsFontDisplay}" />
+        <Setter Property="FontSize" Value="{StaticResource SsFontSizeDisplay}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource SsText}" />
+        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
+    </Style>
+
+    <Style x:Key="SsTitleText" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource SsFontDisplay}" />
+        <Setter Property="FontSize" Value="{StaticResource SsFontSizeTitle}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource SsText}" />
+    </Style>
+
+    <Style x:Key="SsSubtitleText" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource SsFontText}" />
+        <Setter Property="FontSize" Value="{StaticResource SsFontSizeSubtitle}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource SsText}" />
+    </Style>
+
+    <Style x:Key="SsBodyText" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource SsFontText}" />
+        <Setter Property="FontSize" Value="{StaticResource SsFontSizeBody}" />
+        <Setter Property="Foreground" Value="{DynamicResource SsText}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style x:Key="SsSecondaryText" TargetType="TextBlock" BasedOn="{StaticResource SsBodyText}">
+        <Setter Property="Foreground" Value="{DynamicResource SsTextSecondary}" />
+    </Style>
+
+    <Style x:Key="SsCaptionText" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource SsFontText}" />
+        <Setter Property="FontSize" Value="{StaticResource SsFontSizeCaption}" />
+        <Setter Property="Foreground" Value="{DynamicResource SsTextSecondary}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <!-- Bölüm başlığı: büyük harf, geniş harf aralığı, sessiz renk. -->
+    <Style x:Key="SsSectionLabel" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource SsFontText}" />
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource SsTextSecondary}" />
+        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
+    </Style>
+
+    <!-- Ölçüm değerleri: sayaç animasyonunda genişlik değişmesin diye tabular rakam. -->
+    <Style x:Key="SsMetricValue" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource SsFontDisplay}" />
+        <Setter Property="FontSize" Value="32" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource SsText}" />
+        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
+        <Setter Property="Typography.NumeralAlignment" Value="Tabular" />
+    </Style>
+
+    <Style x:Key="SsMonoText" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource SsFontMono}" />
+        <Setter Property="FontSize" Value="12.5" />
+        <Setter Property="Foreground" Value="{DynamicResource SsTextSecondary}" />
+    </Style>
+
+</ResourceDictionary>
