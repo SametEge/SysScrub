@@ -176,7 +176,10 @@ public sealed class WindowsUpdateDriverSource(ILogger<WindowsUpdateDriverSource>
                     Description = SafeString(() => update.Description),
                     Manufacturer = SafeString(() => update.DriverManufacturer),
                     Model = SafeString(() => update.DriverModel),
-                    Version = SafeString(() => update.DriverVerDate is null ? null : update.DriverModel),
+
+                    // WUA sürücü sürümünü ayrı bir alan olarak vermiyor; başlıkta geçiyorsa
+                    // oradan ayıklıyoruz, yoksa karşılaştırma tarihe göre yapılıyor.
+                    Version = ExtractVersion(SafeString(() => update.Title)),
                     Date = SafeDate(() => update.DriverVerDate),
                     HardwareId = SafeString(() => update.DriverHardwareID),
                     SizeBytes = SafeLong(() => update.MaxDownloadSize),
@@ -226,6 +229,23 @@ public sealed class WindowsUpdateDriverSource(ILogger<WindowsUpdateDriverSource>
         {
             return false;
         }
+    }
+
+    /// <summary>
+    /// WUA başlıkları "AMD - Display - 31.0.15.4633" biçiminde. Sondaki noktalı
+    /// sayı dizisi sürücü sürümü; yoksa null döner ve karşılaştırma tarihe düşer.
+    /// </summary>
+    private static string? ExtractVersion(string? title)
+    {
+        if (string.IsNullOrWhiteSpace(title))
+        {
+            return null;
+        }
+
+        System.Text.RegularExpressions.Match match =
+            System.Text.RegularExpressions.Regex.Match(title, @"\b\d+(\.\d+){2,3}\b");
+
+        return match.Success ? match.Value : null;
     }
 
     private static string? SafeString(Func<object?> getter)

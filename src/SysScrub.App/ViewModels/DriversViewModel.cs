@@ -3,113 +3,95 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using SysScrub.Core.Drivers;
-using SysScrub.Core.Formatting;
 using SysScrub.Core.Machine;
 
 namespace SysScrub.App.ViewModels;
 
-/// <summary>Listede gösterilen tek bir cihaz.</summary>
-public sealed record DeviceRowViewModel(DeviceInfo Device)
+/// <summary>
+/// Listede tek bir sürücü satırı: kategori, cihaz adı, kurulu sürüm, kullanılabilir sürüm.
+/// </summary>
+public sealed partial class DriverRowViewModel : ObservableObject
 {
-    public string Name => Device.Name;
+    private readonly Action _onSelectionChanged;
 
-    public string VersionLabel => Device.DriverVersion ?? "sürüm yok";
-
-    public string DateLabel => Device.DriverDate?.ToString("dd.MM.yyyy") ?? "tarih yok";
-
-    public string ProviderLabel => Device.DriverProvider ?? Device.Manufacturer ?? "sağlayıcı bilinmiyor";
-
-    public bool HasProblem => Device.HasProblem;
-
-    public string ProblemDescription => Device.ProblemDescription;
-
-    public bool IsUnsigned => !Device.IsSigned && !Device.HasProblem;
-
-    public string AgeLabel
-    {
-        get
-        {
-            if (Device.DriverAge is not { } age)
-            {
-                return string.Empty;
-            }
-
-            int years = (int)(age.TotalDays / 365);
-
-            return years >= 2 ? $"{years} yıl eski" : string.Empty;
-        }
-    }
-
-    public bool IsAging => AgeLabel.Length > 0;
-}
-
-/// <summary>Cihaz sınıfına göre grup.</summary>
-public sealed partial class DeviceGroupViewModel : ObservableObject
-{
     [ObservableProperty]
-    private bool _isExpanded;
+    private bool _isSelected;
 
-    public DeviceGroupViewModel(DeviceGroup group)
+    public DriverRowViewModel(DriverStatusRow row, Action onSelectionChanged)
     {
-        Title = group.DisplayName;
-        Devices = new ObservableCollection<DeviceRowViewModel>(
-            group.Devices.Select(d => new DeviceRowViewModel(d)));
-        ProblemCount = group.ProblemCount;
+        Row = row;
+        _onSelectionChanged = onSelectionChanged;
 
-        // Sorunlu cihazı olan grup açık gelir: kullanıcının önce görmesi gereken o.
-        _isExpanded = ProblemCount > 0;
+        // Kesin güncellemeler işaretli gelir; belirsiz olanlar kullanıcı kararına bırakılır.
+        _isSelected = row.Status == DriverStatus.UpdateAvailable;
     }
 
-    public string Title { get; }
+    public DriverStatusRow Row { get; }
 
-    public ObservableCollection<DeviceRowViewModel> Devices { get; }
+    /// <summary>"Görüntü bağdaştırıcıları" gibi kategori başlığı.</summary>
+    public string CategoryName => DeviceClassNames.Describe(Row.Device.DeviceClass);
 
-    public int ProblemCount { get; }
+    public string DeviceName => Row.Device.Name;
 
-    public bool HasProblems => ProblemCount > 0;
+    public string Vendor => Row.Device.DriverProvider ?? Row.Device.Manufacturer ?? string.Empty;
 
-    public string CountLabel => $"{Devices.Count}";
+    public string InstalledLabel => Row.InstalledLabel;
 
-    public string ProblemLabel => ProblemCount > 0 ? $"{ProblemCount} sorunlu" : string.Empty;
-}
+    public string AvailableLabel => Row.AvailableLabel;
 
-/// <summary>Windows Update'in sunduğu bir güncelleme.</summary>
-public sealed record DriverUpdateRowViewModel(DriverUpdate Update)
-{
-    public string Title => Update.Title;
+    public string AgeLabel => Row.AgeLabel;
 
-    public string Detail
+    public bool ShowAge => AgeLabel.Length > 0;
+
+    public bool HasUpdate => Row.Status == DriverStatus.UpdateAvailable;
+
+    public bool IsPossiblyOutdated => Row.Status == DriverStatus.PossiblyOutdated;
+
+    public bool HasProblem => Row.Device.HasProblem;
+
+    public string ProblemDescription => Row.Device.ProblemDescription;
+
+    public string IconKey => Row.Device.DeviceClass?.ToUpperInvariant() switch
     {
-        get
-        {
-            var parts = new List<string>();
+        "DISPLAY" => "IconDashboard",
+        "NET" or "NETTRANS" or "NETCLIENT" => "IconUpdates",
+        "DISKDRIVE" or "SCSIADAPTER" or "VOLUME" or "HDC" => "IconDiskHealth",
+        "USB" or "USBDEVICE" or "PRINTER" or "PRINTQUEUE" => "IconPrograms",
+        _ => "IconDrivers"
+    };
 
-            if (Update.Manufacturer is not null)
-            {
-                parts.Add(Update.Manufacturer);
-            }
+    /// <summary>
+    /// "Kullanılabilir" satırının açıklaması. Kesin güncelleme yoksa neden
+    /// bilmediğimizi ipucunda söylüyoruz; kırpılmış metin yerine tam cümle burada.
+    /// </summary>
+    public string AvailableTooltip => Row.Status switch
+    {
+        DriverStatus.UpdateAvailable =>
+            "Windows Update bu sürücünün yenisini sunuyor.",
+        DriverStatus.PossiblyOutdated =>
+            "Windows Update yenisini sunmuyor. Sürücü eski ama üreticinin sitesinde " +
+            "daha yenisi olabilir; Microsoft Update Catalog ve üretici sorgusu bir sonraki adımda geliyor.",
+        _ => "Bilinen bir kaynakta daha yenisi yok."
+    };
 
-            if (Update.Date is { } date)
-            {
-                parts.Add(date.ToString("dd.MM.yyyy"));
-            }
+    /// <summary>Durum rozeti metni.</summary>
+    public string StatusLabel => Row.Status switch
+    {
+        DriverStatus.UpdateAvailable => "güncelleme var",
+        DriverStatus.PossiblyOutdated => "eski olabilir",
+        _ => string.Empty
+    };
 
-            if (Update.SizeBytes > 0)
-            {
-                parts.Add(ByteSize.Format(Update.SizeBytes));
-            }
-
-            return string.Join(" · ", parts);
-        }
-    }
+    partial void OnIsSelectedChanged(bool value) => _onSelectionChanged();
 }
 
 /// <summary>
 /// Sürücüler ekranı.
 ///
-/// Güncelleme kaynağı yalnızca Windows Update: oradan gelen her sürücü WHQL imzalı
-/// ve Microsoft tarafından o donanıma uygun bulunmuş. Üçüncü parti sürücü aynası
-/// tutmuyoruz — DriverBooster tarzı uygulamaları güvenilmez yapan şey tam olarak o.
+/// Liste iki kesin gruba ayrılır: Windows Update'in yenisini sunduğu sürücüler
+/// ("güncelleme var") ve iki yıldan eski olup hiçbir kaynağın yenisini sunmadığı
+/// sürücüler ("eski olabilir"). İkincisine "güncel değil" demiyoruz çünkü
+/// bilmiyoruz — üreticide yenisi olabilir de olmayabilir de.
 /// </summary>
 public sealed partial class DriversViewModel : ObservableObject
 {
@@ -119,6 +101,8 @@ public sealed partial class DriversViewModel : ObservableObject
     private readonly ILogger<DriversViewModel> _logger;
 
     private CancellationTokenSource? _cancellation;
+    private DeviceInventoryReport _lastInventory = DeviceInventoryReport.Empty;
+    private DriverSearchResult? _lastSearch;
 
     [ObservableProperty]
     private bool _isBusy;
@@ -130,25 +114,22 @@ public sealed partial class DriversViewModel : ObservableObject
     private string _busyDetail = string.Empty;
 
     [ObservableProperty]
-    private int _deviceCount;
-
-    [ObservableProperty]
-    private int _problemCount;
-
-    [ObservableProperty]
-    private int _agingCount;
-
-    [ObservableProperty]
     private string _statusMessage = string.Empty;
 
     [ObservableProperty]
-    private string _updateMessage = string.Empty;
+    private string _sourceMessage = string.Empty;
 
     [ObservableProperty]
     private bool _isElevated;
 
     [ObservableProperty]
     private bool _hasLoaded;
+
+    [ObservableProperty]
+    private bool _showUpToDate;
+
+    [ObservableProperty]
+    private int _selectedCount;
 
     public DriversViewModel(
         DeviceInventory inventory,
@@ -164,29 +145,78 @@ public sealed partial class DriversViewModel : ObservableObject
 
         IsElevated = systemInfo.Capture().IsElevated;
 
-        Groups = [];
-        ProblemDevices = [];
-        AgingDevices = [];
-        Updates = [];
+        Attention = [];
+        UpToDate = [];
     }
 
-    public ObservableCollection<DeviceGroupViewModel> Groups { get; }
+    /// <summary>Güncellemesi olan ve eski olabilecek sürücüler; ekranın üst listesi.</summary>
+    public ObservableCollection<DriverRowViewModel> Attention { get; }
 
-    public ObservableCollection<DeviceRowViewModel> ProblemDevices { get; }
+    /// <summary>Güncel sürücüler; katlanmış hâlde duran alt liste.</summary>
+    public ObservableCollection<DriverRowViewModel> UpToDate { get; }
 
-    public ObservableCollection<DeviceRowViewModel> AgingDevices { get; }
+    public int AttentionCount => Attention.Count;
 
-    public ObservableCollection<DriverUpdateRowViewModel> Updates { get; }
+    public int UpToDateCount => UpToDate.Count;
 
-    public bool HasProblems => ProblemCount > 0;
+    public int UpdateAvailableCount => Attention.Count(r => r.HasUpdate);
 
-    public bool HasAging => AgingCount > 0;
+    public bool HasAttention => Attention.Count > 0;
 
-    public bool HasUpdates => Updates.Count > 0;
+    public bool CanUpdateSelected => SelectedCount > 0 && Attention.Any(r => r is { IsSelected: true, HasUpdate: true });
 
-    public string DeviceCountLabel => DeviceCount == 0 ? "—" : $"{DeviceCount:N0}";
+    /// <summary>Ekranın en üstündeki tek cümlelik özet.</summary>
+    public string HeadlineText
+    {
+        get
+        {
+            if (!HasLoaded)
+            {
+                return "Donanım henüz okunmadı";
+            }
 
-    public string ProblemCountLabel => ProblemCount == 0 ? "yok" : $"{ProblemCount:N0}";
+            if (AttentionCount == 0)
+            {
+                return "Tüm sürücüler güncel";
+            }
+
+            int updates = UpdateAvailableCount;
+
+            return updates > 0
+                ? $"{updates} aygıt sürücüsü güncel değil"
+                : $"{AttentionCount} aygıt sürücüsü eski olabilir";
+        }
+    }
+
+    public string HeadlineDetail
+    {
+        get
+        {
+            if (!HasLoaded)
+            {
+                return string.Empty;
+            }
+
+            if (!_lastSearchWasRun)
+            {
+                return "Windows Update henüz sorgulanmadı — \"Güncelleme ara\" ile kesin sonucu görebilirsin.";
+            }
+
+            return AttentionCount == 0
+                ? $"{UpToDateCount} cihazın hepsi güncel."
+                : $"Toplam {AttentionCount} · seçili {SelectedCount}";
+        }
+    }
+
+    public string UpToDateHeader => $"Güncel ({UpToDateCount})";
+
+    /// <summary>
+    /// Üst listenin başlığı. Kesin güncelleme varken "güncel değil" demek doğru;
+    /// yalnızca eskiler varken aynı şeyi demek olduğundan fazlasını iddia etmek olur.
+    /// </summary>
+    public string AttentionHeader => UpdateAvailableCount > 0 ? "GÜNCEL DEĞİL" : "ESKİ OLABİLİR";
+
+    private bool _lastSearchWasRun;
 
     // ------------------------------------------------------------------ envanter
 
@@ -202,40 +232,15 @@ public sealed partial class DriversViewModel : ObservableObject
 
         try
         {
-            DeviceInventoryReport report = await _inventory.LoadAsync(_cancellation.Token);
+            _lastInventory = await _inventory.LoadAsync(_cancellation.Token);
+            Rebuild();
 
-            Groups.Clear();
-
-            foreach (DeviceGroup group in report.GroupByClass())
-            {
-                Groups.Add(new DeviceGroupViewModel(group));
-            }
-
-            ProblemDevices.Clear();
-
-            foreach (DeviceInfo device in report.ProblemDevices)
-            {
-                ProblemDevices.Add(new DeviceRowViewModel(device));
-            }
-
-            AgingDevices.Clear();
-
-            foreach (DeviceInfo device in report.AgingDrivers)
-            {
-                AgingDevices.Add(new DeviceRowViewModel(device));
-            }
-
-            DeviceCount = report.Devices.Count;
-            ProblemCount = report.ProblemDevices.Count;
-            AgingCount = report.AgingDrivers.Count;
             HasLoaded = true;
 
-            StatusMessage = ProblemCount > 0
-                ? $"{ProblemCount} cihaz sorun bildiriyor. Aşağıda ne olduğu yazıyor."
-                : $"{DeviceCount:N0} cihaz okundu, hepsi sorunsuz çalışıyor " +
-                  $"({report.Duration.TotalSeconds:F1} saniye).";
-
-            RaiseDerived();
+            StatusMessage = _lastInventory.ProblemDevices.Count > 0
+                ? $"{_lastInventory.ProblemDevices.Count} cihaz sorun bildiriyor."
+                : $"{_lastInventory.Devices.Count:N0} cihaz okundu " +
+                  $"({_lastInventory.Duration.TotalSeconds:F1} saniye).";
         }
         catch (OperationCanceledException)
         {
@@ -249,9 +254,7 @@ public sealed partial class DriversViewModel : ObservableObject
         finally
         {
             IsBusy = false;
-            _cancellation?.Dispose();
-            _cancellation = null;
-            RefreshCommands();
+            Finish();
         }
     }
 
@@ -260,42 +263,39 @@ public sealed partial class DriversViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanRun))]
     private async Task CheckUpdatesAsync()
     {
+        if (_lastInventory.Devices.Count == 0)
+        {
+            await LoadAsync();
+        }
+
         IsBusy = true;
         BusyTitle = "Güncelleme aranıyor";
         BusyDetail = "Windows Update sorgulanıyor, bu bir dakikaya kadar sürebilir...";
-        UpdateMessage = string.Empty;
 
         _cancellation = new CancellationTokenSource();
 
         try
         {
-            DriverSearchResult result = await _updateSource.SearchAsync(_cancellation.Token);
+            _lastSearch = await _updateSource.SearchAsync(_cancellation.Token);
+            _lastSearchWasRun = true;
 
-            Updates.Clear();
+            Rebuild();
 
-            foreach (DriverUpdate update in result.Updates)
-            {
-                Updates.Add(new DriverUpdateRowViewModel(update));
-            }
-
-            UpdateMessage = result.Describe();
-            RaiseDerived();
+            SourceMessage = _lastSearch.Describe();
         }
         catch (OperationCanceledException)
         {
-            UpdateMessage = "Arama iptal edildi.";
+            SourceMessage = "Arama iptal edildi.";
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Sürücü güncellemesi aranamadı");
-            UpdateMessage = $"Arama başarısız: {ex.Message}";
+            SourceMessage = $"Arama başarısız: {ex.Message}";
         }
         finally
         {
             IsBusy = false;
-            _cancellation?.Dispose();
-            _cancellation = null;
-            RefreshCommands();
+            Finish();
         }
     }
 
@@ -330,9 +330,7 @@ public sealed partial class DriversViewModel : ObservableObject
         finally
         {
             IsBusy = false;
-            _cancellation?.Dispose();
-            _cancellation = null;
-            RefreshCommands();
+            Finish();
         }
     }
 
@@ -348,21 +346,84 @@ public sealed partial class DriversViewModel : ObservableObject
         BusyDetail = "iptal ediliyor...";
     }
 
-    private void RaiseDerived()
+    [RelayCommand]
+    private void ToggleUpToDate() => ShowUpToDate = !ShowUpToDate;
+
+    [RelayCommand]
+    private void SelectAll()
     {
-        OnPropertyChanged(nameof(HasProblems));
-        OnPropertyChanged(nameof(HasAging));
-        OnPropertyChanged(nameof(HasUpdates));
-        OnPropertyChanged(nameof(DeviceCountLabel));
-        OnPropertyChanged(nameof(ProblemCountLabel));
+        foreach (DriverRowViewModel row in Attention)
+        {
+            row.IsSelected = true;
+        }
     }
 
-    private void RefreshCommands()
+    [RelayCommand]
+    private void SelectNone()
     {
+        foreach (DriverRowViewModel row in Attention)
+        {
+            row.IsSelected = false;
+        }
+    }
+
+    // ------------------------------------------------------------------ iç işler
+
+    private void Rebuild()
+    {
+        DriverStatusReport report = DriverStatusMatcher.Build(_lastInventory, _lastSearch);
+
+        Attention.Clear();
+        UpToDate.Clear();
+
+        foreach (DriverStatusRow row in report.Rows)
+        {
+            var viewModel = new DriverRowViewModel(row, UpdateSelection);
+
+            if (row.NeedsAttention)
+            {
+                Attention.Add(viewModel);
+            }
+            else
+            {
+                UpToDate.Add(viewModel);
+            }
+        }
+
+        UpdateSelection();
+        RaiseDerived();
+    }
+
+    private void UpdateSelection()
+    {
+        SelectedCount = Attention.Count(r => r.IsSelected);
+        OnPropertyChanged(nameof(CanUpdateSelected));
+        OnPropertyChanged(nameof(HeadlineDetail));
+    }
+
+    private void RaiseDerived()
+    {
+        OnPropertyChanged(nameof(AttentionCount));
+        OnPropertyChanged(nameof(UpToDateCount));
+        OnPropertyChanged(nameof(UpdateAvailableCount));
+        OnPropertyChanged(nameof(HasAttention));
+        OnPropertyChanged(nameof(HeadlineText));
+        OnPropertyChanged(nameof(HeadlineDetail));
+        OnPropertyChanged(nameof(UpToDateHeader));
+        OnPropertyChanged(nameof(AttentionHeader));
+    }
+
+    private void Finish()
+    {
+        _cancellation?.Dispose();
+        _cancellation = null;
+
         LoadCommand.NotifyCanExecuteChanged();
         CheckUpdatesCommand.NotifyCanExecuteChanged();
         BackupCommand.NotifyCanExecuteChanged();
+
+        RaiseDerived();
     }
 
-    partial void OnIsBusyChanged(bool value) => RefreshCommands();
+    partial void OnIsBusyChanged(bool value) => Finish();
 }

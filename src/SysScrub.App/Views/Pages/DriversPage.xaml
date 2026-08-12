@@ -10,8 +10,108 @@
              d:DataContext="{d:DesignInstance vm:DriversViewModel}">
 
     <UserControl.Resources>
+        <conv:GeometryKeyConverter x:Key="GeometryKey" />
         <conv:BoolToVisibilityConverter x:Key="BoolToVisibility" />
         <conv:StringToVisibilityConverter x:Key="StringToVisibility" />
+
+        <!-- Sürücü satırı: kategori + cihaz solda, kurulu ve kullanılabilir sürüm sağda -->
+        <DataTemplate x:Key="DriverRowTemplate" DataType="{x:Type vm:DriverRowViewModel}">
+            <Border Padding="14,12" Margin="0,0,0,6"
+                    CornerRadius="{StaticResource SsRadiusControl}"
+                    Background="{DynamicResource SsSurfaceRaised}"
+                    BorderBrush="{DynamicResource SsBorder}"
+                    BorderThickness="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}"
+                              VerticalAlignment="Center" Margin="0,0,12,0"
+                              IsEnabled="{Binding HasUpdate}" />
+
+                    <Border Grid.Column="1" Width="38" Height="38" Margin="0,0,14,0"
+                            CornerRadius="{StaticResource SsRadiusSmall}"
+                            Background="{DynamicResource SsSurfaceHover}">
+                        <Path Data="{Binding IconKey, Converter={StaticResource GeometryKey}}"
+                              Fill="{DynamicResource SsTextSecondary}"
+                              Stretch="Uniform" Width="19" Height="19"
+                              HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+
+                    <!-- Kategori + cihaz adı -->
+                    <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding CategoryName}"
+                                       Style="{StaticResource SsBodyText}"
+                                       FontWeight="SemiBold" />
+
+                            <Border Style="{StaticResource SsBadge}" Margin="8,0,0,0" Padding="7,1"
+                                    Background="{DynamicResource SsAccentTint}"
+                                    Visibility="{Binding HasUpdate, Converter={StaticResource BoolToVisibility}}">
+                                <TextBlock Text="{Binding StatusLabel}" FontSize="10.5" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource SsAccentText}" />
+                            </Border>
+
+                            <Border Style="{StaticResource SsBadge}" Margin="8,0,0,0" Padding="7,1"
+                                    Background="{DynamicResource SsCautionTint}"
+                                    Visibility="{Binding IsPossiblyOutdated, Converter={StaticResource BoolToVisibility}}">
+                                <TextBlock Text="{Binding AgeLabel}" FontSize="10.5" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource SsCaution}" />
+                            </Border>
+                        </StackPanel>
+
+                        <TextBlock Text="{Binding DeviceName}"
+                                   Style="{StaticResource SsCaptionText}"
+                                   Margin="0,3,12,0"
+                                   TextTrimming="CharacterEllipsis" />
+
+                        <TextBlock Text="{Binding ProblemDescription}"
+                                   Style="{StaticResource SsCaptionText}"
+                                   Foreground="{DynamicResource SsDanger}"
+                                   Margin="0,2,0,0"
+                                   Visibility="{Binding HasProblem, Converter={StaticResource BoolToVisibility}}" />
+                    </StackPanel>
+
+                    <!-- Kurulu / kullanılabilir -->
+                    <StackPanel Grid.Column="3" VerticalAlignment="Center" Margin="16,0,20,0" MinWidth="230">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Kurulmuş: " Style="{StaticResource SsCaptionText}" />
+                            <TextBlock Text="{Binding InstalledLabel}" Style="{StaticResource SsMonoText}"
+                                       FontSize="11.5" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,3,0,0"
+                                    ToolTip="{Binding AvailableTooltip}">
+                            <TextBlock Text="Kullanılabilir: " Style="{StaticResource SsCaptionText}" />
+                            <TextBlock Text="{Binding AvailableLabel}" FontSize="11.5">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock" BasedOn="{StaticResource SsMonoText}">
+                                        <Style.Triggers>
+                                            <!-- Kesin güncelleme vurgu renginde; belirsiz olan sessiz kalır. -->
+                                            <DataTrigger Binding="{Binding HasUpdate}" Value="True">
+                                                <Setter Property="Foreground" Value="{DynamicResource SsAccentText}" />
+                                                <Setter Property="FontWeight" Value="SemiBold" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Button Grid.Column="4" Content="Güncelle"
+                            Style="{StaticResource SsSecondaryButton}"
+                            MinWidth="96" VerticalAlignment="Center"
+                            IsEnabled="{Binding HasUpdate}"
+                            ToolTip="Kurulum Faz 4 ile geliyor: indirme, imza doğrulama, yedek ve geri alma zinciriyle birlikte." />
+                </Grid>
+            </Border>
+        </DataTemplate>
     </UserControl.Resources>
 
     <Grid>
@@ -27,11 +127,11 @@
         <StackPanel Grid.Row="0" Margin="0,0,0,16">
             <TextBlock Text="Sürücüler" Style="{StaticResource SsDisplayText}" />
             <TextBlock Style="{StaticResource SsSecondaryText}" Margin="0,6,0,0"
-                       Text="Donanımını tanır, sorunlu cihazları ve eski sürücüleri gösterir. Güncelleme kaynağı Windows Update — buradan gelen her sürücü WHQL imzalı." />
+                       Text="Güncelleme kaynağı Windows Update — buradan gelen her sürücü WHQL imzalı ve Microsoft tarafından bu donanıma uygun bulunmuş." />
         </StackPanel>
 
-        <!-- ==================== Özet ve eylemler ==================== -->
-        <Border Grid.Row="1" Style="{StaticResource SsCard}" Margin="0,0,0,16">
+        <!-- ==================== Özet şeridi ==================== -->
+        <Border Grid.Row="1" Style="{StaticResource SsCard}" Margin="0,0,0,14">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -39,39 +139,23 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <StackPanel Margin="0,0,32,0">
-                        <TextBlock Text="CİHAZ" Style="{StaticResource SsSectionLabel}" />
-                        <TextBlock Text="{Binding DeviceCountLabel}" Style="{StaticResource SsMetricValue}"
-                                   FontSize="26" Margin="0,4,0,0" />
-                    </StackPanel>
+                <Border Grid.Column="0" Width="44" Height="44" Margin="0,0,16,0"
+                        CornerRadius="{StaticResource SsRadiusControl}"
+                        Background="{DynamicResource SsAccentTint}">
+                    <Path Data="{StaticResource IconDrivers}" Fill="{DynamicResource SsAccent}"
+                          Stretch="Uniform" Width="22" Height="22"
+                          HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
 
-                    <StackPanel Margin="0,0,32,0">
-                        <TextBlock Text="SORUNLU" Style="{StaticResource SsSectionLabel}" />
-                        <TextBlock Text="{Binding ProblemCountLabel}" FontSize="26" Margin="0,4,0,0">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock" BasedOn="{StaticResource SsMetricValue}">
-                                    <Style.Triggers>
-                                        <!-- Sorun varsa sayı kırmızıya döner; yoksa nötr kalır. -->
-                                        <DataTrigger Binding="{Binding HasProblems}" Value="True">
-                                            <Setter Property="Foreground" Value="{DynamicResource SsDanger}" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                    </StackPanel>
-
-                    <StackPanel>
-                        <TextBlock Text="ESKİ SÜRÜCÜ" Style="{StaticResource SsSectionLabel}" />
-                        <TextBlock Text="{Binding AgingCount}" Style="{StaticResource SsMetricValue}"
-                                   FontSize="26" Margin="0,4,0,0" />
-                    </StackPanel>
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding HeadlineText}" Style="{StaticResource SsTitleText}" />
+                    <TextBlock Text="{Binding HeadlineDetail}" Style="{StaticResource SsCaptionText}"
+                               Margin="0,3,0,0" />
                 </StackPanel>
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
-                    <Button Content="Sürücüleri yedekle"
-                            Style="{StaticResource SsSecondaryButton}"
+                    <Button Content="Yedekle"
+                            Style="{StaticResource SsSubtleButton}"
                             Command="{Binding BackupCommand}"
                             ToolTip="Tüm üçüncü parti sürücüleri dışa aktarır. Yönetici hakkı gerekir."
                             Margin="0,0,8,0" />
@@ -79,9 +163,9 @@
                     <Button Content="Donanımı oku"
                             Style="{StaticResource SsSecondaryButton}"
                             Command="{Binding LoadCommand}"
-                            Margin="0,0,8,0" MinWidth="130" />
+                            Margin="0,0,8,0" MinWidth="126" />
 
-                    <Button Content="Güncelleme ara"
+                    <Button Content="Şimdi güncelle"
                             Style="{StaticResource SsPrimaryButton}"
                             Command="{Binding CheckUpdatesCommand}"
                             MinWidth="150" />
@@ -89,188 +173,68 @@
             </Grid>
         </Border>
 
-        <!-- ==================== İçerik ==================== -->
+        <!-- ==================== Liste ==================== -->
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
             <StackPanel>
 
                 <!-- Windows Update sonucu -->
                 <Border Style="{StaticResource SsCard}" Margin="0,0,0,12"
                         Background="{DynamicResource SsSurfaceRaised}"
-                        Visibility="{Binding UpdateMessage, Converter={StaticResource StringToVisibility}}">
-                    <StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <Path Style="{StaticResource SsIcon}" Data="{StaticResource IconUpdates}"
-                                  Fill="{DynamicResource SsInfo}" VerticalAlignment="Center" />
-                            <TextBlock Text="{Binding UpdateMessage}" Style="{StaticResource SsBodyText}"
-                                       Margin="12,0,0,0" VerticalAlignment="Center" />
+                        Visibility="{Binding SourceMessage, Converter={StaticResource StringToVisibility}}">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Style="{StaticResource SsIcon}" Data="{StaticResource IconStatusInfo}"
+                              Fill="{DynamicResource SsInfo}" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding SourceMessage}" Style="{StaticResource SsBodyText}"
+                                   Margin="12,0,0,0" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Dikkat isteyenler -->
+                <StackPanel Visibility="{Binding HasAttention, Converter={StaticResource BoolToVisibility}}">
+                    <DockPanel Margin="2,0,2,10">
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <Button Content="Tümünü seç" Style="{StaticResource SsSubtleButton}"
+                                    Command="{Binding SelectAllCommand}" MinHeight="26" Padding="9,0" FontSize="11.5" />
+                            <Button Content="Hiçbiri" Style="{StaticResource SsSubtleButton}"
+                                    Command="{Binding SelectNoneCommand}" MinHeight="26" Padding="9,0" FontSize="11.5" />
                         </StackPanel>
 
-                        <ItemsControl ItemsSource="{Binding Updates}" Margin="34,12,0,0"
-                                      Visibility="{Binding HasUpdates, Converter={StaticResource BoolToVisibility}}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="{x:Type vm:DriverUpdateRowViewModel}">
-                                    <StackPanel Margin="0,0,0,8">
-                                        <TextBlock Text="{Binding Title}" Style="{StaticResource SsBodyText}" />
-                                        <TextBlock Text="{Binding Detail}" Style="{StaticResource SsCaptionText}" />
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
-                </Border>
+                        <TextBlock Text="{Binding AttentionHeader}" Style="{StaticResource SsSectionLabel}"
+                                   VerticalAlignment="Center" />
+                    </DockPanel>
 
-                <!-- Sorunlu cihazlar -->
-                <Border Style="{StaticResource SsCard}" Margin="0,0,0,12"
-                        Background="{DynamicResource SsDangerTint}"
-                        BorderBrush="{DynamicResource SsDanger}"
-                        Visibility="{Binding HasProblems, Converter={StaticResource BoolToVisibility}}">
-                    <StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                            <Path Style="{StaticResource SsIcon}" Data="{StaticResource IconStatusDanger}"
-                                  Fill="{DynamicResource SsDanger}" VerticalAlignment="Center" />
-                            <TextBlock Text="Sorun bildiren cihazlar" Style="{StaticResource SsSubtitleText}"
-                                       Margin="12,0,0,0" VerticalAlignment="Center" />
-                        </StackPanel>
+                    <ItemsControl ItemsSource="{Binding Attention}"
+                                  ItemTemplate="{StaticResource DriverRowTemplate}" />
+                </StackPanel>
 
-                        <ItemsControl ItemsSource="{Binding ProblemDevices}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="{x:Type vm:DeviceRowViewModel}">
-                                    <StackPanel Margin="34,0,0,10">
-                                        <TextBlock Text="{Binding Name}" Style="{StaticResource SsBodyText}" />
-                                        <TextBlock Text="{Binding ProblemDescription}"
-                                                   Style="{StaticResource SsCaptionText}"
-                                                   Foreground="{DynamicResource SsDanger}" />
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
-                </Border>
-
-                <!-- Eski sürücüler -->
-                <Border Style="{StaticResource SsCard}" Margin="0,0,0,12"
-                        Visibility="{Binding HasAging, Converter={StaticResource BoolToVisibility}}">
-                    <StackPanel>
-                        <TextBlock Text="İKİ YILDAN ESKİ SÜRÜCÜLER" Style="{StaticResource SsSectionLabel}" />
-                        <TextBlock Style="{StaticResource SsCaptionText}" Margin="0,4,0,12"
-                                   Text="Eski olması sorunlu olduğu anlamına gelmez. Bir şey çalışmıyorsa ya da oyun başarımı düşükse önce bunlara bakılır." />
-
-                        <ItemsControl ItemsSource="{Binding AgingDevices}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="{x:Type vm:DeviceRowViewModel}">
-                                    <Grid Margin="0,0,0,8">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
-
-                                        <StackPanel Grid.Column="0">
-                                            <TextBlock Text="{Binding Name}" Style="{StaticResource SsBodyText}" />
-                                            <TextBlock Text="{Binding ProviderLabel}" Style="{StaticResource SsCaptionText}" />
-                                        </StackPanel>
-
-                                        <TextBlock Grid.Column="1" Text="{Binding VersionLabel}"
-                                                   Style="{StaticResource SsMonoText}"
-                                                   VerticalAlignment="Center" Margin="16,0" />
-
-                                        <Border Grid.Column="2" Style="{StaticResource SsBadge}"
-                                                Background="{DynamicResource SsCautionTint}"
-                                                VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding AgeLabel}" FontSize="11" FontWeight="SemiBold"
-                                                       Foreground="{DynamicResource SsCaution}" />
-                                        </Border>
-                                    </Grid>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
-                </Border>
-
-                <!-- Tüm cihazlar -->
-                <Border Style="{StaticResource SsCard}" Padding="0"
+                <!-- Güncel olanlar: katlanmış -->
+                <Border Style="{StaticResource SsCard}" Padding="0" Margin="0,10,0,0"
                         Visibility="{Binding HasLoaded, Converter={StaticResource BoolToVisibility}}">
                     <StackPanel>
-                        <Border Padding="20,14" BorderBrush="{DynamicResource SsBorder}" BorderThickness="0,0,0,1">
-                            <TextBlock Text="TÜM CİHAZLAR" Style="{StaticResource SsSectionLabel}" />
-                        </Border>
+                        <Button Style="{StaticResource SsSubtleButton}"
+                                Command="{Binding ToggleUpToDateCommand}"
+                                HorizontalContentAlignment="Left"
+                                HorizontalAlignment="Stretch"
+                                MinHeight="44" Padding="20,0">
+                            <StackPanel Orientation="Horizontal">
+                                <Path Data="{StaticResource IconStatusGood}" Fill="{DynamicResource SsGood}"
+                                      Stretch="Uniform" Width="16" Height="16" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding UpToDateHeader}" Margin="10,0,0,0"
+                                           VerticalAlignment="Center" FontWeight="SemiBold" />
+                            </StackPanel>
+                        </Button>
 
-                        <ItemsControl ItemsSource="{Binding Groups}" Margin="8">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="{x:Type vm:DeviceGroupViewModel}">
-                                    <Expander IsExpanded="{Binding IsExpanded}" Margin="0,0,0,2" Background="Transparent">
-                                        <Expander.Header>
-                                            <Grid Margin="0,6">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition Width="Auto" />
-                                                </Grid.ColumnDefinitions>
-
-                                                <TextBlock Grid.Column="0" Text="{Binding Title}"
-                                                           Style="{StaticResource SsBodyText}"
-                                                           FontWeight="SemiBold" VerticalAlignment="Center" />
-
-                                                <Border Grid.Column="1" Style="{StaticResource SsBadge}"
-                                                        Background="{DynamicResource SsDangerTint}"
-                                                        Margin="0,0,10,0"
-                                                        Visibility="{Binding HasProblems, Converter={StaticResource BoolToVisibility}}">
-                                                    <TextBlock Text="{Binding ProblemLabel}" FontSize="11"
-                                                               FontWeight="SemiBold"
-                                                               Foreground="{DynamicResource SsDanger}" />
-                                                </Border>
-
-                                                <TextBlock Grid.Column="2" Text="{Binding CountLabel}"
-                                                           Style="{StaticResource SsCaptionText}"
-                                                           VerticalAlignment="Center" Margin="0,0,12,0" />
-                                            </Grid>
-                                        </Expander.Header>
-
-                                        <ItemsControl ItemsSource="{Binding Devices}" Margin="24,4,0,10">
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate DataType="{x:Type vm:DeviceRowViewModel}">
-                                                    <Grid Margin="0,0,0,6">
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="*" />
-                                                            <ColumnDefinition Width="Auto" />
-                                                            <ColumnDefinition Width="Auto" />
-                                                        </Grid.ColumnDefinitions>
-
-                                                        <StackPanel Grid.Column="0">
-                                                            <TextBlock Text="{Binding Name}"
-                                                                       Style="{StaticResource SsBodyText}"
-                                                                       TextTrimming="CharacterEllipsis" />
-                                                            <TextBlock Text="{Binding ProblemDescription}"
-                                                                       Style="{StaticResource SsCaptionText}"
-                                                                       Foreground="{DynamicResource SsDanger}"
-                                                                       Visibility="{Binding HasProblem, Converter={StaticResource BoolToVisibility}}" />
-                                                        </StackPanel>
-
-                                                        <TextBlock Grid.Column="1" Text="{Binding VersionLabel}"
-                                                                   Style="{StaticResource SsMonoText}"
-                                                                   VerticalAlignment="Center"
-                                                                   MinWidth="130" Margin="12,0" />
-
-                                                        <TextBlock Grid.Column="2" Text="{Binding DateLabel}"
-                                                                   Style="{StaticResource SsCaptionText}"
-                                                                   VerticalAlignment="Center"
-                                                                   MinWidth="86" TextAlignment="Right"
-                                                                   Margin="0,0,12,0" />
-                                                    </Grid>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-                                    </Expander>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                        <ItemsControl ItemsSource="{Binding UpToDate}"
+                                      ItemTemplate="{StaticResource DriverRowTemplate}"
+                                      Margin="14,0,14,14"
+                                      Visibility="{Binding ShowUpToDate, Converter={StaticResource BoolToVisibility}}" />
                     </StackPanel>
                 </Border>
             </StackPanel>
         </ScrollViewer>
 
         <!-- ==================== Durum ==================== -->
-        <Border Grid.Row="3" Style="{StaticResource SsCard}" Margin="0,16,0,0"
+        <Border Grid.Row="3" Style="{StaticResource SsCard}" Margin="0,14,0,0"
                 Background="{DynamicResource SsSurfaceRaised}"
                 Visibility="{Binding StatusMessage, Converter={StaticResource StringToVisibility}}">
             <TextBlock Text="{Binding StatusMessage}" Style="{StaticResource SsBodyText}" />
