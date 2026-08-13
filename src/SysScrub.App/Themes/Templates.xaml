@@ -7,6 +7,7 @@
 
     <conv:GeometryKeyConverter x:Key="GeometryKey" />
     <conv:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibility" />
+    <conv:LocKeyConverter x:Key="Loc" />
     <views:PageTemplateSelector x:Key="PageTemplateSelector" />
 
     <!-- ==================== Yan menü öğesi ==================== -->
@@ -26,7 +27,7 @@
                   VerticalAlignment="Center" />
 
             <TextBlock Grid.Column="1"
-                       Text="{Binding Title}"
+                       Text="{Binding TitleKey, Converter={StaticResource Loc}}"
                        Margin="12,0,0,0"
                        VerticalAlignment="Center"
                        TextTrimming="CharacterEllipsis" />

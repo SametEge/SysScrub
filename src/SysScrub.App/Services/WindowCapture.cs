@@ -16,11 +16,18 @@ internal static class WindowCapture
 {
     private const string Switch = "--screenshot=";
     private const string PageSwitch = "--page=";
+    private const string LanguageSwitch = "--lang=";
 
     public static string? PathFromArgs(IReadOnlyList<string> args) => ValueOf(args, Switch);
 
     /// <summary>Ekran görüntüsü alınırken hangi modülün açık olacağı.</summary>
     public static string? PageFromArgs(IReadOnlyList<string> args) => ValueOf(args, PageSwitch);
+
+    /// <summary>
+    /// Dili geçici olarak değiştirir; ayar dosyasına yazılmaz. Çeviri denemek ve
+    /// her dilde ekran görüntüsü almak için.
+    /// </summary>
+    public static string? LanguageFromArgs(IReadOnlyList<string> args) => ValueOf(args, LanguageSwitch);
 
     private static string? ValueOf(IReadOnlyList<string> args, string prefix)
     {

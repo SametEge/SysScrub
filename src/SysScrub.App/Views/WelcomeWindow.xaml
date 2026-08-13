@@ -1,0 +1,295 @@
+<ui:FluentWindow x:Class="SysScrub.App.Views.WelcomeWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                 xmlns:conv="clr-namespace:SysScrub.App.Converters"
+                 xmlns:loc="clr-namespace:SysScrub.App.Localization"
+                 xmlns:vm="clr-namespace:SysScrub.App.ViewModels"
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 mc:Ignorable="d"
+                 d:DataContext="{d:DesignInstance vm:WelcomeViewModel}"
+                 Title="SysScrub"
+                 Width="880" Height="660"
+                 MinWidth="760" MinHeight="600"
+                 WindowStartupLocation="CenterScreen"
+                 ExtendsContentIntoTitleBar="True"
+                 WindowBackdropType="Mica"
+                 WindowCornerPreference="Round"
+                 ResizeMode="CanResize">
+
+    <ui:FluentWindow.Resources>
+        <conv:GeometryKeyConverter x:Key="GeometryKey" />
+        <conv:BoolToVisibilityConverter x:Key="BoolToVisibility" />
+        <conv:LocKeyConverter x:Key="Loc" />
+        <conv:StepDotConverter x:Key="StepDot" />
+    </ui:FluentWindow.Resources>
+
+    <Grid Background="{DynamicResource SsGround}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- ==================== Başlık çubuğu ==================== -->
+        <ui:TitleBar Grid.Row="0" Title="SysScrub" ShowMaximize="False" ShowMinimize="False" />
+
+        <!-- ==================== Adımlar ==================== -->
+        <Grid Grid.Row="1" Margin="44,10,44,0">
+
+            <!-- 1 · Dil -->
+            <StackPanel Visibility="{Binding IsLanguageStep, Converter={StaticResource BoolToVisibility}}">
+                <Border Width="66" Height="66" CornerRadius="{StaticResource SsRadiusPanel}"
+                        Background="{DynamicResource SsAccentTint}" HorizontalAlignment="Left">
+                    <Image Source="pack://application:,,,/Assets/SysScrub.ico" Width="38" Height="38" />
+                </Border>
+
+                <TextBlock Text="{loc:Str Ob_Title}" Style="{StaticResource SsDisplayText}" Margin="0,20,0,0" />
+
+                <TextBlock Text="{loc:Str Ob_Lang_Title}" Style="{StaticResource SsTitleText}" Margin="0,18,0,0" />
+                <TextBlock Text="{loc:Str Ob_Lang_Subtitle}" Style="{StaticResource SsSecondaryText}"
+                           Margin="0,6,0,0" TextWrapping="Wrap" MaxWidth="620" HorizontalAlignment="Left" />
+
+                <TextBlock Text="{Binding DetectedLabel}" Style="{StaticResource SsCaptionText}"
+                           Margin="0,10,0,0" />
+
+                <ItemsControl ItemsSource="{Binding Languages}" Margin="0,18,0,0">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type vm:LanguageChoiceViewModel}">
+                            <Button Command="{Binding DataContext.ChooseLanguageCommand,
+                                              RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                    CommandParameter="{Binding}"
+                                    Margin="0,0,10,10" Padding="20,13" MinWidth="176"
+                                    HorizontalContentAlignment="Left">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource SsSubtleButton}">
+                                        <Setter Property="MinHeight" Value="0" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="Background" Value="{DynamicResource SsAccentTint}" />
+                                                <Setter Property="Foreground" Value="{DynamicResource SsAccentText}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding NativeName}" FontSize="15" FontWeight="SemiBold" />
+
+                                        <!-- Eksik çeviri gizlenmiyor: kullanıcı ne seçtiğini bilsin. -->
+                                        <Border Style="{StaticResource SsBadge}" Margin="9,0,0,0" Padding="6,1"
+                                                VerticalAlignment="Center"
+                                                Background="{DynamicResource SsSurfaceHover}"
+                                                Visibility="{Binding ShowCoverage, Converter={StaticResource BoolToVisibility}}">
+                                            <TextBlock Text="{Binding CoverageLabel}" FontSize="10"
+                                                       Foreground="{DynamicResource SsTextSecondary}" />
+                                        </Border>
+                                    </StackPanel>
+
+                                    <TextBlock Text="{loc:Str Ob_Lang_Badge}" Style="{StaticResource SsCaptionText}"
+                                               Margin="0,3,0,0" FontSize="10.5"
+                                               Visibility="{Binding IsDetected, Converter={StaticResource BoolToVisibility}}" />
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Border Style="{StaticResource SsCard}" Margin="0,10,0,0" MaxWidth="640"
+                        HorizontalAlignment="Left"
+                        Background="{DynamicResource SsSurfaceRaised}"
+                        Visibility="{Binding ShowCoverage, Converter={StaticResource BoolToVisibility}}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding CoverageLabel}" Style="{StaticResource SsBodyText}"
+                                   FontWeight="SemiBold" />
+                        <TextBlock Text="{loc:Str Ob_Lang_Note}" Style="{StaticResource SsCaptionText}"
+                                   Margin="0,5,0,0" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- 2 · Modüller -->
+            <Grid Visibility="{Binding IsModulesStep, Converter={StaticResource BoolToVisibility}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0">
+                    <TextBlock Text="{loc:Str Ob_Modules_Title}" Style="{StaticResource SsDisplayText}" />
+                    <TextBlock Text="{loc:Str Ob_Modules_Subtitle}" Style="{StaticResource SsSecondaryText}"
+                               Margin="0,8,0,16" TextWrapping="Wrap" MaxWidth="700" HorizontalAlignment="Left" />
+                </StackPanel>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="0,0,8,0">
+                    <ItemsControl ItemsSource="{Binding Modules}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type vm:ModuleIntro}">
+                                <Grid Margin="0,0,0,13">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Grid.Column="0" Width="38" Height="38" Margin="0,0,15,0"
+                                            VerticalAlignment="Top"
+                                            CornerRadius="{StaticResource SsRadiusSmall}"
+                                            Background="{DynamicResource SsSurfaceHover}">
+                                        <Path Data="{Binding IconKey, Converter={StaticResource GeometryKey}}"
+                                              Fill="{DynamicResource SsAccent}"
+                                              Stretch="Uniform" Width="19" Height="19"
+                                              HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="{Binding TitleKey, Converter={StaticResource Loc}}"
+                                                   Style="{StaticResource SsBodyText}" FontWeight="SemiBold" />
+                                        <TextBlock Text="{Binding BodyKey, Converter={StaticResource Loc}}"
+                                                   Style="{StaticResource SsCaptionText}"
+                                                   Margin="0,3,0,0" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+
+            <!-- 3 · Güvenlik -->
+            <StackPanel Visibility="{Binding IsSafetyStep, Converter={StaticResource BoolToVisibility}}">
+                <Border Width="66" Height="66" CornerRadius="{StaticResource SsRadiusPanel}"
+                        Background="{DynamicResource SsGoodTint}" HorizontalAlignment="Left">
+                    <Path Data="{StaticResource IconStatusGood}" Fill="{DynamicResource SsGood}"
+                          Stretch="Uniform" Width="32" Height="32"
+                          HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+
+                <TextBlock Text="{loc:Str Ob_Safety_Title}" Style="{StaticResource SsDisplayText}" Margin="0,20,0,0" />
+                <TextBlock Text="{loc:Str Ob_Safety_Subtitle}" Style="{StaticResource SsSecondaryText}"
+                           Margin="0,8,0,20" TextWrapping="Wrap" MaxWidth="700" HorizontalAlignment="Left" />
+
+                <ItemsControl ItemsSource="{Binding SafetyPoints}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type vm:SafetyPoint}">
+                            <Border Style="{StaticResource SsCard}" Margin="0,0,0,8" MaxWidth="700"
+                                    HorizontalAlignment="Left"
+                                    Background="{DynamicResource SsSurfaceRaised}">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding TitleKey, Converter={StaticResource Loc}}"
+                                               Style="{StaticResource SsBodyText}" FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding BodyKey, Converter={StaticResource Loc}}"
+                                               Style="{StaticResource SsCaptionText}"
+                                               Margin="0,4,0,0" TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
+            <!-- 4 · Gizlilik ve başlangıç -->
+            <StackPanel Visibility="{Binding IsPrivacyStep, Converter={StaticResource BoolToVisibility}}">
+                <TextBlock Text="{loc:Str Ob_Privacy_Title}" Style="{StaticResource SsDisplayText}" />
+                <TextBlock Text="{loc:Str Ob_Privacy_Subtitle}" Style="{StaticResource SsSecondaryText}"
+                           Margin="0,8,0,18" TextWrapping="Wrap" MaxWidth="700" HorizontalAlignment="Left" />
+
+                <ItemsControl ItemsSource="{Binding PrivacyPoints}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                <Ellipse Width="6" Height="6" Margin="0,8,12,0" VerticalAlignment="Top"
+                                         Fill="{DynamicResource SsAccent}" />
+                                <TextBlock Text="{Binding Converter={StaticResource Loc}}"
+                                           Style="{StaticResource SsBodyText}"
+                                           TextWrapping="Wrap" MaxWidth="660" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Rectangle Style="{StaticResource SsSeparator}" Height="1" Margin="0,14,0,18" MaxWidth="700"
+                           HorizontalAlignment="Left" />
+
+                <TextBlock Text="{loc:Str Ob_Ready_Title}" Style="{StaticResource SsTitleText}" />
+                <TextBlock Text="{loc:Str Ob_Ready_Subtitle}" Style="{StaticResource SsSecondaryText}"
+                           Margin="0,6,0,0" TextWrapping="Wrap" MaxWidth="700" HorizontalAlignment="Left" />
+
+                <Border Style="{StaticResource SsCard}" Margin="0,14,0,0" MaxWidth="700"
+                        HorizontalAlignment="Left"
+                        Background="{DynamicResource SsCautionTint}"
+                        Visibility="{Binding ShowAdminHint, Converter={StaticResource BoolToVisibility}}">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Style="{StaticResource SsIcon}" Data="{StaticResource IconStatusCaution}"
+                              Fill="{DynamicResource SsCaution}" VerticalAlignment="Top" Margin="0,2,0,0" />
+                        <TextBlock Text="{loc:Str Ob_Ready_Admin}" Style="{StaticResource SsCaptionText}"
+                                   Margin="12,0,0,0" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+
+        <!-- ==================== Alt çubuk ==================== -->
+        <Border Grid.Row="2" Padding="44,18" Background="{DynamicResource SsSurface}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Adım göstergesi: kullanıcı nerede olduğunu görsün -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding StepLabel}" Style="{StaticResource SsCaptionText}"
+                               VerticalAlignment="Center" Margin="0,0,14,0" />
+
+                    <Ellipse Width="7" Height="7" Margin="0,0,6,0"
+                             Fill="{Binding IsLanguageStep, Converter={StaticResource StepDot}}" />
+                    <Ellipse Width="7" Height="7" Margin="0,0,6,0"
+                             Fill="{Binding IsModulesStep, Converter={StaticResource StepDot}}" />
+                    <Ellipse Width="7" Height="7" Margin="0,0,6,0"
+                             Fill="{Binding IsSafetyStep, Converter={StaticResource StepDot}}" />
+                    <Ellipse Width="7" Height="7"
+                             Fill="{Binding IsPrivacyStep, Converter={StaticResource StepDot}}" />
+                </StackPanel>
+
+                <Button Grid.Column="1" Content="{loc:Str Common_Skip}"
+                        Style="{StaticResource SsSubtleButton}"
+                        Command="{Binding SkipCommand}"
+                        HorizontalAlignment="Left" Margin="24,0,0,0"
+                        Visibility="{Binding IsLastStep, Converter={StaticResource InverseBoolToVisibility}}" />
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Button Content="{loc:Str Common_Back}"
+                            Style="{StaticResource SsSecondaryButton}"
+                            Command="{Binding BackCommand}"
+                            MinWidth="112" Margin="0,0,10,0"
+                            Visibility="{Binding CanGoBack, Converter={StaticResource BoolToVisibility}}" />
+
+                    <Button Style="{StaticResource SsPrimaryButton}"
+                            Command="{Binding NextCommand}" MinWidth="150">
+                        <TextBlock>
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Text" Value="{loc:Str Common_Next}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsLastStep}" Value="True">
+                                            <Setter Property="Text" Value="{loc:Str Common_Start}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+
+</ui:FluentWindow>

@@ -7,6 +7,49 @@ Release notları bu dosyanın ilgili sürüm bölümünden otomatik üretilir.
 
 ---
 
+## [0.11.0-alpha] — 2026-08-13
+
+Çok dilli altyapı ve arayüzü anlatan ilk açılış turu.
+
+### Eklenenler
+
+- **Otomatik dil saptama** — Windows'un dili okunuyor ve önceden seçiliyor.
+  Eşleştirme kademeli: önce tam ad ("zh-Hans"), sonra iki harfli kod ("zh").
+  Windows "zh-Hans-CN" gibi bölgeli adlar verdiği için tam eşitlik arayan bir
+  kontrol hiçbirini bulamazdı
+- **6 dil kataloğu** — Türkçe, İngilizce, Almanca, Japonca, Korece, Basitleştirilmiş
+  Çince. Karşılama turu, gezinme ve Ayarlar altı dilde tam
+- **Canlı dil değişimi** — yeniden başlatma gerekmiyor. Sayı ve tarih biçimleri de
+  dile uyuyor; yalnızca metin çevirmek yarım iş olurdu
+- **İlk açılış turu** — dört adım: dil seçimi, arayüzde ne olduğu (dokuz modül tek
+  tek), geri alınabilirliğin üç katmanı, gizlilik sözü. Ayarlar'dan tekrar açılabiliyor
+- **Ayarlar'da dil seçici** — "Otomatik" dahil, her dilin çeviri kapsamı yanında
+- **`docs/ROADMAP.md`** — durum, sıralı iş listesi, bilinen eksikler, değişmeyen
+  ilkeler ve katkı rehberi
+
+### Neden .resx değil de JSON
+
+resx'in XML gövdesi çevirmen için okunmaz ve bir dil eklemek yüzlerce satırlık XML
+demek. Kataloglar `data/i18n/` altında düz JSON: bir dile katkı vermek tek dosya
+göndermekten ibaret, kod değişikliği gerekmiyor.
+
+### Eksik çeviri gizlenmiyor
+
+Modül ekranları hâlâ Türkçe; taşınacak ~1.300 dize var. Eksik anahtar hata değil,
+Türkçe karşılığına düşülüyor — çeviri parça parça ilerlerken uygulama her adımda
+çalışır kalıyor ve ekranlar çeviri geldikçe kendiliğinden dönüyor.
+
+Kapsam yüzdesi hem dil seçiminde hem Ayarlar'da yazıyor. Kullanıcı ne seçtiğini
+ve bazı ekranların neden Türkçe kaldığını biliyor.
+
+### Çeviri hataları derleme zamanında yakalanıyor
+
+Eksik yer tutucu ("{0}") çalışma anında biçimlendirmeyi bozar, fazladan olan ise
+hiç dolmayan bir metin bırakır. İkisi de ancak o dil seçilince görülürdü; katalog
+tutarlılık testleri artık ikisini de derleme zamanında yakalıyor.
+
+---
+
 ## [0.10.0-alpha] — 2026-08-13
 
 Ayarlar ekranı çalışır durumda. Artık hiçbir modül yer tutucu değil.

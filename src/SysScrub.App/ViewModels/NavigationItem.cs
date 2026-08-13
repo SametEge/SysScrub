@@ -6,7 +6,14 @@ namespace SysScrub.App.ViewModels;
 /// </summary>
 public sealed class NavigationItem
 {
+    /// <summary>
+    /// Kararlı kimlik. Ekranda gösterilmiyor — çeviri anahtarı bunun için ayrı
+    /// duruyor ki dil değişince kod içi eşleştirmeler bozulmasın.
+    /// </summary>
     public required string Title { get; init; }
+
+    /// <summary>Menüde gösterilen çevrilmiş adın anahtarı.</summary>
+    public required string TitleKey { get; init; }
 
     /// <summary>Themes/Icons.xaml içindeki Geometry anahtarı.</summary>
     public required string IconKey { get; init; }

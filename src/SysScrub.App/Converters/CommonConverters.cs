@@ -119,6 +119,31 @@ public sealed class SeverityTintConverter : IValueConverter
         throw new NotSupportedException();
 }
 
+/// <summary>
+/// Çeviri anahtarını metne çevirir.
+///
+/// XAML'deki {loc:Str …} uzantısı anahtar sabitken çalışıyor; liste öğelerinde
+/// anahtarın kendisi veriden geldiği için dönüştürücü gerekiyor.
+/// </summary>
+public sealed class LocKeyConverter : IValueConverter
+{
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        value is string key ? Localization.LocalizationService.Instance[key] : string.Empty;
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        throw new NotSupportedException();
+}
+
+/// <summary>Turdaki adım noktası: içinde bulunulan adım vurgu renginde.</summary>
+public sealed class StepDotConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        Application.Current?.TryFindResource(value is true ? "SsAccent" : "SsBorder");
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        throw new NotSupportedException();
+}
+
 /// <summary>0–1 arası oranı, parametredeki toplam genişliğe göre piksele çevirir.</summary>
 public sealed class FractionWidthConverter : IValueConverter
 {

@@ -27,6 +27,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
             new NavigationItem
             {
                 Title = "Panel",
+                TitleKey = "Nav_Dashboard",
                 IconKey = "IconDashboard",
                 Description = "Sistemin tek bakışta özeti: temizlenebilir alan, disk sağlığı, bekleyen güncellemeler ve akıllı öneriler.",
                 Phase = 0,
@@ -35,6 +36,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
             new NavigationItem
             {
                 Title = "Temizleyici",
+                TitleKey = "Nav_Cleaner",
                 IconKey = "IconCleaner",
                 Description = "Windows, tarayıcı ve uygulama artıklarını kural tabanlı tarar. Her silme karantinaya alınır ve geri alınabilir.",
                 Phase = 0,
@@ -43,6 +45,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
             new NavigationItem
             {
                 Title = "Registry",
+                TitleKey = "Nav_Registry",
                 IconKey = "IconRegistry",
                 Description = "Ölü kayıt defteri girdilerini 12 ayrı tarayıcıyla bulur. Her işlem öncesi .reg yedeği ve geri yükleme noktası alınır.",
                 Phase = 0,
@@ -51,6 +54,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
             new NavigationItem
             {
                 Title = "Sürücüler",
+                TitleKey = "Nav_Drivers",
                 IconKey = "IconDrivers",
                 Description = "Donanım envanteri, eski sürücü tespiti ve güncelleme. Kaynaklar Microsoft ve üreticinin resmi kanalları.",
                 Phase = 0,
@@ -59,6 +63,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
             new NavigationItem
             {
                 Title = "Güncellemeler",
+                TitleKey = "Nav_Updates",
                 IconKey = "IconUpdates",
                 Description = "Kurulu programların yeni sürümlerini winget üzerinden bulur ve toplu günceller.",
                 Phase = 0,
@@ -67,6 +72,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
             new NavigationItem
             {
                 Title = "Başlangıç",
+                TitleKey = "Nav_Startup",
                 IconKey = "IconStartup",
                 Description = "Açılışta çalışan her şey tek listede. Etkisi tahmin değil, olay günlüğünden okunan gerçek gecikme.",
                 Phase = 0,
@@ -75,6 +81,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
             new NavigationItem
             {
                 Title = "Programlar",
+                TitleKey = "Nav_Programs",
                 IconKey = "IconPrograms",
                 Description = "Kurulu programları toplu kaldırır, kaldırma sonrası artık dosya ve kayıtları tarar.",
                 Phase = 0,
@@ -83,6 +90,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
             new NavigationItem
             {
                 Title = "Disk sağlığı",
+                TitleKey = "Nav_DiskHealth",
                 IconKey = "IconDiskHealth",
                 Description = "S.M.A.R.T. verisi, sıcaklık geçmişi, yazılan toplam veri ve kalan ömür tahmini — sade açıklamalarla.",
                 Phase = 0,
@@ -91,6 +99,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
             new NavigationItem
             {
                 Title = "Disk analizi",
+                TitleKey = "Nav_DiskAnalysis",
                 IconKey = "IconDiskAnalysis",
                 Description = "Alanı ne yiyor? Treemap görselleştirme, en büyük dosyalar ve yinelenen dosya bulucu.",
                 Phase = 0,
@@ -99,6 +108,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
             new NavigationItem
             {
                 Title = "Zaman tüneli",
+                TitleKey = "Nav_Timeline",
                 IconKey = "IconTimeline",
                 Description = "Sistemde yapılan her değişikliğin kronolojik kaydı. Herhangi bir noktaya tek tıkla dönülür.",
                 Phase = 0,
@@ -111,6 +121,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
             new NavigationItem
             {
                 Title = "Ayarlar",
+                TitleKey = "Nav_Settings",
                 IconKey = "IconSettings",
                 Description = "Tema, dil, zamanlanmış görevler, karantina saklama süresi ve gelişmiş seçenekler.",
                 Phase = 0,

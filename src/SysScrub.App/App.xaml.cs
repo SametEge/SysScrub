@@ -4,6 +4,7 @@ using System.Windows.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using SysScrub.App.Localization;
 using SysScrub.App.Services;
 using SysScrub.App.ViewModels;
 using SysScrub.App.Views;
@@ -115,21 +116,49 @@ public partial class App : Application
                 services.AddSingleton<SettingsViewModel>();
                 services.AddSingleton<TimelineViewModel>();
                 services.AddTransient<DashboardViewModel>();
+                services.AddTransient<WelcomeViewModel>();
 
+                services.AddSingleton(_ => LocalizationService.Instance);
                 services.AddSingleton<MainWindow>();
+                services.AddTransient<WelcomeWindow>();
             })
             .Build();
 
         DispatcherUnhandledException += OnDispatcherUnhandledException;
         AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
 
+        AppSettings settings = Resolve<SettingsStore>().Current;
+
+        // Dil ilk çizimden önce yerleşmeli; sonra ayarlansa arayüz bir dilde
+        // çizilip hemen başka dile dönerdi. --lang geçici geçersiz kılma:
+        // ayar dosyasına dokunmuyor.
+        LocalizationService.Instance.Use(WindowCapture.LanguageFromArgs(e.Args) ?? settings.Language);
+
         // Kaydedilmiş tema tercihini uygula, sonra başlat: ilk çizimden önce
         // doğru palet yerinde olsun, açılışta tema atlaması olmasın.
         ThemeService theme = Resolve<ThemeService>();
-        theme.Mode = SettingsViewModel.ToThemeMode(Resolve<SettingsStore>().Current.Theme);
+        theme.Mode = SettingsViewModel.ToThemeMode(settings.Theme);
         theme.Initialize();
 
-        Log.Information("SysScrub başlatıldı, sürüm {Version}", GetType().Assembly.GetName().Version);
+        Log.Information(
+            "SysScrub başlatıldı, sürüm {Version}, dil {Culture}",
+            GetType().Assembly.GetName().Version,
+            LocalizationService.Instance.Culture);
+
+        // Ekran görüntüsü alırken tur araya girmemeli.
+        bool automated = WindowCapture.PathFromArgs(e.Args) is not null;
+
+        // Geliştirme anahtarı: turun kendisinin ekran görüntüsünü al.
+        if (automated && e.Args.Contains("--tourshot"))
+        {
+            CaptureWelcomeAndExit(WindowCapture.PathFromArgs(e.Args)!, e.Args);
+            return;
+        }
+
+        if (!settings.TourCompleted && !automated)
+        {
+            ShowWelcome();
+        }
 
         MainWindow window = Resolve<MainWindow>();
 
@@ -168,6 +197,60 @@ public partial class App : Application
                 e.Args.Contains("--diskscan"),
                 e.Args.Contains("--analyzescan"));
         }
+    }
+
+    /// <summary>
+    /// Karşılama turunu gösterir. Ana pencereden önce açılıyor: kullanıcı dilini
+    /// seçmeden arayüzü görmesin.
+    /// </summary>
+    public static void ShowWelcome()
+    {
+        WelcomeWindow welcome = Resolve<WelcomeWindow>();
+
+        welcome.ShowDialog();
+
+        // Pencere çarpıyla kapatıldıysa tur tamamlanmış sayılmıyor ve bir sonraki
+        // açılışta tekrar çıkıyor: dil seçimi atlanmış olabilir.
+        Log.Information("Karşılama turu {Result}", welcome.Completed ? "tamamlandı" : "kapatıldı");
+    }
+
+    /// <summary>
+    /// Geliştirme anahtarı: karşılama turunun belirtilen adımını yakalar.
+    /// <c>--tourstep=2</c> ile adım seçilir.
+    /// </summary>
+    private void CaptureWelcomeAndExit(string path, IReadOnlyList<string> args)
+    {
+        WelcomeWindow welcome = Resolve<WelcomeWindow>();
+
+        int step = 0;
+
+        foreach (string arg in args)
+        {
+            if (arg.StartsWith("--tourstep=", StringComparison.OrdinalIgnoreCase) &&
+                int.TryParse(arg["--tourstep=".Length..], out int parsed))
+            {
+                step = Math.Clamp(parsed, 0, WelcomeViewModel.StepCount - 1);
+            }
+        }
+
+        if (welcome.DataContext is WelcomeViewModel viewModel)
+        {
+            viewModel.Step = step;
+        }
+
+        welcome.ContentRendered += (_, _) => Dispatcher.BeginInvoke(
+            DispatcherPriority.ApplicationIdle,
+            async () =>
+            {
+                await Task.Delay(250);
+
+                WindowCapture.Save(welcome, path);
+                Log.Information("Tur ekran görüntüsü yazıldı: {Path}", path);
+
+                Shutdown();
+            });
+
+        welcome.Show();
     }
 
     /// <summary>

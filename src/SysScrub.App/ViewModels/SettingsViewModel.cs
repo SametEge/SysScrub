@@ -3,6 +3,7 @@ using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
+using SysScrub.App.Localization;
 using SysScrub.App.Services;
 using SysScrub.Core.Cleaning;
 using SysScrub.Core.Formatting;
@@ -10,6 +11,12 @@ using SysScrub.Core.Machine;
 using SysScrub.Core.Settings;
 
 namespace SysScrub.App.ViewModels;
+
+/// <summary>Ayarlardaki dil düğmesi.</summary>
+public sealed record LanguageChoice(string Culture, string Name, string CoverageLabel, bool IsSelected)
+{
+    public bool ShowCoverage => CoverageLabel.Length > 0;
+}
 
 /// <summary>
 /// Ayarlar ekranı.
@@ -22,6 +29,7 @@ public sealed partial class SettingsViewModel : ObservableObject
 {
     private readonly SettingsStore _store;
     private readonly ThemeService _theme;
+    private readonly LocalizationService _localization;
     private readonly QuarantineStore _quarantine;
     private readonly ScheduledMaintenance _maintenance;
     private readonly SystemInfoService _systemInfo;
@@ -47,6 +55,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     public SettingsViewModel(
         SettingsStore store,
         ThemeService theme,
+        LocalizationService localization,
         QuarantineStore quarantine,
         ScheduledMaintenance maintenance,
         SystemInfoService systemInfo,
@@ -54,6 +63,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     {
         _store = store;
         _theme = theme;
+        _localization = localization;
         _quarantine = quarantine;
         _maintenance = maintenance;
         _systemInfo = systemInfo;
@@ -61,6 +71,7 @@ public sealed partial class SettingsViewModel : ObservableObject
 
         IsElevated = systemInfo.Capture().IsElevated;
 
+        BuildLanguages();
         Refresh();
     }
 
@@ -298,13 +309,75 @@ public sealed partial class SettingsViewModel : ObservableObject
         }
     }
 
+    // ------------------------------------------------------------------ dil
+
+    /// <summary>Kataloglar + "otomatik" seçeneği.</summary>
+    public IReadOnlyList<LanguageChoice> Languages { get; private set; } = [];
+
     /// <summary>
-    /// Dil desteği planlı ama henüz yok. Boş bir açılır liste koymaktansa
-    /// durumu yazıyoruz: olmayan bir özelliği varmış gibi göstermek kötü.
+    /// Seçili dilin çeviri durumu. Eksik çeviriyi gizlemiyoruz: kullanıcı bazı
+    /// ekranların neden Türkçe kaldığını bilsin.
     /// </summary>
-    public string LanguageNotice =>
-        "Arayüz şu an yalnızca Türkçe. İngilizce, Almanca, Japonca, Korece ve " +
-        "Basitleştirilmiş Çince çeviriler sonraki sürümde geliyor.";
+    public string CoverageNotice
+    {
+        get
+        {
+            LanguageOption? option = _localization.Find(_localization.Culture);
+
+            return option is null || option.IsComplete
+                ? string.Empty
+                : _localization.Format("Set_Language_Coverage", option.NativeName, option.CoveragePercent);
+        }
+    }
+
+    public bool HasCoverageNotice => CoverageNotice.Length > 0;
+
+    [RelayCommand]
+    private void SetLanguage(string culture)
+    {
+        _localization.Use(culture);
+        _store.Update(s => s with { Language = culture });
+
+        BuildLanguages();
+
+        OnPropertyChanged(nameof(CoverageNotice));
+        OnPropertyChanged(nameof(HasCoverageNotice));
+        OnPropertyChanged(nameof(SystemLabel));
+    }
+
+    /// <summary>Turu tekrar açar; kullanıcı arayüz anlatımına dönebilsin.</summary>
+    [RelayCommand]
+    private void ShowTour()
+    {
+        _store.Update(s => s with { TourCompleted = false });
+
+        App.ShowWelcome();
+
+        BuildLanguages();
+        Refresh();
+    }
+
+    private void BuildLanguages()
+    {
+        string selected = _store.Current.Language;
+
+        var choices = new List<LanguageChoice>
+        {
+            new(AppSettings.AutomaticLanguage,
+                _localization["Set_Language_Auto"],
+                string.Empty,
+                selected == AppSettings.AutomaticLanguage)
+        };
+
+        choices.AddRange(_localization.Languages.Select(option => new LanguageChoice(
+            option.Culture,
+            option.NativeName,
+            option.IsComplete ? string.Empty : $"%{option.CoveragePercent}",
+            selected == option.Culture)));
+
+        Languages = choices;
+        OnPropertyChanged(nameof(Languages));
+    }
 
     // ------------------------------------------------------------------ tazeleme
 

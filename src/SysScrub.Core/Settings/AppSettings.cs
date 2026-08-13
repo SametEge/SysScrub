@@ -21,6 +21,19 @@ public sealed record AppSettings
     [JsonPropertyName("theme")]
     public ThemePreference Theme { get; init; } = ThemePreference.System;
 
+    /// <summary>
+    /// Arayüz dili. "auto" işletim sisteminin dilini kullanır — yeni kurulumda
+    /// kullanıcı hiçbir şey seçmeden kendi dilini görüyor.
+    /// </summary>
+    [JsonPropertyName("language")]
+    public string Language { get; init; } = AutomaticLanguage;
+
+    /// <summary>Karşılama turu tamamlandı mı; ilk açılışta gösterilmesini bu belirliyor.</summary>
+    [JsonPropertyName("tourCompleted")]
+    public bool TourCompleted { get; init; }
+
+    public const string AutomaticLanguage = "auto";
+
     /// <summary>Karantinadaki dosyaların kaç gün saklanacağı.</summary>
     [JsonPropertyName("quarantineRetentionDays")]
     public int QuarantineRetentionDays { get; init; } = DefaultRetentionDays;
@@ -63,7 +76,8 @@ public sealed record AppSettings
         QuarantineRetentionDays = Math.Clamp(QuarantineRetentionDays, MinimumRetentionDays, MaximumRetentionDays),
         ScheduledHour = Math.Clamp(ScheduledHour, 0, 23),
         LogRetentionDays = Math.Clamp(LogRetentionDays, 1, 365),
-        Theme = Enum.IsDefined(Theme) ? Theme : ThemePreference.System
+        Theme = Enum.IsDefined(Theme) ? Theme : ThemePreference.System,
+        Language = string.IsNullOrWhiteSpace(Language) ? AutomaticLanguage : Language.Trim()
     };
 
     public TimeSpan QuarantineRetention => TimeSpan.FromDays(QuarantineRetentionDays);

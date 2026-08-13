@@ -34,4 +34,13 @@
     <Resource Include="Assets\SysScrub.ico" />
   </ItemGroup>
 
+  <!--
+    Çeviri katalogları veri olarak duruyor: bir dile katkı vermek tek JSON dosyası
+    göndermek demek, kod değişikliği değil. Derlemeye gömülüyorlar ki tek dosya
+    yayınında da yanlarında taşınsınlar.
+  -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\data\i18n\*.json" LogicalName="SysScrub.App.Localization.%(Filename).json" />
+  </ItemGroup>
+
 </Project>
