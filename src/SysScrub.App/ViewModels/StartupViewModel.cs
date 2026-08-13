@@ -2,6 +2,8 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
+using SysScrub.App.Localization;
+using static SysScrub.App.Localization.L;
 using SysScrub.Core.Formatting;
 using SysScrub.Core.Machine;
 using SysScrub.Core.Startup;
@@ -54,7 +56,7 @@ public sealed partial class StartupRowViewModel : ObservableObject
         _ => "danger"
     };
 
-    public string ActionLabel => IsEnabled ? "Devre dışı bırak" : "Etkinleştir";
+    public string ActionLabel => T(IsEnabled ? "St_Disable" : "St_Enable");
 
     public string IconKey => Entry.Source switch
     {
@@ -66,7 +68,7 @@ public sealed partial class StartupRowViewModel : ObservableObject
 
     /// <summary>Neden değiştirilemediğinin açıklaması; salt okunur satırlarda gösterilir.</summary>
     public string ReadOnlyReason => Entry.Source == StartupSource.Service
-        ? "Servis — bu ekrandan değiştirilmez"
+        ? T("St_ServiceReadOnly")
         : string.Empty;
 
     /// <summary>Kaydın durumu değiştikten sonra satırı tazeler.</summary>
@@ -130,6 +132,9 @@ public sealed partial class StartupViewModel : ObservableObject
         _manager = manager;
         _logger = logger;
 
+        // Dil değişince tüm metinler yeniden okunmalı; boş ad her bağlamayı tazeliyor.
+        LocalizationService.Instance.LanguageChanged += (_, _) => OnPropertyChanged(string.Empty);
+
         IsElevated = systemInfo.Capture().IsElevated;
 
         Enabled = [];
@@ -150,7 +155,7 @@ public sealed partial class StartupViewModel : ObservableObject
 
     public bool HasDisabled => Disabled.Count > 0;
 
-    public string DisabledHeader => $"Kapalı ({DisabledCount})";
+    public string DisabledHeader => T("St_DisabledHeader", DisabledCount);
 
     /// <summary>Hedefi kaybolmuş öğeler; açılışta boşuna aranıyorlar.</summary>
     public int BrokenCount => Enabled.Count(r => r.TargetMissing);
@@ -158,8 +163,8 @@ public sealed partial class StartupViewModel : ObservableObject
     public bool HasBroken => BrokenCount > 0;
 
     public string BrokenMessage => BrokenCount == 1
-        ? "1 öğenin çalıştırdığı dosya artık yok. Windows her açılışta boşuna arıyor; kapatabilirsin."
-        : $"{BrokenCount} öğenin çalıştırdığı dosya artık yok. Windows her açılışta boşuna arıyor; kapatabilirsin.";
+        ? T("St_Broken1")
+        : T("St_BrokenN", BrokenCount);
 
     public bool BootMeasurementsAvailable => _report.BootMeasurementsAvailable;
 
@@ -176,12 +181,12 @@ public sealed partial class StartupViewModel : ObservableObject
         {
             if (!HasLoaded)
             {
-                return "Başlangıç öğeleri henüz okunmadı";
+                return T("St_NotRead");
             }
 
             return EnabledCount == 0
-                ? "Açılışta çalışan öğe yok"
-                : $"{EnabledCount} öğe açılışta çalışıyor";
+                ? T("St_NoneRunning")
+                : T("St_RunningCount", EnabledCount);
         }
     }
 
@@ -191,17 +196,17 @@ public sealed partial class StartupViewModel : ObservableObject
         {
             if (!HasLoaded)
             {
-                return "Kayıt defteri, başlangıç klasörleri, zamanlanmış görevler ve servisler birlikte taranır.";
+                return T("St_Intro");
             }
 
             if (!BootMeasurementsAvailable)
             {
-                return $"{DisabledCount} kapalı · açılış ölçümü bu makinede okunamadı, etki sütunu boş.";
+                return T("St_NoMeasurement", DisabledCount);
             }
 
             return HasTotalDelay
-                ? $"{DisabledCount} kapalı · ölçülen toplam gecikme {TotalDelayLabel}"
-                : $"{DisabledCount} kapalı · Windows bu öğeler için henüz gecikme ölçmemiş";
+                ? T("St_TotalDelay", DisabledCount, TotalDelayLabel)
+                : T("St_NoDelayYet", DisabledCount);
         }
     }
 
@@ -211,8 +216,8 @@ public sealed partial class StartupViewModel : ObservableObject
     private async Task LoadAsync()
     {
         IsBusy = true;
-        BusyTitle = "Başlangıç okunuyor";
-        BusyDetail = "kayıtlar, klasörler, görevler ve servisler taranıyor...";
+        BusyTitle = T("St_Busy");
+        BusyDetail = T("St_BusyDetail");
         StatusMessage = string.Empty;
 
         _cancellation = new CancellationTokenSource();
@@ -225,19 +230,17 @@ public sealed partial class StartupViewModel : ObservableObject
             HasLoaded = true;
 
             StatusMessage = _report.BootMeasurementsAvailable
-                ? $"{_report.Entries.Count} öğe okundu; açılış gecikmeleri Windows'un Tanılama-Performans " +
-                  "günlüğünden alındı."
-                : $"{_report.Entries.Count} öğe okundu. Açılış ölçümü okunamadı — Tanılama-Performans günlüğü " +
-                  "kapalı olabilir; etki sütunu bu yüzden boş.";
+                ? T("St_ReadOk", _report.Entries.Count)
+                : T("St_ReadNoLog", _report.Entries.Count);
         }
         catch (OperationCanceledException)
         {
-            StatusMessage = "Okuma iptal edildi.";
+            StatusMessage = T("Msg_Cancelled");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Başlangıç envanteri okunamadı");
-            StatusMessage = $"Başlangıç okunamadı: {ex.Message}";
+            StatusMessage = T("Err_ReadFailed", ex.Message);
         }
         finally
         {
@@ -273,19 +276,17 @@ public sealed partial class StartupViewModel : ObservableObject
 
                 Move(row, target);
 
-                StatusMessage = target
-                    ? $"{row.Name} açılışta yeniden çalışacak."
-                    : $"{row.Name} devre dışı bırakıldı. Kaydı silinmedi; istediğin an geri açabilirsin.";
+                StatusMessage = T(target ? "St_Enabled" : "St_Disabled", row.Name);
             }
             else
             {
-                row.ResultMessage = result.Message ?? "Değiştirilemedi.";
+                row.ResultMessage = result.Message ?? T("St_ChangeFailed");
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Başlangıç öğesi değiştirilemedi: {Name}", row.Name);
-            row.ResultMessage = $"Değiştirilemedi: {ex.Message}";
+            row.ResultMessage = T("St_ChangeFailedWhy", ex.Message);
         }
         finally
         {

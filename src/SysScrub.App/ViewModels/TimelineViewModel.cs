@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using SysScrub.App.Localization;
+using static SysScrub.App.Localization.L;
 using CommunityToolkit.Mvvm.Input;
 using SysScrub.Core.Cleaning;
 using SysScrub.Core.Formatting;
@@ -34,12 +36,12 @@ public sealed partial class TimelineEntryViewModel : ObservableObject
 
     public string Title => Run.Operation switch
     {
-        HistoryOperation.Clean => "Temizlik",
-        HistoryOperation.RegistryClean => "Registry temizliği",
-        HistoryOperation.DriverUpdate => "Sürücü güncellemesi",
-        HistoryOperation.StartupChange => "Başlangıç değişikliği",
-        HistoryOperation.Uninstall => "Program kaldırma",
-        _ => "İşlem"
+        HistoryOperation.Clean => T("Tl_Op_Clean"),
+        HistoryOperation.RegistryClean => T("Tl_Op_Registry"),
+        HistoryOperation.DriverUpdate => T("Tl_Op_Driver"),
+        HistoryOperation.StartupChange => T("Tl_Op_Startup"),
+        HistoryOperation.Uninstall => T("Tl_Op_Uninstall"),
+        _ => T("Tl_Op_Other")
     };
 
     public string TimeLabel => Run.StartedAt.LocalDateTime.ToString("dd MMMM yyyy, HH:mm");
@@ -50,22 +52,22 @@ public sealed partial class TimelineEntryViewModel : ObservableObject
     {
         get
         {
-            var parts = new List<string> { $"{Run.ItemsAffected:N0} öğe" };
+            var parts = new List<string> { T("Tl_Items", $"{Run.ItemsAffected:N0}") };
 
             if (Run.ItemsFailed > 0)
             {
-                parts.Add($"{Run.ItemsFailed:N0} başarısız");
+                parts.Add(T("Tl_Failed", $"{Run.ItemsFailed:N0}"));
             }
 
             if (Run.ItemsScheduledForReboot > 0)
             {
-                parts.Add($"{Run.ItemsScheduledForReboot:N0} yeniden başlatmada silinecek");
+                parts.Add(T("Tl_Reboot", $"{Run.ItemsScheduledForReboot:N0}"));
             }
 
             // Kanıtlı ölçüm: diskin gerçekten ne kadar boşaldığı.
             if (Run.MeasuredGain > 0)
             {
-                parts.Add($"diskte ölçülen {ByteSize.Format(Run.MeasuredGain)}");
+                parts.Add(T("Tl_Measured", ByteSize.Format(Run.MeasuredGain)));
             }
 
             parts.Add($"{Run.Duration.TotalSeconds:F1} sn");
@@ -74,9 +76,9 @@ public sealed partial class TimelineEntryViewModel : ObservableObject
         }
     }
 
-    public string StateLabel => WasReverted ? "geri alındı"
-        : IsReversible ? "geri alınabilir"
-        : "kalıcı";
+    public string StateLabel => T(WasReverted ? "Tl_St_Reverted"
+        : IsReversible ? "Tl_St_Reversible"
+        : "Tl_St_Permanent");
 
     public bool CanUndo => IsReversible && !WasReverted;
 }
@@ -108,7 +110,10 @@ public sealed partial class TimelineViewModel : ObservableObject
         Entries = [];
 
         Refresh();
-    }
+    
+        // Dil değişince tüm metinler yeniden okunmalı; boş ad her bağlamayı tazeliyor.
+        LocalizationService.Instance.LanguageChanged += (_, _) => OnPropertyChanged(string.Empty);
+}
 
     public ObservableCollection<TimelineEntryViewModel> Entries { get; }
 
@@ -124,11 +129,11 @@ public sealed partial class TimelineViewModel : ObservableObject
             Entries.Add(new TimelineEntryViewModel(run));
         }
 
-        EmptyMessage = "Henüz kayıtlı bir işlem yok. Temizleyiciyi çalıştırdığında yaptığın her değişiklik buraya düşecek.";
+        EmptyMessage = T("Tl_EmptyMessage");
 
         long quarantineBytes = _quarantine.TotalBytes();
         QuarantineLabel = quarantineBytes > 0
-            ? $"Karantinada {ByteSize.Format(quarantineBytes)} veri bekliyor — saklama süresi dolunca kalıcı silinir."
+            ? T("Tl_QuarantineWaiting", ByteSize.Format(quarantineBytes))
             : string.Empty;
 
         OnPropertyChanged(nameof(IsEmpty));
@@ -169,20 +174,20 @@ public sealed partial class TimelineViewModel : ObservableObject
         entry.IsReversible = false;
 
         QuarantineLabel = result.Restored > 0
-            ? $"{result.Restored:N0} dosya geri yüklendi ({ByteSize.Format(result.Bytes)})."
-            : "Geri yüklenecek dosya bulunamadı.";
+            ? T("Tl_RestoredFiles", $"{result.Restored:N0}", ByteSize.Format(result.Bytes))
+            : T("Tl_NothingToRestore");
 
         Refresh();
     }
 
     private static string DescribeOutcome(HistoryItemOutcome outcome) => outcome switch
     {
-        HistoryItemOutcome.Deleted => "silindi",
-        HistoryItemOutcome.Quarantined => "karantinada",
-        HistoryItemOutcome.RecycleBin => "geri dönüşüm kutusunda",
-        HistoryItemOutcome.ScheduledForReboot => "yeniden başlatmada silinecek",
-        HistoryItemOutcome.SkippedByGuard => "güvenlik denetimi atladı",
-        HistoryItemOutcome.Changed => "değiştirildi",
-        _ => "silinemedi"
+        HistoryItemOutcome.Deleted => T("Tl_Out_Deleted"),
+        HistoryItemOutcome.Quarantined => T("Tl_Out_Quarantined"),
+        HistoryItemOutcome.RecycleBin => T("Tl_Out_RecycleBin"),
+        HistoryItemOutcome.ScheduledForReboot => T("Tl_Out_Reboot"),
+        HistoryItemOutcome.SkippedByGuard => T("Tl_Out_Guard"),
+        HistoryItemOutcome.Changed => T("Tl_Out_Changed"),
+        _ => T("Tl_Out_Failed")
     };
 }

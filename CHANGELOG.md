@@ -7,6 +7,34 @@ Release notları bu dosyanın ilgili sürüm bölümünden otomatik üretilir.
 
 ---
 
+## [0.13.0-alpha] — 2026-08-13
+
+Görünüm modellerinin ürettiği bütün cümleler çeviriye taşındı.
+
+### Eklenenler
+
+- **12 görünüm modelinin tamamı** — özet başlıkları, durum satırları, işlem
+  örtülerindeki metinler, ölçüm kutuları, hata mesajları ve ipuçları. 216 yeni
+  anahtar, altı dilde
+- **Kategori ve grup başlıkları** — `Tarayıcılar`, `Oyun platformları`,
+  `Geçici dosyalar`, `Önbellekler` ve diğerleri
+- **Zaman tüneli işlem adları**, disk sağlığı durum etiketleri, sürücü durum
+  rozetleri, risk rozetleri
+- Dil değişince her görünüm modeli kendini tazeliyor: boş özellik adıyla
+  bildirim göndermek o nesnedeki tüm bağlamaları yeniden okutuyor
+
+### Kapsam
+
+Arayüzün tamamı altı dilde. Kalan tek yer **temizleme kurallarının adları ve
+açıklamaları**: `data/rules/*.json` içinde yalnızca Türkçe ve İngilizce var,
+diğer dört dilde Türkçe'ye düşüyorlar. 48 kural × 2 alan × 4 dil = 384 çeviri,
+ayrı bir adım.
+
+Gösterilmeyen kimlikler (`Id`) bilerek Türkçe kaldı: ekranda görünmüyorlar ve
+kod içi eşleştirmelerde kullanıldıkları için sabit olmaları gerekiyor.
+
+---
+
 ## [0.12.0-alpha] — 2026-08-13
 
 Dil değişimi artık gerçekten her sayfada çalışıyor.

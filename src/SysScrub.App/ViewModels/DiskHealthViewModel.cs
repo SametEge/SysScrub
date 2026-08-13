@@ -2,6 +2,8 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
+using SysScrub.App.Localization;
+using static SysScrub.App.Localization.L;
 using SysScrub.Core.Disks;
 using SysScrub.Core.Formatting;
 
@@ -72,6 +74,9 @@ public sealed partial class DiskHealthViewModel : ObservableObject
         _inventory = inventory;
         _logger = logger;
 
+        // Dil değişince tüm metinler yeniden okunmalı; boş ad her bağlamayı tazeliyor.
+        LocalizationService.Instance.LanguageChanged += (_, _) => OnPropertyChanged(string.Empty);
+
         Disks = [];
         Metrics = [];
         Attributes = [];
@@ -116,8 +121,8 @@ public sealed partial class DiskHealthViewModel : ObservableObject
             {
                 disk.CapacityLabel,
                 disk.BusType,
-                disk.IsSolidState ? "Katı hal (SSD)" : "Dönen disk (HDD)",
-                disk.FirmwareRevision is { Length: > 0 } fw ? $"bellenim {fw}" : null
+                T(disk.IsSolidState ? "Dh_Ssd" : "Dh_Hdd"),
+                disk.FirmwareRevision is { Length: > 0 } fw ? T("Dh_Firmware", fw) : null
             }.Where(p => !string.IsNullOrWhiteSpace(p)).ToArray()!;
 
             return string.Join("  ·  ", parts);
@@ -139,7 +144,7 @@ public sealed partial class DiskHealthViewModel : ObservableObject
         : 0;
 
     public string UsedLifeLabel => SelectedDisk?.Nvme is { } nvme
-        ? $"Yazma ömrünün %{nvme.PercentageUsed}'i tüketildi"
+        ? T("Dh_UsedLife", nvme.PercentageUsed)
         : string.Empty;
 
     public bool HasUsedLife => SelectedDisk?.Nvme is not null;
@@ -150,14 +155,14 @@ public sealed partial class DiskHealthViewModel : ObservableObject
         {
             if (!HasLoaded)
             {
-                return "Diskler henüz okunmadı";
+                return T("Dh_NotRead");
             }
 
             return Disks.Count switch
             {
-                0 => "Fiziksel disk bulunamadı",
-                1 => "1 disk bulundu",
-                _ => $"{Disks.Count} disk bulundu"
+                0 => T("Dh_NoDisks"),
+                1 => T("Dh_DiskCount1"),
+                _ => T("Dh_DiskCountN", Disks.Count)
             };
         }
     }
@@ -168,12 +173,12 @@ public sealed partial class DiskHealthViewModel : ObservableObject
         {
             if (!HasLoaded)
             {
-                return "S.M.A.R.T. verisi diskin kendisinden okunur; hiçbir şeye yazılmaz.";
+                return T("Dh_Intro");
             }
 
             return _report.ReadableCount == Disks.Count
-                ? $"{_report.ReadableCount} diskin sağlık verisi okundu."
-                : $"{_report.ReadableCount} / {Disks.Count} diskin sağlık verisi okunabildi.";
+                ? T("Dh_AllRead", _report.ReadableCount)
+                : T("Dh_PartialRead", _report.ReadableCount, Disks.Count);
         }
     }
 
@@ -206,19 +211,17 @@ public sealed partial class DiskHealthViewModel : ObservableObject
             Select(Disks.FirstOrDefault(d => d.Model == previous) ?? Disks.FirstOrDefault());
 
             StatusMessage = _report.IsElevated
-                ? $"{Disks.Count} disk okundu " +
-                  $"({DurationText.FromMilliseconds((int)_report.Duration.TotalMilliseconds)})."
-                : "Disk kimlikleri okundu. S.M.A.R.T. verisi için uygulamanın yönetici olarak " +
-                  "çalışması gerekiyor.";
+                ? T("Dh_ReadOk", Disks.Count, DurationText.FromMilliseconds((int)_report.Duration.TotalMilliseconds))
+                : T("Dh_ReadNoAdmin");
         }
         catch (OperationCanceledException)
         {
-            StatusMessage = "Okuma iptal edildi.";
+            StatusMessage = T("Msg_Cancelled");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Disk sağlığı okunamadı");
-            StatusMessage = $"Diskler okunamadı: {ex.Message}";
+            StatusMessage = T("Err_ReadFailed", ex.Message);
         }
         finally
         {
@@ -290,24 +293,24 @@ public sealed partial class DiskHealthViewModel : ObservableObject
         if (disk.TemperatureCelsius is > 0 and var temperature)
         {
             yield return new DiskMetric(
-                "Sıcaklık",
+                T("Dh_M_Temp"),
                 $"{temperature} °C",
-                temperature >= 70 ? "Uzun vadede ömrü kısaltan seviye" : "Normal aralıkta",
+                T(temperature >= 70 ? "Dh_M_TempHigh" : "Dh_M_TempOk"),
                 temperature >= 80 ? "danger" : temperature >= 70 ? "caution" : "good");
         }
 
         if (disk.PowerOnHours is > 0 and var hours)
         {
             yield return new DiskMetric(
-                "Açık kalma süresi",
+                T("Dh_M_Uptime"),
                 DurationText.Humanize(TimeSpan.FromHours(hours)),
-                $"{hours:N0} saat",
+                T("Dh_M_Hours", $"{hours:N0}"),
                 "none");
         }
 
         if (disk.PowerCycles is > 0 and var cycles)
         {
-            yield return new DiskMetric("Açılma sayısı", $"{cycles:N0}", string.Empty, "none");
+            yield return new DiskMetric(T("Dh_M_Cycles"), $"{cycles:N0}", string.Empty, "none");
         }
 
         if (disk.Nvme is not { } nvme)
@@ -316,43 +319,43 @@ public sealed partial class DiskHealthViewModel : ObservableObject
         }
 
         yield return new DiskMetric(
-            "Yazılan toplam veri",
+            T("Dh_M_Written"),
             ByteSize.Format(nvme.BytesWritten),
-            $"okunan {ByteSize.Format(nvme.BytesRead)}",
+            T("Dh_M_Read", ByteSize.Format(nvme.BytesRead)),
             "none");
 
         yield return new DiskMetric(
-            "Kalan ömür",
+            T("Dh_M_Life"),
             $"%{Math.Clamp(100 - nvme.PercentageUsed, 0, 100)}",
-            nvme.PercentageUsed >= 80 ? "Değişim planlanmalı" : "Üreticinin öngördüğü yazma ömrüne göre",
+            T(nvme.PercentageUsed >= 80 ? "Dh_M_LifePlan" : "Dh_M_LifeOk"),
             nvme.PercentageUsed >= 100 ? "danger" : nvme.PercentageUsed >= 80 ? "caution" : "good");
 
         yield return new DiskMetric(
-            "Kalan yedek blok",
+            T("Dh_M_Spare"),
             $"%{nvme.AvailableSpare}",
-            $"üreticinin eşiği %{nvme.AvailableSpareThreshold}",
+            T("Dh_M_SpareThreshold", nvme.AvailableSpareThreshold),
             nvme.AvailableSpare <= nvme.AvailableSpareThreshold ? "danger" : "good");
 
         yield return new DiskMetric(
-            "Ani kapanma",
+            T("Dh_M_Unsafe"),
             $"{nvme.UnsafeShutdowns:N0}",
-            "Elektriğin düzgün kesilmediği durum sayısı",
+            T("Dh_M_UnsafeBody"),
             "none");
 
         yield return new DiskMetric(
-            "Düzeltilemeyen hata",
+            T("Dh_M_Errors"),
             $"{nvme.MediaErrors:N0}",
-            nvme.MediaErrors > 0 ? "Veri kaybı olmuş olabilir" : "Veri bütünlüğü sorunu yok",
+            T(nvme.MediaErrors > 0 ? "Dh_M_ErrorsBad" : "Dh_M_ErrorsOk"),
             nvme.MediaErrors > 0 ? "danger" : "good");
 
         if (nvme.SensorsCelsius.Count > 0)
         {
             yield return new DiskMetric(
-                "Ek sıcaklık sensörleri",
+                T("Dh_M_Sensors"),
                 string.Join(" · ", nvme.SensorsCelsius.Select(s => $"{s} °C")),
                 // Bileşik sıcaklık üreticiye özel bir hesap; sensörlerin en yükseği
                 // olmak zorunda değil. Bu yüzden sağlık kararına katılmıyorlar.
-                "Denetleyici ve bellek sensörleri; sağlık kararına katılmaz",
+                T("Dh_M_SensorsBody"),
                 "none");
         }
     }
@@ -361,10 +364,10 @@ public sealed partial class DiskHealthViewModel : ObservableObject
 
     internal static string Describe(DiskHealthStatus status) => status switch
     {
-        DiskHealthStatus.Good => "İyi",
-        DiskHealthStatus.Caution => "Dikkat",
-        DiskHealthStatus.Bad => "Kötü",
-        _ => "Bilinmiyor"
+        DiskHealthStatus.Good => T("Dh_S_Good"),
+        DiskHealthStatus.Caution => T("Dh_S_Caution"),
+        DiskHealthStatus.Bad => T("Dh_S_Bad"),
+        _ => T("Dh_S_Unknown")
     };
 
     internal static string SeverityOf(DiskHealthStatus status) => status switch

@@ -2,6 +2,8 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
+using SysScrub.App.Localization;
+using static SysScrub.App.Localization.L;
 using SysScrub.Core.Drivers;
 using SysScrub.Core.Machine;
 
@@ -67,18 +69,17 @@ public sealed partial class DriverRowViewModel : ObservableObject
     public string AvailableTooltip => Row.Status switch
     {
         DriverStatus.UpdateAvailable =>
-            "Windows Update bu sürücünün yenisini sunuyor.",
+            T("Dr_TipAvailable"),
         DriverStatus.PossiblyOutdated =>
-            "Windows Update yenisini sunmuyor. Sürücü eski ama üreticinin sitesinde " +
-            "daha yenisi olabilir; Microsoft Update Catalog ve üretici sorgusu bir sonraki adımda geliyor.",
-        _ => "Bilinen bir kaynakta daha yenisi yok."
+            T("Dr_TipMaybeOld"),
+        _ => T("Dr_TipCurrent")
     };
 
     /// <summary>Durum rozeti metni.</summary>
     public string StatusLabel => Row.Status switch
     {
-        DriverStatus.UpdateAvailable => "güncelleme var",
-        DriverStatus.PossiblyOutdated => "eski olabilir",
+        DriverStatus.UpdateAvailable => T("Dr_HasUpdate"),
+        DriverStatus.PossiblyOutdated => T("Dr_MaybeOld"),
         _ => string.Empty
     };
 
@@ -143,6 +144,9 @@ public sealed partial class DriversViewModel : ObservableObject
         _backup = backup;
         _logger = logger;
 
+        // Dil değişince tüm metinler yeniden okunmalı; boş ad her bağlamayı tazeliyor.
+        LocalizationService.Instance.LanguageChanged += (_, _) => OnPropertyChanged(string.Empty);
+
         IsElevated = systemInfo.Capture().IsElevated;
 
         Attention = [];
@@ -172,19 +176,19 @@ public sealed partial class DriversViewModel : ObservableObject
         {
             if (!HasLoaded)
             {
-                return "Donanım henüz okunmadı";
+                return T("Dr_NotRead");
             }
 
             if (AttentionCount == 0)
             {
-                return "Tüm sürücüler güncel";
+                return T("Dr_AllCurrent");
             }
 
             int updates = UpdateAvailableCount;
 
             return updates > 0
-                ? $"{updates} aygıt sürücüsü güncel değil"
-                : $"{AttentionCount} aygıt sürücüsü eski olabilir";
+                ? T("Dr_OutdatedCount", updates)
+                : T("Dr_MaybeOldCount", AttentionCount);
         }
     }
 
@@ -199,22 +203,22 @@ public sealed partial class DriversViewModel : ObservableObject
 
             if (!_lastSearchWasRun)
             {
-                return "Windows Update henüz sorgulanmadı — \"Güncelleme ara\" ile kesin sonucu görebilirsin.";
+                return T("Dr_NotQueried", T("Dr_UpdateNow"));
             }
 
             return AttentionCount == 0
-                ? $"{UpToDateCount} cihazın hepsi güncel."
-                : $"Toplam {AttentionCount} · seçili {SelectedCount}";
+                ? T("Dr_AllOk", UpToDateCount)
+                : T("Dr_TotalSelected", AttentionCount, SelectedCount);
         }
     }
 
-    public string UpToDateHeader => $"Güncel ({UpToDateCount})";
+    public string UpToDateHeader => T("Dr_UpToDateHeader", UpToDateCount);
 
     /// <summary>
     /// Üst listenin başlığı. Kesin güncelleme varken "güncel değil" demek doğru;
     /// yalnızca eskiler varken aynı şeyi demek olduğundan fazlasını iddia etmek olur.
     /// </summary>
-    public string AttentionHeader => UpdateAvailableCount > 0 ? "GÜNCEL DEĞİL" : "ESKİ OLABİLİR";
+    public string AttentionHeader => T(UpdateAvailableCount > 0 ? "Dr_HeaderOutdated" : "Dr_HeaderMaybeOld");
 
     private bool _lastSearchWasRun;
 
@@ -224,8 +228,8 @@ public sealed partial class DriversViewModel : ObservableObject
     private async Task LoadAsync()
     {
         IsBusy = true;
-        BusyTitle = "Donanım okunuyor";
-        BusyDetail = "cihazlar ve sürücü bilgileri toplanıyor...";
+        BusyTitle = T("Dr_Busy_Read");
+        BusyDetail = T("Dr_Busy_ReadDetail");
         StatusMessage = string.Empty;
 
         _cancellation = new CancellationTokenSource();
@@ -244,12 +248,12 @@ public sealed partial class DriversViewModel : ObservableObject
         }
         catch (OperationCanceledException)
         {
-            StatusMessage = "Okuma iptal edildi.";
+            StatusMessage = T("Msg_Cancelled");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Donanım envanteri okunamadı");
-            StatusMessage = $"Donanım okunamadı: {ex.Message}";
+            StatusMessage = T("Err_ReadFailed", ex.Message);
         }
         finally
         {
@@ -269,8 +273,8 @@ public sealed partial class DriversViewModel : ObservableObject
         }
 
         IsBusy = true;
-        BusyTitle = "Güncelleme aranıyor";
-        BusyDetail = "Windows Update sorgulanıyor, bu bir dakikaya kadar sürebilir...";
+        BusyTitle = T("Dr_Busy_Search");
+        BusyDetail = T("Dr_Busy_SearchDetail");
 
         _cancellation = new CancellationTokenSource();
 
@@ -290,7 +294,7 @@ public sealed partial class DriversViewModel : ObservableObject
         catch (Exception ex)
         {
             _logger.LogError(ex, "Sürücü güncellemesi aranamadı");
-            SourceMessage = $"Arama başarısız: {ex.Message}";
+            SourceMessage = T("Err_SearchFailed", ex.Message);
         }
         finally
         {
@@ -305,8 +309,8 @@ public sealed partial class DriversViewModel : ObservableObject
     private async Task BackupAsync()
     {
         IsBusy = true;
-        BusyTitle = "Sürücüler yedekleniyor";
-        BusyDetail = "üçüncü parti sürücü paketleri dışa aktarılıyor...";
+        BusyTitle = T("Dr_Busy_Backup");
+        BusyDetail = T("Dr_Busy_BackupDetail");
 
         _cancellation = new CancellationTokenSource();
 
@@ -315,7 +319,7 @@ public sealed partial class DriversViewModel : ObservableObject
             DriverBackupResult result = await _backup.ExportAllAsync(_cancellation.Token);
 
             StatusMessage = result.Succeeded
-                ? $"{result.Describe()} Klasör: {result.Path}"
+                ? T("Dr_BackupFolder", result.Describe(), result.Path)
                 : result.Describe();
         }
         catch (OperationCanceledException)
@@ -325,7 +329,7 @@ public sealed partial class DriversViewModel : ObservableObject
         catch (Exception ex)
         {
             _logger.LogError(ex, "Sürücü yedeği alınamadı");
-            StatusMessage = $"Yedekleme başarısız: {ex.Message}";
+            StatusMessage = T("Err_BackupFailed", ex.Message);
         }
         finally
         {

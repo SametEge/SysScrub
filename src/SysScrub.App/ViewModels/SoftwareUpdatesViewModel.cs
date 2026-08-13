@@ -2,6 +2,8 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
+using SysScrub.App.Localization;
+using static SysScrub.App.Localization.L;
 using SysScrub.Core.Software;
 
 namespace SysScrub.App.ViewModels;
@@ -94,6 +96,9 @@ public sealed partial class SoftwareUpdatesViewModel : ObservableObject
         _winget = winget;
         _logger = logger;
 
+        // Dil değişince tüm metinler yeniden okunmalı; boş ad her bağlamayı tazeliyor.
+        LocalizationService.Instance.LanguageChanged += (_, _) => OnPropertyChanged(string.Empty);
+
         Updates = [];
     }
 
@@ -113,18 +118,18 @@ public sealed partial class SoftwareUpdatesViewModel : ObservableObject
         {
             if (!HasChecked)
             {
-                return "Programlar henüz denetlenmedi";
+                return T("Up_NotChecked");
             }
 
             return UpdateCount == 0
-                ? "Tüm programlar güncel"
-                : $"{UpdateCount} programın yeni sürümü var";
+                ? T("Up_AllCurrent")
+                : T("Up_HaveNew", UpdateCount);
         }
     }
 
     public string HeadlineDetail => HasChecked && UpdateCount > 0
-        ? $"Seçili {SelectedCount} · kaynak winget ve Microsoft Store"
-        : "Kurulu programlar winget üzerinden denetlenir; kaynak paketin kendi yayıncısıdır.";
+        ? T("Up_SelectedSource", SelectedCount)
+        : T("Up_Intro");
 
     // ------------------------------------------------------------------ denetleme
 
@@ -132,8 +137,8 @@ public sealed partial class SoftwareUpdatesViewModel : ObservableObject
     private async Task CheckAsync()
     {
         IsBusy = true;
-        BusyTitle = "Programlar denetleniyor";
-        BusyDetail = "winget kaynakları sorguluyor...";
+        BusyTitle = T("Up_Busy_Check");
+        BusyDetail = T("Up_Busy_CheckDetail");
         ProgressFraction = 0;
         StatusMessage = string.Empty;
 
@@ -158,12 +163,12 @@ public sealed partial class SoftwareUpdatesViewModel : ObservableObject
         }
         catch (OperationCanceledException)
         {
-            StatusMessage = "Denetim iptal edildi.";
+            StatusMessage = T("Msg_Cancelled");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Program listesi alınamadı");
-            StatusMessage = $"Denetim başarısız: {ex.Message}";
+            StatusMessage = T("Err_CheckFailed", ex.Message);
         }
         finally
         {
@@ -191,7 +196,7 @@ public sealed partial class SoftwareUpdatesViewModel : ObservableObject
         }
 
         IsBusy = true;
-        BusyTitle = "Programlar güncelleniyor";
+        BusyTitle = T("Up_Busy_Update");
         ProgressFraction = 0;
 
         _cancellation = new CancellationTokenSource();
@@ -231,18 +236,17 @@ public sealed partial class SoftwareUpdatesViewModel : ObservableObject
             ProgressFraction = 1;
 
             StatusMessage = failed == 0
-                ? $"{succeeded} program güncellendi."
-                : $"{succeeded} program güncellendi, {failed} tanesi güncellenemedi. " +
-                  "Sebebi her satırın altında yazıyor.";
+                ? T("Up_Res_Ok", succeeded)
+                : T("Up_Res_Partial", succeeded, failed);
         }
         catch (OperationCanceledException)
         {
-            StatusMessage = $"İptal edildi. {succeeded} program güncellenmişti.";
+            StatusMessage = T("Up_Res_Cancelled", succeeded);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Güncelleme başarısız");
-            StatusMessage = $"Güncelleme başarısız: {ex.Message}";
+            StatusMessage = T("Err_UpdateFailed", ex.Message);
         }
         finally
         {
@@ -262,7 +266,7 @@ public sealed partial class SoftwareUpdatesViewModel : ObservableObject
     {
         // winget çalışan bir kurulumu yarıda kesmiyor; iptal yalnızca sıradakileri durduruyor.
         _cancellation?.Cancel();
-        BusyDetail = "sıradaki paketler iptal ediliyor...";
+        BusyDetail = T("Up_Cancelling");
     }
 
     [RelayCommand]

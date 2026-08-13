@@ -59,6 +59,8 @@ public sealed partial class CategoryNodeViewModel : ObservableObject
     {
         Category = category;
         Groups = new ObservableCollection<GroupNodeViewModel>(groups);
+
+        LocalizationService.Instance.LanguageChanged += (_, _) => OnPropertyChanged(nameof(Title));
     }
 
     public RuleCategory Category { get; }
@@ -67,16 +69,16 @@ public sealed partial class CategoryNodeViewModel : ObservableObject
 
     public IEnumerable<RuleNodeViewModel> AllRules => Groups.SelectMany(g => g.Rules);
 
-    public string Title => Category switch
+    public string Title => LocalizationService.Instance[Category switch
     {
-        RuleCategory.Windows => "Windows",
-        RuleCategory.Browsers => "Tarayıcılar",
-        RuleCategory.Applications => "Uygulamalar",
-        RuleCategory.Gaming => "Oyun platformları",
-        RuleCategory.Developer => "Geliştirici araçları",
-        RuleCategory.Privacy => "Gizlilik",
-        _ => "Diğer"
-    };
+        RuleCategory.Windows => "Cat_Windows",
+        RuleCategory.Browsers => "Cat_Browsers",
+        RuleCategory.Applications => "Cat_Applications",
+        RuleCategory.Gaming => "Cat_Gaming",
+        RuleCategory.Developer => "Cat_Developer",
+        RuleCategory.Privacy => "Cat_Privacy",
+        _ => "Cat_Other"
+    }];
 
     public string IconKey => Category switch
     {

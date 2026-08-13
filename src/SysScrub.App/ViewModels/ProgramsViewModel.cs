@@ -2,6 +2,8 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
+using SysScrub.App.Localization;
+using static SysScrub.App.Localization.L;
 using SysScrub.Core.Formatting;
 using SysScrub.Core.Programs;
 
@@ -87,11 +89,11 @@ public sealed partial class ProgramRowViewModel : ObservableObject
 
     public string ActionTooltip => Program.CanUninstall
         ? Program.SupportsQuietUninstall
-            ? "Yayıncının sessiz kaldırma komutu var; pencere açılmadan kaldırılır."
-            : "Programın kendi kaldırıcısı açılacak."
+            ? T("Pr_QuietTip")
+            : T("Pr_OwnUninstallerTip")
         : Program.UninstallerMissing
-            ? "Kaldırıcı dosyası bulunamadı; program kayıtlı görünüyor ama buradan kaldırılamaz."
-            : "Bu programın kaldırma komutu tanımlı değil; kaydı elle temizlemek gerekir.";
+            ? T("Pr_MissingTip")
+            : T("Pr_NoCommandTip");
 
     public string IconKey => IsStore ? "IconUpdates" : "IconPrograms";
 
@@ -185,6 +187,9 @@ public sealed partial class ProgramsViewModel : ObservableObject
         _uninstaller = uninstaller;
         _logger = logger;
 
+        // Dil değişince tüm metinler yeniden okunmalı; boş ad her bağlamayı tazeliyor.
+        LocalizationService.Instance.LanguageChanged += (_, _) => OnPropertyChanged(string.Empty);
+
         Programs = [];
     }
 
@@ -201,7 +206,7 @@ public sealed partial class ProgramsViewModel : ObservableObject
 
     public string LeftoverMessage => LeftoverPath is null
         ? string.Empty
-        : $"Kaldırma bitti ama kurulum klasörü duruyor: {ByteSize.Format(LeftoverBytes)}  ·  {LeftoverPath}";
+        : T("Pr_Leftover", ByteSize.Format(LeftoverBytes), LeftoverPath);
 
     public bool SortBySize => Sort == ProgramSort.Size;
 
@@ -215,12 +220,12 @@ public sealed partial class ProgramsViewModel : ObservableObject
         {
             if (!HasLoaded)
             {
-                return "Programlar henüz okunmadı";
+                return T("Pr_NotRead");
             }
 
             return ShownCount == ShownTotal
-                ? $"{ShownCount} program kurulu"
-                : $"{ShownCount} / {ShownTotal} program gösteriliyor";
+                ? T("Pr_Installed", ShownCount)
+                : T("Pr_Showing", ShownCount, ShownTotal);
         }
     }
 
@@ -230,20 +235,19 @@ public sealed partial class ProgramsViewModel : ObservableObject
         {
             if (!HasLoaded)
             {
-                return "Kaynak: Uninstall kayıtları ve Store paket deposu. " +
-                       "Win32_Product sorgulanmıyor — her MSI paketini yeniden yapılandırdığı için.";
+                return T("Pr_Source");
             }
 
             if (IsMeasuring)
             {
-                return $"Kurulum klasörleri ölçülüyor…  {MeasuredCount} program ölçüldü";
+                return T("Pr_Measuring", MeasuredCount);
             }
 
-            string total = KnownSize > 0 ? $"bilinen toplam {ByteSize.Format(KnownSize)}" : "boyutlar ölçülmedi";
+            string total = KnownSize > 0 ? T("Pr_KnownTotal", ByteSize.Format(KnownSize)) : T("Pr_NotMeasured");
 
             return SelectedCount > 0
-                ? $"Seçili {SelectedCount}  ·  {total}"
-                : $"{_report.StoreCount} Store paketi  ·  {total}";
+                ? T("Pr_SelectedTotal", SelectedCount, total)
+                : T("Pr_StoreTotal", _report.StoreCount, total);
         }
     }
 
@@ -259,8 +263,8 @@ public sealed partial class ProgramsViewModel : ObservableObject
     private async Task LoadAsync()
     {
         IsBusy = true;
-        BusyTitle = "Programlar okunuyor";
-        BusyDetail = "kayıtlar ve Store paketleri taranıyor...";
+        BusyTitle = T("Pr_Busy_Read");
+        BusyDetail = T("Pr_Busy_ReadDetail");
         StatusMessage = string.Empty;
         LeftoverPath = null;
 
@@ -280,22 +284,24 @@ public sealed partial class ProgramsViewModel : ObservableObject
             HasLoaded = true;
             ApplyFilter();
 
-            StatusMessage =
-                $"{_report.VisibleCount} program, {_report.StoreCount} Store paketi ve " +
-                $"{_report.ComponentCount} gizli bileşen okundu " +
-                $"({DurationText.FromMilliseconds((int)_report.Duration.TotalMilliseconds)}).";
+            StatusMessage = T(
+                "Pr_ReadResult",
+                _report.VisibleCount,
+                _report.StoreCount,
+                _report.ComponentCount,
+                DurationText.FromMilliseconds((int)_report.Duration.TotalMilliseconds));
 
             // Ölçüm listeyi bekletmiyor; satırlar dolarken kullanıcı listeyi kullanabiliyor.
             StartMeasuring();
         }
         catch (OperationCanceledException)
         {
-            StatusMessage = "Okuma iptal edildi.";
+            StatusMessage = T("Msg_Cancelled");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Program envanteri okunamadı");
-            StatusMessage = $"Programlar okunamadı: {ex.Message}";
+            StatusMessage = T("Err_ReadFailed", ex.Message);
         }
         finally
         {
@@ -378,7 +384,7 @@ public sealed partial class ProgramsViewModel : ObservableObject
         }
 
         IsBusy = true;
-        BusyTitle = rows.Count == 1 ? "Program kaldırılıyor" : "Programlar kaldırılıyor";
+        BusyTitle = T(rows.Count == 1 ? "Pr_Busy_Uninstall1" : "Pr_Busy_UninstallN");
         LeftoverPath = null;
 
         _cancellation = new CancellationTokenSource();
@@ -424,18 +430,17 @@ public sealed partial class ProgramsViewModel : ObservableObject
             }
 
             StatusMessage = failed == 0
-                ? $"{removed} program kaldırıldı."
-                : $"{removed} program kaldırıldı, {failed} tanesi kaldırılamadı. " +
-                  "Sebebi her satırın altında yazıyor.";
+                ? T("Pr_Res_Ok", removed)
+                : T("Pr_Res_Partial", removed, failed);
         }
         catch (OperationCanceledException)
         {
-            StatusMessage = $"İptal edildi. {removed} program kaldırılmıştı.";
+            StatusMessage = T("Pr_Res_Cancelled", removed);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Kaldırma başarısız");
-            StatusMessage = $"Kaldırma başarısız: {ex.Message}";
+            StatusMessage = T("Err_UninstallFailed", ex.Message);
         }
         finally
         {
@@ -461,8 +466,8 @@ public sealed partial class ProgramsViewModel : ObservableObject
         bool removed = await _uninstaller.RemoveLeftoverAsync(path);
 
         StatusMessage = removed
-            ? $"Kalan klasör Geri Dönüşüm Kutusu'na taşındı: {path}"
-            : $"Kalan klasör silinemedi: {path}";
+            ? T("Pr_LeftoverMoved", path)
+            : T("Pr_LeftoverFailed", path);
 
         LeftoverPath = null;
     }

@@ -3,6 +3,8 @@ using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
+using SysScrub.App.Localization;
+using static SysScrub.App.Localization.L;
 using SysScrub.Core.Analysis;
 using SysScrub.Core.Formatting;
 using SysScrub.Core.Windows;
@@ -21,7 +23,7 @@ public sealed partial class DriveChoiceViewModel(string root, string label, long
     public string Label { get; } = label;
 
     public string Detail { get; } = totalBytes > 0
-        ? $"{ByteSize.Format(freeBytes)} boş / {ByteSize.Format(totalBytes)}"
+        ? T("Da_DriveDetail", ByteSize.Format(freeBytes), ByteSize.Format(totalBytes))
         : string.Empty;
 }
 
@@ -80,6 +82,9 @@ public sealed partial class DiskAnalysisViewModel : ObservableObject
         _duplicates = duplicates;
         _logger = logger;
 
+        // Dil değişince tüm metinler yeniden okunmalı; boş ad her bağlamayı tazeliyor.
+        LocalizationService.Instance.LanguageChanged += (_, _) => OnPropertyChanged(string.Empty);
+
         Drives = [];
         Breadcrumb = [];
         LargestFiles = [];
@@ -113,12 +118,12 @@ public sealed partial class DiskAnalysisViewModel : ObservableObject
         {
             if (!HasScanned)
             {
-                return "Henüz taranmadı";
+                return T("Da_NotScanned");
             }
 
             return Current is { } node && node.Parent is not null
                 ? $"{node.Name} — {ByteSize.Format(node.SizeBytes)}"
-                : $"{TotalLabel} kullanımda";
+                : T("Da_InUse", TotalLabel);
         }
     }
 
@@ -128,14 +133,13 @@ public sealed partial class DiskAnalysisViewModel : ObservableObject
         {
             if (!HasScanned)
             {
-                return "Bir sürücü seç ve taramayı başlat. Hiçbir dosya silinmez, açılmaz; " +
-                       "bulut dosyaları indirilmez.";
+                return T("Da_Intro");
             }
 
             var parts = new List<string>
             {
-                $"{_result.FileCount:N0} dosya",
-                $"{_result.DirectoryCount:N0} klasör",
+                T("Da_Files", $"{_result.FileCount:N0}"),
+                T("Da_Folders", $"{_result.DirectoryCount:N0}"),
                 DurationText.FromMilliseconds((int)_result.Duration.TotalMilliseconds)
             };
 
@@ -157,17 +161,17 @@ public sealed partial class DiskAnalysisViewModel : ObservableObject
 
             if (_result.SkippedDirectories > 0)
             {
-                parts.Add($"{_result.SkippedDirectories:N0} klasöre erişilemedi");
+                parts.Add(T("Da_SkippedDirs", $"{_result.SkippedDirectories:N0}"));
             }
 
             if (_result.CloudPlaceholders > 0)
             {
-                parts.Add($"{_result.CloudPlaceholders:N0} bulut dosyası diskte yer kaplamıyor, sayılmadı");
+                parts.Add(T("Da_SkippedCloud", $"{_result.CloudPlaceholders:N0}"));
             }
 
             if (_result.SkippedLinks > 0)
             {
-                parts.Add($"{_result.SkippedLinks:N0} bağlantı noktası takip edilmedi");
+                parts.Add(T("Da_SkippedLinks", $"{_result.SkippedLinks:N0}"));
             }
 
             return parts.Count == 0 ? string.Empty : string.Join("  ·  ", parts);
@@ -180,8 +184,10 @@ public sealed partial class DiskAnalysisViewModel : ObservableObject
 
     public string DuplicateSummary => DuplicateResult.Groups.Count == 0
         ? string.Empty
-        : $"{DuplicateResult.Groups.Count:N0} grup  ·  {DuplicateResult.DuplicateCount:N0} fazla kopya  ·  " +
-          $"kazanılabilir {ByteSize.Format(DuplicateResult.RecoverableBytes)}";
+        : T("Da_DupSummary",
+            $"{DuplicateResult.Groups.Count:N0}",
+            $"{DuplicateResult.DuplicateCount:N0}",
+            ByteSize.Format(DuplicateResult.RecoverableBytes));
 
     // ------------------------------------------------------------------ sürücüler
 
@@ -236,7 +242,7 @@ public sealed partial class DiskAnalysisViewModel : ObservableObject
         }
 
         IsBusy = true;
-        BusyTitle = "Disk taranıyor";
+        BusyTitle = T("Da_Busy_Scan");
         BusyDetail = root;
         StatusMessage = string.Empty;
         ShowDuplicates = false;
@@ -270,18 +276,20 @@ public sealed partial class DiskAnalysisViewModel : ObservableObject
                 Types.Add(type);
             }
 
-            StatusMessage =
-                $"{ByteSize.Format(_result.TotalBytes)} tarandı: {_result.FileCount:N0} dosya, " +
-                $"{_result.DirectoryCount:N0} klasör.";
+            StatusMessage = T(
+                "Da_ScanResult",
+                ByteSize.Format(_result.TotalBytes),
+                $"{_result.FileCount:N0}",
+                $"{_result.DirectoryCount:N0}");
         }
         catch (OperationCanceledException)
         {
-            StatusMessage = "Tarama iptal edildi.";
+            StatusMessage = T("Msg_Cancelled");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Disk analizi başarısız");
-            StatusMessage = $"Tarama başarısız: {ex.Message}";
+            StatusMessage = T("Err_ScanFailed", ex.Message);
         }
         finally
         {
@@ -347,8 +355,8 @@ public sealed partial class DiskAnalysisViewModel : ObservableObject
         }
 
         IsBusy = true;
-        BusyTitle = "Yinelenen dosyalar aranıyor";
-        BusyDetail = "boyutlar karşılaştırılıyor...";
+        BusyTitle = T("Da_Busy_Dup");
+        BusyDetail = T("Da_Busy_DupDetail");
 
         _cancellation = new CancellationTokenSource();
 
@@ -370,18 +378,20 @@ public sealed partial class DiskAnalysisViewModel : ObservableObject
             ShowDuplicates = true;
 
             StatusMessage = DuplicateResult.Groups.Count == 0
-                ? "1 MB üstünde yinelenen dosya bulunamadı."
-                : $"{DuplicateResult.Groups.Count:N0} grupta {DuplicateResult.DuplicateCount:N0} fazla kopya var; " +
-                  $"kazanılabilir alan {ByteSize.Format(DuplicateResult.RecoverableBytes)}.";
+                ? T("Da_NoDuplicates")
+                : T("Da_DupResult",
+                    $"{DuplicateResult.Groups.Count:N0}",
+                    $"{DuplicateResult.DuplicateCount:N0}",
+                    ByteSize.Format(DuplicateResult.RecoverableBytes));
         }
         catch (OperationCanceledException)
         {
-            StatusMessage = "Arama iptal edildi.";
+            StatusMessage = T("Msg_Cancelled");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Yinelenen arama başarısız");
-            StatusMessage = $"Arama başarısız: {ex.Message}";
+            StatusMessage = T("Err_SearchFailed", ex.Message);
         }
         finally
         {
@@ -420,13 +430,15 @@ public sealed partial class DiskAnalysisViewModel : ObservableObject
         {
             DuplicateGroups.Remove(group);
 
-            StatusMessage =
-                $"{extras.Length} kopya Geri Dönüşüm Kutusu'na taşındı ({ByteSize.Format(group.RecoverableBytes)}). " +
-                $"Korunan: {group.Paths[0]}";
+            StatusMessage = T(
+                "Da_DupRemoved",
+                extras.Length,
+                ByteSize.Format(group.RecoverableBytes),
+                group.Paths[0]);
         }
         else
         {
-            StatusMessage = "Kopyalar silinemedi; dosyalar kullanımda olabilir.";
+            StatusMessage = T("Da_DupFailed");
         }
 
         OnPropertyChanged(nameof(HasDuplicateResult));

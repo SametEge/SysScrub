@@ -1,6 +1,8 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using SysScrub.App.Localization;
+using static SysScrub.App.Localization.L;
 using CommunityToolkit.Mvvm.Input;
 using SysScrub.App.Services;
 using SysScrub.Core.Formatting;
@@ -81,7 +83,10 @@ public sealed partial class DashboardViewModel : ObservableObject, IDisposable
         Cleaner.PropertyChanged += OnCleanerChanged;
 
         Refresh();
-    }
+    
+        // Dil değişince tüm metinler yeniden okunmalı; boş ad her bağlamayı tazeliyor.
+        LocalizationService.Instance.LanguageChanged += (_, _) => OnPropertyChanged(string.Empty);
+}
 
     /// <summary>Temizleyici ekranıyla paylaşılan görünüm modeli.</summary>
     public CleanerViewModel Cleaner { get; }
@@ -111,20 +116,20 @@ public sealed partial class DashboardViewModel : ObservableObject, IDisposable
 
     public string ScanCaption => Cleaner.Stage switch
     {
-        CleanerStage.Scanning => "taranıyor...",
-        CleanerStage.Reviewing when Cleaner.FoundFiles == 0 => "temizlenecek bir şey yok",
+        CleanerStage.Scanning => T("Db_Scanning"),
+        CleanerStage.Reviewing when Cleaner.FoundFiles == 0 => T("Db_NothingToClean"),
         CleanerStage.Reviewing or CleanerStage.Finished => $"{Cleaner.FoundFiles:N0} dosya temizlenebilir",
-        _ => "henüz taranmadı"
+        _ => T("Db_NotScanned")
     };
 
     public string ScanHint => Cleaner.Stage switch
     {
-        CleanerStage.Scanning => "Tarama sürüyor. Dosyalar yalnızca listeleniyor, hiçbir şey silinmiyor.",
+        CleanerStage.Scanning => T("Db_ScanningBody"),
         CleanerStage.Reviewing when Cleaner.FoundFiles > 0 =>
-            "Ne silineceğine sen karar ver. Temizleyici ekranında kural kural inceleyebilirsin.",
-        CleanerStage.Reviewing => "Sistem temiz görünüyor.",
-        CleanerStage.Finished => "Temizlik tamamlandı. Ayrıntılar Zaman tüneli ekranında.",
-        _ => "Tarama, dosyaları listeler ama hiçbir şey silmez. Ne silineceğine sen karar verirsin."
+            T("Db_ReviewBody"),
+        CleanerStage.Reviewing => T("Db_CleanBody"),
+        CleanerStage.Finished => T("Db_FinishedBody"),
+        _ => T("Db_ReadyBody")
     };
 
     [RelayCommand]
@@ -181,7 +186,7 @@ public sealed partial class DashboardViewModel : ObservableObject, IDisposable
             {
                 Name = drive.Name.TrimEnd('\\'),
                 Label = drive.Label,
-                Detail = $"{ByteSize.Format(drive.FreeBytes)} boş · {drive.Format}",
+                Detail = T("Db_DriveDetail", ByteSize.Format(drive.FreeBytes), drive.Format),
                 UsedRatio = drive.UsedRatio,
                 IsCriticallyFull = drive.IsCriticallyFull
             });

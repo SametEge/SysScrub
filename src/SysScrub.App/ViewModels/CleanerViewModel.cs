@@ -2,6 +2,8 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
+using SysScrub.App.Localization;
+using static SysScrub.App.Localization.L;
 using SysScrub.App.ViewModels.Cleaner;
 using SysScrub.Core.Cleaning;
 using SysScrub.Core.Formatting;
@@ -105,6 +107,9 @@ public sealed partial class CleanerViewModel : ObservableObject
         _systemInfo = systemInfo;
         _logger = logger;
 
+        // Dil değişince tüm metinler yeniden okunmalı; boş ad her bağlamayı tazeliyor.
+        LocalizationService.Instance.LanguageChanged += (_, _) => OnPropertyChanged(string.Empty);
+
         IsElevated = systemInfo.Capture().IsElevated;
         Categories = new ObservableCollection<CategoryNodeViewModel>(BuildTree());
 
@@ -138,8 +143,8 @@ public sealed partial class CleanerViewModel : ObservableObject
         ProgressFraction = 0;
         FoundBytes = 0;
         FoundFiles = 0;
-        BusyTitle = "Taranıyor";
-        BusyDetail = "kurallar hazırlanıyor...";
+        BusyTitle = T("Cl_Busy_Scan");
+        BusyDetail = T("Cl_Busy_ScanDetail");
         ProgressLabel = string.Empty;
 
         foreach (RuleNodeViewModel rule in AllRules)
@@ -164,8 +169,8 @@ public sealed partial class CleanerViewModel : ObservableObject
             FoundFiles = report.FilesFound;
 
             BusyDetail = report.FilesFound == 0
-                ? $"{report.CompletedRules}/{report.TotalRules} kural tarandı"
-                : $"{report.FilesFound:N0} dosya · {ByteSize.Format(report.BytesFound)} bulundu";
+                ? T("Cl_RulesScanned", report.CompletedRules, report.TotalRules)
+                : T("Cl_FoundFiles", $"{report.FilesFound:N0}", ByteSize.Format(report.BytesFound));
 
             OnPropertyChanged(nameof(FoundLabel));
         });
@@ -177,19 +182,19 @@ public sealed partial class CleanerViewModel : ObservableObject
 
             Stage = CleanerStage.Reviewing;
             StatusMessage = _lastReport.TotalCount == 0
-                ? "Temizlenecek bir şey bulunamadı. Sistem temiz görünüyor."
+                ? T("Cl_NothingFound")
                 : BuildScanSummary(_lastReport);
         }
         catch (OperationCanceledException)
         {
             Stage = CleanerStage.Ready;
-            StatusMessage = "Tarama iptal edildi.";
+            StatusMessage = T("Msg_Cancelled");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Tarama başarısız");
             Stage = CleanerStage.Ready;
-            StatusMessage = $"Tarama sırasında hata: {ex.Message}";
+            StatusMessage = T("Err_ScanError", ex.Message);
         }
         finally
         {
@@ -216,8 +221,8 @@ public sealed partial class CleanerViewModel : ObservableObject
         Stage = CleanerStage.Cleaning;
         ProgressFraction = 0;
         StatusMessage = string.Empty;
-        BusyTitle = "Temizleniyor";
-        BusyDetail = $"0 / {selection.Sum(s => s.Count):N0} dosya";
+        BusyTitle = T("Cl_Busy_Clean");
+        BusyDetail = T("Cl_FilesOf", "0", $"{selection.Sum(s => s.Count):N0}");
         ProgressLabel = string.Empty;
 
         _cancellation = new CancellationTokenSource();
@@ -226,8 +231,8 @@ public sealed partial class CleanerViewModel : ObservableObject
         {
             ProgressFraction = report.Fraction;
             ProgressLabel = report.CurrentRule;
-            BusyDetail = $"{report.Processed:N0} / {report.Total:N0} dosya · " +
-                         $"{ByteSize.Format(report.BytesFreed)} kurtarıldı";
+            BusyDetail = T("Cl_FilesOf", $"{report.Processed:N0}", $"{report.Total:N0}") + "  ·  " +
+                         T("Cl_Recovered", ByteSize.Format(report.BytesFreed));
         });
 
         try
@@ -254,13 +259,13 @@ public sealed partial class CleanerViewModel : ObservableObject
         catch (OperationCanceledException)
         {
             Stage = CleanerStage.Reviewing;
-            StatusMessage = "Temizlik iptal edildi. O ana kadar silinenler geri alınabilir.";
+            StatusMessage = T("Cl_CleanCancelled");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Temizlik başarısız");
             Stage = CleanerStage.Reviewing;
-            StatusMessage = $"Temizlik sırasında hata: {ex.Message}";
+            StatusMessage = T("Err_CleanError", ex.Message);
         }
         finally
         {
@@ -277,7 +282,7 @@ public sealed partial class CleanerViewModel : ObservableObject
     {
         _cancellation?.Cancel();
         BusyDetail = "iptal ediliyor...";
-        StatusMessage = "İptal ediliyor...";
+        StatusMessage = T("Cl_Cancelling");
     }
 
     [RelayCommand(CanExecute = nameof(CanUndo))]
@@ -292,10 +297,10 @@ public sealed partial class CleanerViewModel : ObservableObject
         _history.MarkReverted(_lastClean.RunId);
 
         CanUndoLastClean = false;
-        ResultSummary = $"{restore.Restored:N0} dosya geri yüklendi";
+        ResultSummary = T("Cl_Restored", $"{restore.Restored:N0}");
         ResultDetail = restore.Skipped > 0
-            ? $"{restore.Skipped:N0} dosya atlandı — hedefte zaten bir dosya vardı."
-            : $"{ByteSize.Format(restore.Bytes)} veri eski yerine döndü.";
+            ? T("Cl_RestoreSkipped", $"{restore.Skipped:N0}")
+            : T("Cl_RestoreOk", ByteSize.Format(restore.Bytes));
 
         RefreshCommandStates();
     }
@@ -390,7 +395,7 @@ public sealed partial class CleanerViewModel : ObservableObject
 
         if (report.SkippedForElevation > 0)
         {
-            text += $" {report.SkippedForElevation} kural yönetici hakkı olmadığı için atlandı.";
+            text += T("Cl_SkippedElevation", report.SkippedForElevation);
         }
 
         return text;
@@ -404,22 +409,22 @@ public sealed partial class CleanerViewModel : ObservableObject
 
         if (result.Quarantined > 0)
         {
-            parts.Add($"{result.Quarantined:N0} dosya karantinada, geri alınabilir");
+            parts.Add(T("Cl_Quarantined", $"{result.Quarantined:N0}"));
         }
 
         if (result.Deleted > 0)
         {
-            parts.Add($"{result.Deleted:N0} dosya kalıcı silindi");
+            parts.Add(T("Cl_Deleted", $"{result.Deleted:N0}"));
         }
 
         if (result.ScheduledForReboot > 0)
         {
-            parts.Add($"{result.ScheduledForReboot:N0} kilitli dosya yeniden başlatmada silinecek");
+            parts.Add(T("Cl_Reboot", $"{result.ScheduledForReboot:N0}"));
         }
 
         if (result.SkippedByGuard > 0)
         {
-            parts.Add($"{result.SkippedByGuard:N0} dosya güvenlik denetimiyle atlandı");
+            parts.Add(T("Cl_GuardSkipped", $"{result.SkippedByGuard:N0}"));
         }
 
         if (result.Failures.Count > 0)
@@ -430,7 +435,7 @@ public sealed partial class CleanerViewModel : ObservableObject
         // Kanıtlı ölçüm: diskin gerçek boş alanı ne kadar arttı.
         if (result.MeasuredGain > 0)
         {
-            parts.Add($"diskte ölçülen artış {ByteSize.Format(result.MeasuredGain)}");
+            parts.Add(T("Cl_MeasuredGain", ByteSize.Format(result.MeasuredGain)));
         }
 
         ResultDetail = string.Join(" · ", parts);

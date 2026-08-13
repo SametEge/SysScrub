@@ -3,6 +3,7 @@ using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
+using static SysScrub.App.Localization.L;
 using SysScrub.App.Localization;
 using SysScrub.App.Services;
 using SysScrub.Core.Cleaning;
@@ -69,6 +70,9 @@ public sealed partial class SettingsViewModel : ObservableObject
         _systemInfo = systemInfo;
         _logger = logger;
 
+        // Dil değişince tüm metinler yeniden okunmalı; boş ad her bağlamayı tazeliyor.
+        LocalizationService.Instance.LanguageChanged += (_, _) => OnPropertyChanged(string.Empty);
+
         IsElevated = systemInfo.Capture().IsElevated;
 
         BuildLanguages();
@@ -127,11 +131,11 @@ public sealed partial class SettingsViewModel : ObservableObject
         }
     }
 
-    public string RetentionLabel => $"{RetentionDays} gün";
+    public string RetentionLabel => T("Set_Days", RetentionDays);
 
     public string QuarantineSummary => QuarantineRuns == 0
-        ? "Karantinada bekleyen dosya yok."
-        : $"{QuarantineRuns} çalıştırma  ·  {ByteSize.Format(QuarantineBytes)}";
+        ? T("Set_Quarantine_Empty")
+        : T("Set_Quarantine_Summary", QuarantineRuns, ByteSize.Format(QuarantineBytes));
 
     public bool HasQuarantine => QuarantineRuns > 0;
 
@@ -143,8 +147,8 @@ public sealed partial class SettingsViewModel : ObservableObject
         int removed = _quarantine.Purge(_store.Current.QuarantineRetention);
 
         StatusMessage = removed == 0
-            ? $"Saklama süresini ({RetentionLabel}) aşan kayıt yok."
-            : $"{removed} eski karantina kaydı kalıcı olarak silindi.";
+            ? T("Set_PurgeNone", RetentionLabel)
+            : T("Set_PurgeDone", removed);
 
         Refresh();
     }
@@ -186,8 +190,8 @@ public sealed partial class SettingsViewModel : ObservableObject
 
             StatusMessage = MaintenanceState.Message
                 ?? (MaintenanceState.Exists
-                    ? $"Haftalık bakım görevi kuruldu: her pazar saat {ScheduledHour:00}:00."
-                    : "Haftalık bakım görevi kaldırıldı.");
+                    ? T("Set_ScheduleOn", $"{ScheduledHour:00}")
+                    : T("Set_ScheduleOff"));
 
             OnPropertyChanged();
             RaiseMaintenanceDerived();
@@ -217,7 +221,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         }
     }
 
-    public string ScheduleLabel => $"Her pazar saat {ScheduledHour:00}:00";
+    public string ScheduleLabel => T("Set_Hour_Label", $"{ScheduledHour:00}");
 
     public string MaintenanceDetail
     {
@@ -225,12 +229,11 @@ public sealed partial class SettingsViewModel : ObservableObject
         {
             if (!MaintenanceState.Exists)
             {
-                return "Kapalı. Açıldığında yalnızca güvenli işaretli kurallar çalışır; " +
-                       "her silme karantinaya alınır ve Zaman tüneli'nden geri alınabilir.";
+                return T("Set_Weekly_Off");
             }
 
             return MaintenanceState.NextRun is { } next
-                ? $"Sıradaki çalışma: {next:dd MMMM yyyy HH:mm}"
+                ? T("Set_Weekly_Next", $"{next:dd MMMM yyyy HH:mm}")
                 : ScheduleLabel;
         }
     }
@@ -244,11 +247,11 @@ public sealed partial class SettingsViewModel : ObservableObject
         {
             if (!IsElevated)
             {
-                return "Zamanlanmış görev oluşturmak için uygulamayı yönetici olarak açın.";
+                return T("Set_Weekly_NeedsAdmin");
             }
 
             return ScheduledMaintenance.CliPath is null
-                ? "Komut satırı sürümü (sysscrub-cli.exe) bu kurulumda bulunamadı."
+                ? T("Set_Weekly_NoCli")
                 : string.Empty;
         }
     }
@@ -264,8 +267,8 @@ public sealed partial class SettingsViewModel : ObservableObject
     public bool IsPortable => AppPaths.IsPortable;
 
     public string StorageModeLabel => AppPaths.IsPortable
-        ? "Portatif mod: tüm veri uygulamanın kendi klasöründe, sisteme hiçbir şey yazılmıyor."
-        : "Veriler ortak uygulama verisi klasöründe tutuluyor.";
+        ? T("Set_Portable")
+        : T("Set_NotPortable");
 
     [RelayCommand]
     private void OpenDataFolder() => OpenFolder(AppPaths.DataDirectory);
@@ -288,7 +291,7 @@ public sealed partial class SettingsViewModel : ObservableObject
                                    or System.ComponentModel.Win32Exception)
         {
             _logger.LogWarning(ex, "Klasör açılamadı: {Path}", path);
-            StatusMessage = $"Klasör açılamadı: {path}";
+            StatusMessage = T("Set_FolderFailed", path);
         }
     }
 
@@ -305,7 +308,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         {
             SystemSnapshot snapshot = _systemInfo.Capture();
 
-            return $"{snapshot.OperatingSystem}  ·  {(IsElevated ? "yönetici" : "sınırlı yetki")}";
+            return T("Set_SystemLine", snapshot.OperatingSystem, T(IsElevated ? "Set_Elevated" : "Set_NotElevated"));
         }
     }
 

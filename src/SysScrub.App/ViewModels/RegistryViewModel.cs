@@ -2,8 +2,10 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
+using static SysScrub.App.Localization.L;
 using SysScrub.App.Localization;
 using SysScrub.Core.Cleaning;
+using SysScrub.Core.Formatting;
 using SysScrub.Core.Machine;
 using SysScrub.Core.RegistryCleaning;
 using SysScrub.Core.Rules;
@@ -54,7 +56,7 @@ public sealed partial class RegistryScannerNodeViewModel : ObservableObject
 
     public bool ShowRiskBadge => Risk != RiskLevel.Safe;
 
-    public string RiskLabel => Risk == RiskLevel.Caution ? "dikkat" : "gelişmiş";
+    public string RiskLabel => T(Risk == RiskLevel.Caution ? "Risk_Caution" : "Risk_Advanced");
 
     public bool RequiresAdmin => Scanner.RequiresAdmin;
 
@@ -64,14 +66,16 @@ public sealed partial class RegistryScannerNodeViewModel : ObservableObject
         ? LocalizationService.Instance["Msg_NeedsAdmin"]
         : string.Empty;
 
-    public string CountLabel => !WasScanned ? string.Empty : Count > 0 ? $"{Count:N0} kayıt" : "temiz";
+    public string CountLabel => !WasScanned
+        ? string.Empty
+        : Count > 0 ? T("Rg_Records", $"{Count:N0}") : T("Rg_Clean");
 
     public bool IsEmpty => WasScanned && Count == 0;
 
     public bool HasFindings => Count > 0;
 
     public string TruncationNote => Count > MaxShownFindings
-        ? $"İlk {MaxShownFindings:N0} kayıt gösteriliyor, toplam {Count:N0}."
+        ? T("Rg_Truncated", $"{MaxShownFindings:N0}", $"{Count:N0}")
         : string.Empty;
 
     public void Apply(RegistryScannerResult result)
@@ -179,6 +183,9 @@ public sealed partial class RegistryViewModel : ObservableObject
         _settings = settings;
         _logger = logger;
 
+        // Dil değişince tüm metinler yeniden okunmalı; boş ad her bağlamayı tazeliyor.
+        LocalizationService.Instance.LanguageChanged += (_, _) => OnPropertyChanged(string.Empty);
+
         IsElevated = systemInfo.Capture().IsElevated;
 
         Scanners = new ObservableCollection<RegistryScannerNodeViewModel>(
@@ -209,8 +216,8 @@ public sealed partial class RegistryViewModel : ObservableObject
         CanUndoLastClean = false;
         ProgressFraction = 0;
         FoundCount = 0;
-        BusyTitle = "Registry taranıyor";
-        BusyDetail = "tarayıcılar hazırlanıyor...";
+        BusyTitle = T("Rg_Busy_Scan");
+        BusyDetail = T("Rg_Busy_ScanDetail");
 
         foreach (RegistryScannerNodeViewModel node in Scanners)
         {
@@ -231,7 +238,7 @@ public sealed partial class RegistryViewModel : ObservableObject
             ProgressFraction = report.Fraction;
             ProgressLabel = report.CurrentScanner;
             FoundCount = report.FindingsSoFar;
-            BusyDetail = $"{report.Completed}/{report.Total} tarayıcı · {report.FindingsSoFar:N0} kayıt";
+            BusyDetail = T("Rg_ScanProgress", report.Completed, report.Total, $"{report.FindingsSoFar:N0}");
             OnPropertyChanged(nameof(FoundLabel));
         });
 
@@ -242,20 +249,21 @@ public sealed partial class RegistryViewModel : ObservableObject
 
             Stage = CleanerStage.Reviewing;
             StatusMessage = _lastReport.TotalCount == 0
-                ? "Ölü kayıt bulunamadı. Kayıt defteri temiz görünüyor."
-                : $"{_lastReport.TotalCount:N0} ölü kayıt bulundu ({_lastReport.Duration.TotalSeconds:F1} saniye). " +
-                  "Silmeden önce her kaydın neden ölü sayıldığını ayrıntı bölümünden görebilirsin.";
+                ? T("Rg_NothingFound")
+                : T("Rg_Found",
+                    $"{_lastReport.TotalCount:N0}",
+                    DurationText.FromMilliseconds((int)_lastReport.Duration.TotalMilliseconds));
         }
         catch (OperationCanceledException)
         {
             Stage = CleanerStage.Ready;
-            StatusMessage = "Tarama iptal edildi.";
+            StatusMessage = T("Msg_Cancelled");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Registry taraması başarısız");
             Stage = CleanerStage.Ready;
-            StatusMessage = $"Tarama sırasında hata: {ex.Message}";
+            StatusMessage = T("Err_ScanError", ex.Message);
         }
         finally
         {
@@ -282,7 +290,7 @@ public sealed partial class RegistryViewModel : ObservableObject
         Stage = CleanerStage.Cleaning;
         ProgressFraction = 0;
         BusyTitle = "Registry temizleniyor";
-        BusyDetail = "yedek alınıyor ve geri yükleme noktası oluşturuluyor...";
+        BusyDetail = T("Rg_Busy_Backup");
         ProgressLabel = string.Empty;
 
         _cancellation = new CancellationTokenSource();
@@ -290,7 +298,7 @@ public sealed partial class RegistryViewModel : ObservableObject
         var progress = new Progress<RegistryCleanProgress>(report =>
         {
             ProgressFraction = report.Fraction;
-            BusyDetail = $"{report.Processed:N0} / {report.Total:N0} kayıt";
+            BusyDetail = T("Rg_CleanProgress", $"{report.Processed:N0}", $"{report.Total:N0}");
         });
 
         try
@@ -318,13 +326,13 @@ public sealed partial class RegistryViewModel : ObservableObject
         catch (OperationCanceledException)
         {
             Stage = CleanerStage.Reviewing;
-            StatusMessage = "Temizlik iptal edildi. O ana kadar silinenler yedekten geri alınabilir.";
+            StatusMessage = T("Rg_CleanCancelled");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Registry temizliği başarısız");
             Stage = CleanerStage.Reviewing;
-            StatusMessage = $"Temizlik sırasında hata: {ex.Message}";
+            StatusMessage = T("Err_CleanError", ex.Message);
         }
         finally
         {
@@ -355,12 +363,12 @@ public sealed partial class RegistryViewModel : ObservableObject
         {
             _history.MarkReverted(_lastClean.RunId);
             CanUndoLastClean = false;
-            ResultSummary = "Silinen kayıtlar geri yüklendi";
-            ResultDetail = $"Yedek dosyası: {backup}";
+            ResultSummary = T("Rg_Restored");
+            ResultDetail = T("Rg_BackupFile", backup);
         }
         else
         {
-            ResultDetail = $"Geri yükleme başarısız. Yedeği elle içe aktarabilirsin: {backup}";
+            ResultDetail = T("Rg_RestoreFailed", backup);
         }
 
         RefreshCommands();
@@ -426,13 +434,13 @@ public sealed partial class RegistryViewModel : ObservableObject
 
     private void BuildResultText(RegistryCleanResult result)
     {
-        ResultSummary = $"{result.Removed:N0} ölü kayıt silindi";
+        ResultSummary = T("Rg_Removed", $"{result.Removed:N0}");
 
         var parts = new List<string>();
 
         if (result.BackupPath is not null)
         {
-            parts.Add("yedek alındı, geri alınabilir");
+            parts.Add(T("Rg_BackupTaken"));
         }
 
         if (result.RestorePoint is { } restorePoint)
@@ -442,12 +450,12 @@ public sealed partial class RegistryViewModel : ObservableObject
 
         if (result.SkippedByGuard > 0)
         {
-            parts.Add($"{result.SkippedByGuard:N0} kayıt güvenlik denetimiyle atlandı");
+            parts.Add(T("Rg_GuardSkipped", $"{result.SkippedByGuard:N0}"));
         }
 
         if (result.Failures.Count > 0)
         {
-            parts.Add($"{result.Failures.Count:N0} kayıt silinemedi");
+            parts.Add(T("Rg_Failures", $"{result.Failures.Count:N0}"));
         }
 
         ResultDetail = string.Join(" · ", parts);
