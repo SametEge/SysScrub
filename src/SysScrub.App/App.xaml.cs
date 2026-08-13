@@ -7,6 +7,7 @@ using Serilog;
 using SysScrub.App.Services;
 using SysScrub.App.ViewModels;
 using SysScrub.App.Views;
+using SysScrub.Core.Analysis;
 using SysScrub.Core.Cleaning;
 using SysScrub.Core.Disks;
 using SysScrub.Core.Drivers;
@@ -76,6 +77,10 @@ public partial class App : Application
                 services.AddSingleton<SmartAttributeTable>();
                 services.AddSingleton<DiskInventory>();
 
+                // Disk analizi
+                services.AddSingleton<DiskScanner>();
+                services.AddSingleton<DuplicateFinder>();
+
                 // Program kaldırıcı
                 services.AddSingleton<ProgramInventory>();
                 services.AddSingleton<ProgramSizeCalculator>();
@@ -101,6 +106,7 @@ public partial class App : Application
                 services.AddSingleton<StartupViewModel>();
                 services.AddSingleton<ProgramsViewModel>();
                 services.AddSingleton<DiskHealthViewModel>();
+                services.AddSingleton<DiskAnalysisViewModel>();
                 services.AddSingleton<TimelineViewModel>();
                 services.AddTransient<DashboardViewModel>();
 
@@ -139,7 +145,8 @@ public partial class App : Application
                 e.Args.Contains("--wingetscan"),
                 e.Args.Contains("--startupscan"),
                 e.Args.Contains("--programscan"),
-                e.Args.Contains("--diskscan"));
+                e.Args.Contains("--diskscan"),
+                e.Args.Contains("--analyzescan"));
         }
     }
 
@@ -157,12 +164,23 @@ public partial class App : Application
         bool wingetScan = false,
         bool startupScan = false,
         bool programScan = false,
-        bool diskScan = false)
+        bool diskScan = false,
+        bool analyzeScan = false)
     {
         window.ContentRendered += (_, _) => Dispatcher.BeginInvoke(
             DispatcherPriority.ApplicationIdle,
             async () =>
             {
+                if (analyzeScan)
+                {
+                    await Resolve<DiskAnalysisViewModel>().ScanCommand.ExecuteAsync(null);
+
+                    // Treemap yerleşimi ölçüm geçtikten sonra kuruluyor; çizilmesini bekliyoruz.
+                    await Task.Delay(600);
+                    System.Windows.Input.CommandManager.InvalidateRequerySuggested();
+                    await Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
+                }
+
                 if (diskScan)
                 {
                     await Resolve<DiskHealthViewModel>().LoadCommand.ExecuteAsync(null);

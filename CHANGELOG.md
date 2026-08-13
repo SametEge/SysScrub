@@ -7,6 +7,43 @@ Release notları bu dosyanın ilgili sürüm bölümünden otomatik üretilir.
 
 ---
 
+## [0.9.0-alpha] — 2026-08-13
+
+Disk analizi çalışır durumda. Planlanan tüm v1 modülleri artık ayakta.
+
+### Eklenenler
+
+- **Klasör ağacı taraması** — üst seviye klasörler paralel geziliyor. Gerçek makinede
+  C:\ tamamı (335,7 GB, 2,1 milyon dosya, 348 bin klasör) 78 saniyede tarandı
+- **Treemap** — her bloğun alanı boyutuyla orantılı. Yerleşim squarified algoritma:
+  naif dilimleme okunmaz şeritler üretiyor, bloklar kareye yakın tutuluyor.
+  Bloğa tıklayınca içine iniliyor, ekmek kırıntısıyla geri dönülüyor
+- **En büyük 100 dosya ve tür dağılımı** — tarama sırasında toplanıyor, ikinci geçiş yok
+- **Yinelenen dosya bulucu** — üç aşamalı: boyut → baş ve son 4 KB özeti → tam özet.
+  Her aşama bir sonrakine daha az dosya bırakıyor; dosyaların tamamını okumak
+  kabul edilemez derecede pahalı olurdu
+- **`analyze` komutu** — `sysscrub-cli analyze <yol>`, `--duplicates` ile yinelenenler
+
+### Salt okunur
+
+Hiçbir dosya silinmiyor, taşınmıyor, açılmıyor. Tek istisna kullanıcının açıkça
+istediği yinelenen temizliği ve orada da her gruptan **ilk kopya her zaman korunuyor**;
+silme kalıcı değil, Geri Dönüşüm Kutusu'na taşıma.
+
+Bağlantı noktalarının (junction/symlink) içine girilmiyor: girilseydi aynı ağaç iki
+kez sayılır, kötü durumda sonsuz döngüye girilirdi.
+
+Bulut yer tutucuları indirilmiyor ve toplama katılmıyor. Diskte yer kaplamayan bir
+dosyayı saymak "alanı ne yiyor" sorusunun cevabını yanlış yapardı.
+
+### Eksik toplam açıklanıyor
+
+Erişilemeyen klasör sayısı, atlanan bulut dosyası ve takip edilmeyen bağlantı noktası
+sayısı ekranda yazıyor. Dizin numaralandırması bilerek hataları yutmayacak şekilde
+kuruldu; yutsaydı sayaç hiç artmaz ve kullanıcı "her şey sayıldı" sanırdı.
+
+---
+
 ## [0.8.0-alpha] — 2026-08-13
 
 Disk sağlığı çalışır durumda.

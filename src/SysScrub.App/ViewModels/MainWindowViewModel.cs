@@ -93,7 +93,8 @@ public sealed partial class MainWindowViewModel : ObservableObject
                 Title = "Disk analizi",
                 IconKey = "IconDiskAnalysis",
                 Description = "Alanı ne yiyor? Treemap görselleştirme, en büyük dosyalar ve yinelenen dosya bulucu.",
-                Phase = 8
+                Phase = 0,
+                TemplateKey = "DiskAnalysisPageTemplate"
             },
             new NavigationItem
             {

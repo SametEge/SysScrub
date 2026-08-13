@@ -28,6 +28,7 @@ internal static class Program
                 "startup" => await StartupCommand.RunAsync(args),
                 "programs" => await ProgramsCommand.RunAsync(args),
                 "disk" => await DiskCommand.RunAsync(args),
+                "analyze" => await AnalyzeCommand.RunAsync(args),
                 "history" => HistoryCommand.List(),
                 "undo" => HistoryCommand.Undo(args),
                 "version" => PrintVersion(),
@@ -57,6 +58,7 @@ internal static class Program
         Console.WriteLine("  startup             Açılışta çalışan öğeleri listeler (--disable/--enable <ad>)");
         Console.WriteLine("  programs            Kurulu programları listeler (--size ile gerçek boyut)");
         Console.WriteLine("  disk                Disk sağlığını ve S.M.A.R.T. verisini okur (yönetici gerekir)");
+        Console.WriteLine("  analyze <yol>       Alanı ne yiyor: klasör, dosya ve tür dağılımı (--duplicates)");
         Console.WriteLine("  history             Geçmiş temizlikleri listeler");
         Console.WriteLine("  undo <kimlik>       Bir temizliği geri alır (karantinadan geri yükler)");
         Console.WriteLine("  version             Sürüm bilgisini yazdırır");

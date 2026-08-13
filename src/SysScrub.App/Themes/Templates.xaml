@@ -77,6 +77,10 @@
         <pages:DiskHealthPage />
     </DataTemplate>
 
+    <DataTemplate x:Key="DiskAnalysisPageTemplate" DataType="{x:Type vm:NavigationItem}">
+        <pages:DiskAnalysisPage />
+    </DataTemplate>
+
     <DataTemplate x:Key="PlaceholderPageTemplate" DataType="{x:Type vm:NavigationItem}">
         <pages:ModulePlaceholderPage />
     </DataTemplate>
