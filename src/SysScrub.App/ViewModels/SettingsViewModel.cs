@@ -60,6 +60,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         QuarantineStore quarantine,
         ScheduledMaintenance maintenance,
         SystemInfoService systemInfo,
+        AppUpdateViewModel update,
         ILogger<SettingsViewModel> logger)
     {
         _store = store;
@@ -69,6 +70,8 @@ public sealed partial class SettingsViewModel : ObservableObject
         _maintenance = maintenance;
         _systemInfo = systemInfo;
         _logger = logger;
+
+        Update = update;
 
         // Dil değişince tüm metinler yeniden okunmalı; boş ad her bağlamayı tazeliyor.
         LocalizationService.Instance.LanguageChanged += (_, _) => OnPropertyChanged(string.Empty);
@@ -264,6 +267,8 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     public string SettingsFilePath => _store.FilePath;
 
+    public string SettingsFileLabel => T("Set_SettingsFile", SettingsFilePath);
+
     public bool IsPortable => AppPaths.IsPortable;
 
     public string StorageModeLabel => AppPaths.IsPortable
@@ -295,12 +300,19 @@ public sealed partial class SettingsViewModel : ObservableObject
         }
     }
 
+    // ------------------------------------------------------------------ güncelleme
+
+    /// <summary>Uygulamanın kendi güncelleme kartı; ayrı görünüm modelinde yaşıyor.</summary>
+    public AppUpdateViewModel Update { get; }
+
     // ------------------------------------------------------------------ hakkında
 
     public string VersionLabel =>
         typeof(SettingsViewModel).Assembly.GetName().Version is { } v
             ? $"{v.Major}.{v.Minor}.{v.Build}"
-            : "bilinmiyor";
+            : T("Common_Unknown");
+
+    public string VersionText => T("Set_Version", VersionLabel);
 
     public string SystemLabel
     {
@@ -308,7 +320,11 @@ public sealed partial class SettingsViewModel : ObservableObject
         {
             SystemSnapshot snapshot = _systemInfo.Capture();
 
-            return T("Set_SystemLine", snapshot.OperatingSystem, T(IsElevated ? "Set_Elevated" : "Set_NotElevated"));
+            string system = snapshot.WindowsBuild.Length > 0
+                ? T("Set_SystemBuild", snapshot.OperatingSystem, snapshot.WindowsBuild)
+                : snapshot.OperatingSystem;
+
+            return T("Set_SystemLine", system, T(IsElevated ? "Set_Elevated" : "Set_NotElevated"));
         }
     }
 

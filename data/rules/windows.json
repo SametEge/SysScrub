@@ -5,14 +5,29 @@
       "id": "windows.temp.user",
       "category": "Windows",
       "group": "Geçici dosyalar",
-      "name": { "tr": "Kullanıcı geçici dosyaları", "en": "User temporary files" },
+      "name": {
+        "tr": "Kullanıcı geçici dosyaları",
+        "en": "User temporary files",
+        "de": "Temporäre Benutzerdateien",
+        "ja": "ユーザーの一時ファイル",
+        "ko": "사용자 임시 파일",
+        "zh-Hans": "用户临时文件"
+      },
       "explanation": {
         "tr": "Programların çalışırken oluşturup silmeyi unuttuğu dosyalar (%TEMP%). Bir günden eski olanlar temizlenir; açık programların kullandığı dosyalara dokunulmaz.",
-        "en": "Files programs create while running and forget to delete (%TEMP%). Only files older than a day are removed, so nothing in use is touched."
+        "en": "Files programs create while running and forget to delete (%TEMP%). Only files older than a day are removed, so nothing in use is touched.",
+        "de": "Dateien, die Programme im Betrieb anlegen und zu löschen vergessen (%TEMP%). Nur Dateien, die älter als ein Tag sind, werden entfernt – nichts in Benutzung wird angefasst.",
+        "ja": "プログラムが実行中に作成し、削除し忘れたファイル (%TEMP%)。1 日より古いものだけを削除するため、使用中のファイルには触れません。",
+        "ko": "프로그램이 실행 중 만들고 지우지 않은 파일(%TEMP%). 하루보다 오래된 것만 지우므로 사용 중인 파일은 건드리지 않습니다.",
+        "zh-Hans": "程序运行时创建却忘记删除的文件（%TEMP%）。只删除超过一天的文件，正在使用的文件不会被动。"
       },
       "risk": "safe",
       "defaultEnabled": true,
-      "roots": [{ "base": "UserTemp" }],
+      "roots": [
+        {
+          "base": "UserTemp"
+        }
+      ],
       "minAgeDays": 1,
       "deleteMode": "permanent"
     },
@@ -20,14 +35,29 @@
       "id": "windows.temp.system",
       "category": "Windows",
       "group": "Geçici dosyalar",
-      "name": { "tr": "Sistem geçici dosyaları", "en": "System temporary files" },
+      "name": {
+        "tr": "Sistem geçici dosyaları",
+        "en": "System temporary files",
+        "de": "Temporäre Systemdateien",
+        "ja": "システムの一時ファイル",
+        "ko": "시스템 임시 파일",
+        "zh-Hans": "系统临时文件"
+      },
       "explanation": {
         "tr": "Windows'un kendi geçici klasörü. Kurulumlar ve servisler burayı kullanır, artıkları kalır.",
-        "en": "Windows' own temp folder. Installers and services leave residue here."
+        "en": "Windows' own temp folder. Installers and services leave residue here.",
+        "de": "Der eigene Temp-Ordner von Windows. Installer und Dienste hinterlassen hier Reste.",
+        "ja": "Windows 自身の Temp フォルダー。インストーラーやサービスがここに残骸を残します。",
+        "ko": "Windows 자체 임시 폴더. 설치 프로그램과 서비스가 여기에 잔여물을 남깁니다.",
+        "zh-Hans": "Windows 自己的临时文件夹。安装程序和服务会在这里留下残余。"
       },
       "risk": "safe",
       "requiresAdmin": true,
-      "roots": [{ "base": "WindowsTemp" }],
+      "roots": [
+        {
+          "base": "WindowsTemp"
+        }
+      ],
       "minAgeDays": 1,
       "deleteMode": "permanent"
     },
@@ -35,48 +65,107 @@
       "id": "windows.crashdumps.user",
       "category": "Windows",
       "group": "Hata kayıtları",
-      "name": { "tr": "Uygulama çökme dökümleri", "en": "Application crash dumps" },
+      "name": {
+        "tr": "Uygulama çökme dökümleri",
+        "en": "Application crash dumps",
+        "de": "Absturzabbilder von Anwendungen",
+        "ja": "アプリのクラッシュ ダンプ",
+        "ko": "앱 크래시 덤프",
+        "zh-Hans": "应用崩溃转储"
+      },
       "explanation": {
         "tr": "Çöken uygulamaların bellek dökümleri. Tek başına yüzlerce megabayt tutabilir; hata ayıklamıyorsan gereksiz.",
-        "en": "Memory dumps from crashed applications. Can be hundreds of megabytes and are useless unless you are debugging."
+        "en": "Memory dumps from crashed applications. Can be hundreds of megabytes and are useless unless you are debugging.",
+        "de": "Speicherabbilder abgestürzter Programme. Können hunderte Megabyte groß sein und sind nutzlos, wenn du nicht gerade debuggst.",
+        "ja": "クラッシュしたアプリのメモリ ダンプ。数百 MB になることがあり、デバッグしていなければ不要です。",
+        "ko": "충돌한 프로그램의 메모리 덤프. 수백 MB에 이를 수 있고 디버깅 중이 아니라면 쓸모없습니다.",
+        "zh-Hans": "程序崩溃时产生的内存转储。可达数百 MB，除非在调试否则无用。"
       },
       "risk": "safe",
-      "roots": [{ "base": "LocalAppData", "path": "CrashDumps" }],
+      "roots": [
+        {
+          "base": "LocalAppData",
+          "path": "CrashDumps"
+        }
+      ],
       "deleteMode": "permanent"
     },
     {
       "id": "windows.memory.dumps",
       "category": "Windows",
       "group": "Hata kayıtları",
-      "name": { "tr": "Sistem bellek dökümleri", "en": "System memory dumps" },
+      "name": {
+        "tr": "Sistem bellek dökümleri",
+        "en": "System memory dumps",
+        "de": "Systemspeicherabbilder",
+        "ja": "システムのメモリ ダンプ",
+        "ko": "시스템 메모리 덤프",
+        "zh-Hans": "系统内存转储"
+      },
       "explanation": {
         "tr": "Mavi ekran sonrası oluşan döküm dosyaları. MEMORY.DMP tek başına belleğin tamamı kadar yer kaplayabilir.",
-        "en": "Dump files created after a blue screen. MEMORY.DMP alone can be as large as your RAM."
+        "en": "Dump files created after a blue screen. MEMORY.DMP alone can be as large as your RAM.",
+        "de": "Abbilddateien nach einem Bluescreen. MEMORY.DMP allein kann so groß sein wie dein Arbeitsspeicher.",
+        "ja": "ブルー スクリーン後に作成されるダンプ ファイル。MEMORY.DMP だけで搭載メモリと同じ大きさになることがあります。",
+        "ko": "블루 스크린 후 만들어지는 덤프 파일. MEMORY.DMP 하나만으로도 설치된 메모리 크기만큼 커질 수 있습니다.",
+        "zh-Hans": "蓝屏后生成的转储文件。仅 MEMORY.DMP 就可能与内存容量一样大。"
       },
       "risk": "safe",
       "requiresAdmin": true,
       "roots": [
-        { "base": "SystemRoot", "path": "Minidump" },
-        { "base": "SystemRoot", "path": "LiveKernelReports" }
+        {
+          "base": "SystemRoot",
+          "path": "Minidump"
+        },
+        {
+          "base": "SystemRoot",
+          "path": "LiveKernelReports"
+        }
       ],
-      "include": ["**/*.dmp", "**/*.mdmp"],
+      "include": [
+        "**/*.dmp",
+        "**/*.mdmp"
+      ],
       "deleteMode": "permanent"
     },
     {
       "id": "windows.error.reporting",
       "category": "Windows",
       "group": "Hata kayıtları",
-      "name": { "tr": "Windows hata raporları", "en": "Windows error reports" },
+      "name": {
+        "tr": "Windows hata raporları",
+        "en": "Windows error reports",
+        "de": "Windows-Fehlerberichte",
+        "ja": "Windows のエラー報告",
+        "ko": "Windows 오류 보고",
+        "zh-Hans": "Windows 错误报告"
+      },
       "explanation": {
         "tr": "Microsoft'a gönderilmek üzere kuyruğa alınmış veya arşivlenmiş hata raporları. Gönderilmiş olsalar bile silinmiyorlar.",
-        "en": "Error reports queued for or already sent to Microsoft. They are not removed after sending."
+        "en": "Error reports queued for or already sent to Microsoft. They are not removed after sending.",
+        "de": "Fehlerberichte, die an Microsoft gesendet werden sollen oder bereits gesendet wurden. Nach dem Senden werden sie nicht entfernt.",
+        "ja": "Microsoft へ送信予定または送信済みのエラー報告。送信後も削除されません。",
+        "ko": "Microsoft로 보낼 예정이거나 이미 보낸 오류 보고. 보낸 뒤에도 지워지지 않습니다.",
+        "zh-Hans": "排队待发或已发送给 Microsoft 的错误报告。发送后并不会被清除。"
       },
       "risk": "safe",
       "roots": [
-        { "base": "LocalAppData", "path": "Microsoft/Windows/WER/ReportQueue" },
-        { "base": "LocalAppData", "path": "Microsoft/Windows/WER/ReportArchive" },
-        { "base": "ProgramData", "path": "Microsoft/Windows/WER/ReportQueue" },
-        { "base": "ProgramData", "path": "Microsoft/Windows/WER/ReportArchive" }
+        {
+          "base": "LocalAppData",
+          "path": "Microsoft/Windows/WER/ReportQueue"
+        },
+        {
+          "base": "LocalAppData",
+          "path": "Microsoft/Windows/WER/ReportArchive"
+        },
+        {
+          "base": "ProgramData",
+          "path": "Microsoft/Windows/WER/ReportQueue"
+        },
+        {
+          "base": "ProgramData",
+          "path": "Microsoft/Windows/WER/ReportArchive"
+        }
       ],
       "deleteMode": "permanent"
     },
@@ -84,20 +173,48 @@
       "id": "windows.logs.setup",
       "category": "Windows",
       "group": "Günlükler",
-      "name": { "tr": "Kurulum ve bileşen günlükleri", "en": "Setup and servicing logs" },
+      "name": {
+        "tr": "Kurulum ve bileşen günlükleri",
+        "en": "Setup and servicing logs",
+        "de": "Setup- und Wartungsprotokolle",
+        "ja": "セットアップと保守のログ",
+        "ko": "설치와 서비스 로그",
+        "zh-Hans": "安装与维护日志"
+      },
       "explanation": {
         "tr": "Windows güncellemelerinin ve bileşen kurulumlarının bıraktığı metin günlükleri (CBS, DISM). Sorun gidermiyorsan gereksiz.",
-        "en": "Text logs left by Windows updates and component installs (CBS, DISM). Useless unless you are troubleshooting."
+        "en": "Text logs left by Windows updates and component installs (CBS, DISM). Useless unless you are troubleshooting.",
+        "de": "Textprotokolle von Windows-Updates und Komponenteninstallationen (CBS, DISM). Nutzlos, wenn du keine Fehlersuche betreibst.",
+        "ja": "Windows Update やコンポーネント インストールが残すテキスト ログ (CBS、DISM)。トラブルシューティング中でなければ不要です。",
+        "ko": "Windows 업데이트와 구성 요소 설치가 남긴 텍스트 로그(CBS, DISM). 문제를 진단하는 중이 아니라면 쓸모없습니다.",
+        "zh-Hans": "Windows 更新和组件安装留下的文本日志（CBS、DISM）。除非排查故障，否则无用。"
       },
       "risk": "safe",
       "requiresAdmin": true,
       "roots": [
-        { "base": "SystemRoot", "path": "Logs/CBS" },
-        { "base": "SystemRoot", "path": "Logs/DISM" },
-        { "base": "SystemRoot", "path": "Logs/MoSetup" },
-        { "base": "SystemRoot", "path": "Logs/SIH" }
+        {
+          "base": "SystemRoot",
+          "path": "Logs/CBS"
+        },
+        {
+          "base": "SystemRoot",
+          "path": "Logs/DISM"
+        },
+        {
+          "base": "SystemRoot",
+          "path": "Logs/MoSetup"
+        },
+        {
+          "base": "SystemRoot",
+          "path": "Logs/SIH"
+        }
       ],
-      "include": ["**/*.log", "**/*.cab", "**/*.evtx", "**/*.etl"],
+      "include": [
+        "**/*.log",
+        "**/*.cab",
+        "**/*.evtx",
+        "**/*.etl"
+      ],
       "minAgeDays": 7,
       "deleteMode": "permanent"
     },
@@ -105,15 +222,31 @@
       "id": "windows.panther",
       "category": "Windows",
       "group": "Günlükler",
-      "name": { "tr": "Yükseltme günlükleri (Panther)", "en": "Upgrade logs (Panther)" },
+      "name": {
+        "tr": "Yükseltme günlükleri (Panther)",
+        "en": "Upgrade logs (Panther)",
+        "de": "Upgrade-Protokolle (Panther)",
+        "ja": "アップグレード ログ (Panther)",
+        "ko": "업그레이드 로그(Panther)",
+        "zh-Hans": "升级日志（Panther）"
+      },
       "explanation": {
         "tr": "Windows sürüm yükseltmelerinin bıraktığı günlükler. Yükseltme sorunsuz geçtiyse gerekmiyor.",
-        "en": "Logs left by Windows version upgrades. Not needed once the upgrade went through."
+        "en": "Logs left by Windows version upgrades. Not needed once the upgrade went through.",
+        "de": "Protokolle von Windows-Versionsupgrades. Nach einem erfolgreichen Upgrade nicht mehr nötig.",
+        "ja": "Windows のバージョン アップグレードが残すログ。アップグレードが完了していれば不要です。",
+        "ko": "Windows 버전 업그레이드가 남긴 로그. 업그레이드가 끝났다면 필요 없습니다.",
+        "zh-Hans": "Windows 版本升级留下的日志。升级完成后即不再需要。"
       },
       "risk": "caution",
       "requiresAdmin": true,
       "defaultEnabled": false,
-      "roots": [{ "base": "SystemRoot", "path": "Panther" }],
+      "roots": [
+        {
+          "base": "SystemRoot",
+          "path": "Panther"
+        }
+      ],
       "minAgeDays": 30,
       "deleteMode": "quarantine"
     },
@@ -121,15 +254,31 @@
       "id": "windows.update.cache",
       "category": "Windows",
       "group": "Windows Update",
-      "name": { "tr": "Windows Update indirme önbelleği", "en": "Windows Update download cache" },
+      "name": {
+        "tr": "Windows Update indirme önbelleği",
+        "en": "Windows Update download cache",
+        "de": "Windows Update-Downloadcache",
+        "ja": "Windows Update のダウンロード キャッシュ",
+        "ko": "Windows Update 다운로드 캐시",
+        "zh-Hans": "Windows 更新下载缓存"
+      },
       "explanation": {
         "tr": "İndirilip kurulmuş güncelleme paketleri. Kurulduktan sonra saklanmalarına gerek yok; genelde birkaç gigabayt tutar. Temizlik için Windows Update servisi kısa süre durdurulur ve sonra geri başlatılır.",
-        "en": "Update packages that were downloaded and installed. They serve no purpose afterwards and usually take several gigabytes. Cleaning briefly stops and restarts the Windows Update service."
+        "en": "Update packages that were downloaded and installed. They serve no purpose afterwards and usually take several gigabytes. Cleaning briefly stops and restarts the Windows Update service.",
+        "de": "Bereits heruntergeladene und installierte Updatepakete. Danach ohne Nutzen und meist mehrere Gigabyte groß. Beim Bereinigen wird der Windows Update-Dienst kurz gestoppt und neu gestartet.",
+        "ja": "ダウンロードしてインストール済みの更新パッケージ。以後は不要で、通常数 GB を占めます。削除時に Windows Update サービスを一時的に停止して再開します。",
+        "ko": "이미 내려받아 설치한 업데이트 패키지. 이후에는 쓸모없고 보통 수 GB를 차지합니다. 정리 시 Windows Update 서비스를 잠깐 멈췄다가 다시 시작합니다.",
+        "zh-Hans": "已下载并安装的更新包。之后不再有用，通常占用数 GB。清理时会短暂停止并重启 Windows 更新服务。"
       },
       "risk": "safe",
       "requiresAdmin": true,
       "handler": "windowsUpdateCache",
-      "roots": [{ "base": "SystemRoot", "path": "SoftwareDistribution/Download" }],
+      "roots": [
+        {
+          "base": "SystemRoot",
+          "path": "SoftwareDistribution/Download"
+        }
+      ],
       "minAgeDays": 3,
       "deleteMode": "permanent"
     },
@@ -137,47 +286,99 @@
       "id": "windows.delivery.optimization",
       "category": "Windows",
       "group": "Windows Update",
-      "name": { "tr": "Teslim İyileştirme önbelleği", "en": "Delivery Optimization cache" },
+      "name": {
+        "tr": "Teslim İyileştirme önbelleği",
+        "en": "Delivery Optimization cache",
+        "de": "Übermittlungsoptimierungs-Cache",
+        "ja": "配信の最適化キャッシュ",
+        "ko": "배달 최적화 캐시",
+        "zh-Hans": "传递优化缓存"
+      },
       "explanation": {
         "tr": "Windows'un diğer bilgisayarlarla paylaşmak üzere sakladığı güncelleme parçaları. Silinince yeniden indirilirler.",
-        "en": "Update chunks Windows keeps to share with other machines. They are re-downloaded if needed."
+        "en": "Update chunks Windows keeps to share with other machines. They are re-downloaded if needed.",
+        "de": "Update-Teile, die Windows behält, um sie mit anderen Rechnern zu teilen. Sie werden bei Bedarf erneut geladen.",
+        "ja": "他の PC と共有するために Windows が保持する更新の断片。必要になれば再取得されます。",
+        "ko": "다른 컴퓨터와 공유하려고 Windows가 보관하는 업데이트 조각. 필요하면 다시 내려받습니다.",
+        "zh-Hans": "Windows 保留以便与其他机器共享的更新分块。需要时会重新下载。"
       },
       "risk": "safe",
       "requiresAdmin": true,
-      "roots": [{ "base": "SystemRoot", "path": "SoftwareDistribution/DeliveryOptimization" }],
+      "roots": [
+        {
+          "base": "SystemRoot",
+          "path": "SoftwareDistribution/DeliveryOptimization"
+        }
+      ],
       "deleteMode": "permanent"
     },
     {
       "id": "windows.old",
       "category": "Windows",
       "group": "Eski Windows kurulumu",
-      "name": { "tr": "Windows.old klasörü", "en": "Windows.old folder" },
+      "name": {
+        "tr": "Windows.old klasörü",
+        "en": "Windows.old folder",
+        "de": "Windows.old-Ordner",
+        "ja": "Windows.old フォルダー",
+        "ko": "Windows.old 폴더",
+        "zh-Hans": "Windows.old 文件夹"
+      },
       "explanation": {
         "tr": "Sürüm yükseltmesinden kalan eski Windows kurulumu. 20-40 GB tutabilir. UYARI: silindikten sonra önceki Windows sürümüne geri dönemezsin.",
-        "en": "The previous Windows installation left by an upgrade. Can be 20-40 GB. WARNING: once removed you can no longer roll back to the previous Windows version."
+        "en": "The previous Windows installation left by an upgrade. Can be 20-40 GB. WARNING: once removed you can no longer roll back to the previous Windows version.",
+        "de": "Die vorherige Windows-Installation, die ein Upgrade hinterlassen hat. Kann 20–40 GB groß sein. WARNUNG: Nach dem Entfernen ist keine Rückkehr zur vorherigen Windows-Version mehr möglich.",
+        "ja": "アップグレードが残した以前の Windows インストール。20〜40 GB になることがあります。警告: 削除すると以前の Windows バージョンに戻せなくなります。",
+        "ko": "업그레이드가 남긴 이전 Windows 설치. 20~40 GB에 이를 수 있습니다. 경고: 삭제하면 이전 Windows 버전으로 되돌릴 수 없습니다.",
+        "zh-Hans": "升级留下的旧 Windows 安装。可能有 20-40 GB。警告：删除后将无法回退到旧版 Windows。"
       },
       "risk": "advanced",
       "requiresAdmin": true,
       "defaultEnabled": false,
-      "roots": [{ "base": "SystemDrive", "path": "Windows.old" }],
+      "roots": [
+        {
+          "base": "SystemDrive",
+          "path": "Windows.old"
+        }
+      ],
       "deleteMode": "permanent"
     },
     {
       "id": "windows.upgrade.leftovers",
       "category": "Windows",
       "group": "Eski Windows kurulumu",
-      "name": { "tr": "Yükseltme artığı klasörler", "en": "Upgrade leftover folders" },
+      "name": {
+        "tr": "Yükseltme artığı klasörler",
+        "en": "Upgrade leftover folders",
+        "de": "Reste von Upgrades",
+        "ja": "アップグレードの残骸フォルダー",
+        "ko": "업그레이드 잔여 폴더",
+        "zh-Hans": "升级残留文件夹"
+      },
       "explanation": {
         "tr": "Yarım kalmış veya tamamlanmış yükseltmelerin bıraktığı gizli klasörler ($WINDOWS.~BT, $WINDOWS.~WS, $GetCurrent).",
-        "en": "Hidden folders left by interrupted or completed upgrades ($WINDOWS.~BT, $WINDOWS.~WS, $GetCurrent)."
+        "en": "Hidden folders left by interrupted or completed upgrades ($WINDOWS.~BT, $WINDOWS.~WS, $GetCurrent).",
+        "de": "Versteckte Ordner, die abgebrochene oder abgeschlossene Upgrades hinterlassen ($WINDOWS.~BT, $WINDOWS.~WS, $GetCurrent).",
+        "ja": "中断または完了したアップグレードが残す隠しフォルダー ($WINDOWS.~BT、$WINDOWS.~WS、$GetCurrent)。",
+        "ko": "중단되거나 완료된 업그레이드가 남긴 숨김 폴더($WINDOWS.~BT, $WINDOWS.~WS, $GetCurrent).",
+        "zh-Hans": "中断或完成的升级留下的隐藏文件夹（$WINDOWS.~BT、$WINDOWS.~WS、$GetCurrent）。"
       },
       "risk": "advanced",
       "requiresAdmin": true,
       "defaultEnabled": false,
       "roots": [
-        { "base": "SystemDrive", "path": "$WINDOWS.~BT" },
-        { "base": "SystemDrive", "path": "$WINDOWS.~WS" },
-        { "base": "SystemDrive", "path": "$GetCurrent" }
+        {
+          "base": "SystemDrive",
+          "path": "$WINDOWS.~BT"
+        },
+        {
+          "base": "SystemDrive",
+          "path": "$WINDOWS.~WS"
+        },
+        {
+          "base": "SystemDrive",
+          "path": "$GetCurrent"
+        }
       ],
       "deleteMode": "permanent"
     },
@@ -185,16 +386,34 @@
       "id": "windows.prefetch",
       "category": "Windows",
       "group": "Önbellekler",
-      "name": { "tr": "Prefetch verileri", "en": "Prefetch data" },
+      "name": {
+        "tr": "Prefetch verileri",
+        "en": "Prefetch data",
+        "de": "Prefetch-Daten",
+        "ja": "Prefetch データ",
+        "ko": "Prefetch 데이터",
+        "zh-Hans": "预读取数据"
+      },
       "explanation": {
         "tr": "Windows'un uygulamaları daha hızlı açmak için tuttuğu ön yükleme verisi. Silmek zarar vermez ama ilk birkaç açılış bir miktar yavaşlar; Windows veriyi yeniden oluşturur.",
-        "en": "Preload data Windows keeps to open apps faster. Removing it is harmless, but the first few launches are slower until Windows rebuilds it."
+        "en": "Preload data Windows keeps to open apps faster. Removing it is harmless, but the first few launches are slower until Windows rebuilds it.",
+        "de": "Vorladedaten, mit denen Windows Apps schneller startet. Das Entfernen ist harmlos, aber die ersten Starts sind langsamer, bis Windows sie neu aufbaut.",
+        "ja": "アプリを速く起動するために Windows が保持する先読みデータ。削除しても害はありませんが、Windows が作り直すまで最初の数回は起動が遅くなります。",
+        "ko": "앱을 빨리 열려고 Windows가 보관하는 미리 읽기 데이터. 지워도 해롭지 않지만 Windows가 다시 만들 때까지 처음 몇 번은 느립니다.",
+        "zh-Hans": "Windows 为加快应用启动而保留的预加载数据。删除无害，但在 Windows 重建之前，前几次启动会变慢。"
       },
       "risk": "caution",
       "requiresAdmin": true,
       "defaultEnabled": false,
-      "roots": [{ "base": "SystemRoot", "path": "Prefetch" }],
-      "include": ["**/*.pf"],
+      "roots": [
+        {
+          "base": "SystemRoot",
+          "path": "Prefetch"
+        }
+      ],
+      "include": [
+        "**/*.pf"
+      ],
       "minAgeDays": 30,
       "deleteMode": "quarantine"
     },
@@ -202,14 +421,33 @@
       "id": "windows.thumbnail.cache",
       "category": "Windows",
       "group": "Önbellekler",
-      "name": { "tr": "Küçük resim önbelleği", "en": "Thumbnail cache" },
+      "name": {
+        "tr": "Küçük resim önbelleği",
+        "en": "Thumbnail cache",
+        "de": "Miniaturansichten-Cache",
+        "ja": "サムネイル キャッシュ",
+        "ko": "축소판 캐시",
+        "zh-Hans": "缩略图缓存"
+      },
       "explanation": {
         "tr": "Dosya Gezgini'nin resim ve video önizlemeleri için tuttuğu önbellek. Silinince gerektikçe yeniden oluşturulur.",
-        "en": "Cache File Explorer keeps for image and video previews. It is rebuilt on demand."
+        "en": "Cache File Explorer keeps for image and video previews. It is rebuilt on demand.",
+        "de": "Cache, den der Explorer für Bild- und Videovorschauen behält. Er wird bei Bedarf neu erstellt.",
+        "ja": "エクスプローラーが画像や動画のプレビュー用に保持するキャッシュ。必要に応じて再作成されます。",
+        "ko": "파일 탐색기가 이미지·동영상 미리 보기를 위해 보관하는 캐시. 필요할 때 다시 만들어집니다.",
+        "zh-Hans": "文件资源管理器为图片和视频预览保留的缓存。需要时会自动重建。"
       },
       "risk": "safe",
-      "roots": [{ "base": "LocalAppData", "path": "Microsoft/Windows/Explorer" }],
-      "include": ["thumbcache_*.db", "iconcache_*.db"],
+      "roots": [
+        {
+          "base": "LocalAppData",
+          "path": "Microsoft/Windows/Explorer"
+        }
+      ],
+      "include": [
+        "thumbcache_*.db",
+        "iconcache_*.db"
+      ],
       "recursive": false,
       "deleteMode": "permanent"
     },
@@ -217,20 +455,52 @@
       "id": "windows.shader.cache",
       "category": "Windows",
       "group": "Önbellekler",
-      "name": { "tr": "Ekran kartı gölgelendirici önbelleği", "en": "GPU shader cache" },
+      "name": {
+        "tr": "Ekran kartı gölgelendirici önbelleği",
+        "en": "GPU shader cache",
+        "de": "GPU-Shader-Cache",
+        "ja": "GPU シェーダー キャッシュ",
+        "ko": "GPU 셰이더 캐시",
+        "zh-Hans": "GPU 着色器缓存"
+      },
       "explanation": {
         "tr": "DirectX, NVIDIA ve AMD'nin derlenmiş gölgelendiricileri sakladığı önbellek. Oyun oynadıkça büyür; silinince ilk açılışta yeniden derlenir.",
-        "en": "Cache where DirectX, NVIDIA and AMD store compiled shaders. It grows as you play and is recompiled on first launch after cleaning."
+        "en": "Cache where DirectX, NVIDIA and AMD store compiled shaders. It grows as you play and is recompiled on first launch after cleaning.",
+        "de": "Cache, in dem DirectX, NVIDIA und AMD kompilierte Shader ablegen. Er wächst beim Spielen und wird beim ersten Start nach dem Bereinigen neu erzeugt.",
+        "ja": "DirectX、NVIDIA、AMD がコンパイル済みシェーダーを保存するキャッシュ。プレイするほど増え、削除後の初回起動時に再コンパイルされます。",
+        "ko": "DirectX, NVIDIA, AMD가 컴파일된 셰이더를 저장하는 캐시. 플레이할수록 커지며 정리 후 첫 실행에서 다시 컴파일됩니다.",
+        "zh-Hans": "DirectX、NVIDIA 与 AMD 存放已编译着色器的缓存。游玩时会不断增大，清理后首次启动会重新编译。"
       },
       "risk": "safe",
       "roots": [
-        { "base": "LocalAppData", "path": "D3DSCache" },
-        { "base": "LocalAppData", "path": "NVIDIA/DXCache" },
-        { "base": "LocalAppData", "path": "NVIDIA/GLCache" },
-        { "base": "LocalAppData", "path": "AMD/DxCache" },
-        { "base": "LocalAppData", "path": "AMD/DxcCache" },
-        { "base": "LocalAppData", "path": "AMD/GLCache" },
-        { "base": "LocalAppData", "path": "Intel/ShaderCache" }
+        {
+          "base": "LocalAppData",
+          "path": "D3DSCache"
+        },
+        {
+          "base": "LocalAppData",
+          "path": "NVIDIA/DXCache"
+        },
+        {
+          "base": "LocalAppData",
+          "path": "NVIDIA/GLCache"
+        },
+        {
+          "base": "LocalAppData",
+          "path": "AMD/DxCache"
+        },
+        {
+          "base": "LocalAppData",
+          "path": "AMD/DxcCache"
+        },
+        {
+          "base": "LocalAppData",
+          "path": "AMD/GLCache"
+        },
+        {
+          "base": "LocalAppData",
+          "path": "Intel/ShaderCache"
+        }
       ],
       "deleteMode": "permanent"
     },
@@ -238,33 +508,66 @@
       "id": "windows.font.cache",
       "category": "Windows",
       "group": "Önbellekler",
-      "name": { "tr": "Yazı tipi önbelleği", "en": "Font cache" },
+      "name": {
+        "tr": "Yazı tipi önbelleği",
+        "en": "Font cache",
+        "de": "Schriftarten-Cache",
+        "ja": "フォント キャッシュ",
+        "ko": "글꼴 캐시",
+        "zh-Hans": "字体缓存"
+      },
       "explanation": {
         "tr": "Windows'un yazı tiplerini hızlı yüklemek için tuttuğu önbellek. Bozulduğunda metinler yanlış görünebilir; temizlemek bunu düzeltir.",
-        "en": "Cache Windows keeps to load fonts quickly. When it gets corrupted text can render incorrectly; clearing it fixes that."
+        "en": "Cache Windows keeps to load fonts quickly. When it gets corrupted text can render incorrectly; clearing it fixes that.",
+        "de": "Cache, mit dem Windows Schriften schnell lädt. Bei Beschädigung wird Text falsch dargestellt; Leeren behebt das.",
+        "ja": "フォントを素早く読み込むために Windows が保持するキャッシュ。破損すると文字が正しく表示されなくなり、削除すると直ります。",
+        "ko": "글꼴을 빠르게 불러오려고 Windows가 보관하는 캐시. 손상되면 글자가 깨질 수 있으며, 지우면 해결됩니다.",
+        "zh-Hans": "Windows 为快速加载字体而保留的缓存。损坏时文字可能显示异常，清理即可修复。"
       },
       "risk": "caution",
       "requiresAdmin": true,
       "defaultEnabled": false,
       "roots": [
-        { "base": "SystemRoot", "path": "ServiceProfiles/LocalService/AppData/Local/FontCache" }
+        {
+          "base": "SystemRoot",
+          "path": "ServiceProfiles/LocalService/AppData/Local/FontCache"
+        }
       ],
-      "include": ["**/*.dat"],
+      "include": [
+        "**/*.dat"
+      ],
       "deleteMode": "quarantine"
     },
     {
       "id": "windows.inetcache",
       "category": "Windows",
       "group": "Önbellekler",
-      "name": { "tr": "Windows internet önbelleği", "en": "Windows internet cache" },
+      "name": {
+        "tr": "Windows internet önbelleği",
+        "en": "Windows internet cache",
+        "de": "Windows-Internetcache",
+        "ja": "Windows のインターネット キャッシュ",
+        "ko": "Windows 인터넷 캐시",
+        "zh-Hans": "Windows 网络缓存"
+      },
       "explanation": {
         "tr": "Windows bileşenlerinin ve eski Internet Explorer motorunun indirdiği geçici internet dosyaları.",
-        "en": "Temporary internet files downloaded by Windows components and the legacy Internet Explorer engine."
+        "en": "Temporary internet files downloaded by Windows components and the legacy Internet Explorer engine.",
+        "de": "Temporäre Internetdateien, die Windows-Komponenten und die alte Internet-Explorer-Engine geladen haben.",
+        "ja": "Windows のコンポーネントや旧 Internet Explorer エンジンがダウンロードした一時インターネット ファイル。",
+        "ko": "Windows 구성 요소와 옛 Internet Explorer 엔진이 내려받은 임시 인터넷 파일.",
+        "zh-Hans": "Windows 组件与旧版 Internet Explorer 引擎下载的临时 Internet 文件。"
       },
       "risk": "safe",
       "roots": [
-        { "base": "LocalAppData", "path": "Microsoft/Windows/INetCache" },
-        { "base": "SystemRoot", "path": "Downloaded Program Files" }
+        {
+          "base": "LocalAppData",
+          "path": "Microsoft/Windows/INetCache"
+        },
+        {
+          "base": "SystemRoot",
+          "path": "Downloaded Program Files"
+        }
       ],
       "deleteMode": "permanent"
     },
@@ -272,30 +575,61 @@
       "id": "windows.defender.scan.history",
       "category": "Windows",
       "group": "Windows Defender",
-      "name": { "tr": "Defender tarama geçmişi", "en": "Defender scan history" },
+      "name": {
+        "tr": "Defender tarama geçmişi",
+        "en": "Defender scan history",
+        "de": "Defender-Prüfverlauf",
+        "ja": "Defender のスキャン履歴",
+        "ko": "Defender 검사 기록",
+        "zh-Hans": "Defender 扫描历史"
+      },
       "explanation": {
         "tr": "Microsoft Defender'ın geçmiş taramalarına ait kayıtlar. Silinmesi korumayı etkilemez, yalnızca geçmiş listesi boşalır.",
-        "en": "Records of past Microsoft Defender scans. Removing them does not affect protection, it only clears the history list."
+        "en": "Records of past Microsoft Defender scans. Removing them does not affect protection, it only clears the history list.",
+        "de": "Aufzeichnungen früherer Microsoft Defender-Prüfungen. Das Entfernen beeinträchtigt den Schutz nicht, es leert nur die Verlaufsliste.",
+        "ja": "Microsoft Defender の過去のスキャン記録。削除しても保護には影響せず、履歴の一覧が消えるだけです。",
+        "ko": "Microsoft Defender의 지난 검사 기록. 지워도 보호 기능에는 영향이 없고 기록 목록만 비워집니다.",
+        "zh-Hans": "Microsoft Defender 过去的扫描记录。删除不影响防护，只是清空历史列表。"
       },
       "risk": "caution",
       "requiresAdmin": true,
       "defaultEnabled": false,
-      "roots": [{ "base": "ProgramData", "path": "Microsoft/Windows Defender/Scans/History/Service" }],
+      "roots": [
+        {
+          "base": "ProgramData",
+          "path": "Microsoft/Windows Defender/Scans/History/Service"
+        }
+      ],
       "deleteMode": "quarantine"
     },
     {
       "id": "windows.recycle.bin",
       "category": "Windows",
       "group": "Geri Dönüşüm Kutusu",
-      "name": { "tr": "Geri Dönüşüm Kutusu", "en": "Recycle Bin" },
+      "name": {
+        "tr": "Geri Dönüşüm Kutusu",
+        "en": "Recycle Bin",
+        "de": "Papierkorb",
+        "ja": "ごみ箱",
+        "ko": "휴지통",
+        "zh-Hans": "回收站"
+      },
       "explanation": {
         "tr": "Sildiğin ama kutudan boşaltmadığın dosyalar. UYARI: boşaltıldıktan sonra bu dosyalar geri alınamaz.",
-        "en": "Files you deleted but never emptied. WARNING: once emptied these files cannot be recovered."
+        "en": "Files you deleted but never emptied. WARNING: once emptied these files cannot be recovered.",
+        "de": "Dateien, die du gelöscht, aber nie endgültig entfernt hast. WARNUNG: Nach dem Leeren sind diese Dateien nicht wiederherstellbar.",
+        "ja": "削除したまま空にしていないファイル。警告: 空にすると復元できなくなります。",
+        "ko": "삭제했지만 비우지 않은 파일. 경고: 비우면 이 파일들은 복구할 수 없습니다.",
+        "zh-Hans": "已删除但尚未清空的文件。警告：清空后这些文件将无法恢复。"
       },
       "risk": "caution",
       "defaultEnabled": false,
       "handler": "recycleBin",
-      "roots": [{ "base": "AllFixedDrives" }],
+      "roots": [
+        {
+          "base": "AllFixedDrives"
+        }
+      ],
       "deleteMode": "permanent"
     }
   ]

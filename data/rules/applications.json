@@ -5,19 +5,49 @@
       "id": "app.discord.cache",
       "category": "Applications",
       "group": "Discord",
-      "name": { "tr": "Discord önbelleği", "en": "Discord cache" },
+      "name": {
+        "tr": "Discord önbelleği",
+        "en": "Discord cache",
+        "de": "Discord-Cache",
+        "ja": "Discord のキャッシュ",
+        "ko": "Discord 캐시",
+        "zh-Hans": "Discord 缓存"
+      },
       "explanation": {
         "tr": "Discord'un indirdiği resim, emoji ve ek dosyaları. Silinince oturumun kapanmaz.",
-        "en": "Images, emoji and attachments Discord downloaded. Cleaning does not sign you out."
+        "en": "Images, emoji and attachments Discord downloaded. Cleaning does not sign you out.",
+        "de": "Bilder, Emoji und Anhänge, die Discord geladen hat. Das Bereinigen meldet dich nicht ab.",
+        "ja": "Discord がダウンロードした画像・絵文字・添付ファイル。削除してもサインアウトされません。",
+        "ko": "Discord가 내려받은 이미지, 이모지, 첨부 파일. 정리해도 로그아웃되지 않습니다.",
+        "zh-Hans": "Discord 下载的图片、表情和附件。清理不会让你退出登录。"
       },
       "risk": "safe",
-      "blockingProcesses": ["Discord", "DiscordPTB", "DiscordCanary"],
+      "blockingProcesses": [
+        "Discord",
+        "DiscordPTB",
+        "DiscordCanary"
+      ],
       "roots": [
-        { "base": "RoamingAppData", "path": "discord/Cache" },
-        { "base": "RoamingAppData", "path": "discord/Code Cache" },
-        { "base": "RoamingAppData", "path": "discord/GPUCache" },
-        { "base": "RoamingAppData", "path": "discordptb/Cache" },
-        { "base": "RoamingAppData", "path": "discordcanary/Cache" }
+        {
+          "base": "RoamingAppData",
+          "path": "discord/Cache"
+        },
+        {
+          "base": "RoamingAppData",
+          "path": "discord/Code Cache"
+        },
+        {
+          "base": "RoamingAppData",
+          "path": "discord/GPUCache"
+        },
+        {
+          "base": "RoamingAppData",
+          "path": "discordptb/Cache"
+        },
+        {
+          "base": "RoamingAppData",
+          "path": "discordcanary/Cache"
+        }
       ],
       "deleteMode": "permanent"
     },
@@ -25,33 +55,80 @@
       "id": "app.spotify.cache",
       "category": "Applications",
       "group": "Spotify",
-      "name": { "tr": "Spotify önbelleği", "en": "Spotify cache" },
+      "name": {
+        "tr": "Spotify önbelleği",
+        "en": "Spotify cache",
+        "de": "Spotify-Cache",
+        "ja": "Spotify のキャッシュ",
+        "ko": "Spotify 캐시",
+        "zh-Hans": "Spotify 缓存"
+      },
       "explanation": {
         "tr": "Çevrimdışı dinleme için indirilen parçalar hariç, geçici akış verisi. Çevrimdışı kaydettiğin listeler etkilenmez.",
-        "en": "Temporary streaming data, excluding tracks downloaded for offline listening. Your offline playlists are untouched."
+        "en": "Temporary streaming data, excluding tracks downloaded for offline listening. Your offline playlists are untouched.",
+        "de": "Temporäre Streaming-Daten, ohne die für offline heruntergeladenen Titel. Deine Offline-Playlists bleiben unberührt.",
+        "ja": "一時的なストリーミング データ。オフライン再生用にダウンロードした曲は含まれず、そのまま残ります。",
+        "ko": "임시 스트리밍 데이터. 오프라인 재생용으로 내려받은 곡은 포함되지 않으며 그대로 남습니다.",
+        "zh-Hans": "临时流媒体数据，不包含已下载供离线收听的曲目。离线歌单不受影响。"
       },
       "risk": "safe",
-      "blockingProcesses": ["Spotify"],
-      "roots": [{ "base": "LocalAppData", "path": "Spotify/Data" }],
+      "blockingProcesses": [
+        "Spotify"
+      ],
+      "roots": [
+        {
+          "base": "LocalAppData",
+          "path": "Spotify/Data"
+        }
+      ],
       "deleteMode": "permanent"
     },
     {
       "id": "app.teams.cache",
       "category": "Applications",
       "group": "Microsoft Teams",
-      "name": { "tr": "Teams önbelleği", "en": "Teams cache" },
+      "name": {
+        "tr": "Teams önbelleği",
+        "en": "Teams cache",
+        "de": "Teams-Cache",
+        "ja": "Teams のキャッシュ",
+        "ko": "Teams 캐시",
+        "zh-Hans": "Teams 缓存"
+      },
       "explanation": {
         "tr": "Teams'in sakladığı geçici veri. Teams sık sık bozulan önbellek yüzünden takılır; temizlemek çoğu sorunu çözer.",
-        "en": "Temporary data Teams keeps. Teams often misbehaves due to a corrupted cache, and clearing it fixes most issues."
+        "en": "Temporary data Teams keeps. Teams often misbehaves due to a corrupted cache, and clearing it fixes most issues.",
+        "de": "Temporäre Daten von Teams. Teams spinnt oft wegen eines beschädigten Caches; Leeren behebt die meisten Probleme.",
+        "ja": "Teams が保持する一時データ。キャッシュ破損で不調になることが多く、削除すると大半の問題が解消します。",
+        "ko": "Teams가 보관하는 임시 데이터. 캐시 손상으로 오작동하는 경우가 많으며, 지우면 대부분 해결됩니다.",
+        "zh-Hans": "Teams 保存的临时数据。缓存损坏常导致 Teams 异常，清理后多数问题即可解决。"
       },
       "risk": "safe",
-      "blockingProcesses": ["Teams", "ms-teams"],
+      "blockingProcesses": [
+        "Teams",
+        "ms-teams"
+      ],
       "roots": [
-        { "base": "RoamingAppData", "path": "Microsoft/Teams/Cache" },
-        { "base": "RoamingAppData", "path": "Microsoft/Teams/Code Cache" },
-        { "base": "RoamingAppData", "path": "Microsoft/Teams/GPUCache" },
-        { "base": "RoamingAppData", "path": "Microsoft/Teams/Service Worker/CacheStorage" },
-        { "base": "LocalAppData", "path": "Packages/MSTeams_8wekyb3d8bbwe/LocalCache/Microsoft/MSTeams/Logs" }
+        {
+          "base": "RoamingAppData",
+          "path": "Microsoft/Teams/Cache"
+        },
+        {
+          "base": "RoamingAppData",
+          "path": "Microsoft/Teams/Code Cache"
+        },
+        {
+          "base": "RoamingAppData",
+          "path": "Microsoft/Teams/GPUCache"
+        },
+        {
+          "base": "RoamingAppData",
+          "path": "Microsoft/Teams/Service Worker/CacheStorage"
+        },
+        {
+          "base": "LocalAppData",
+          "path": "Packages/MSTeams_8wekyb3d8bbwe/LocalCache/Microsoft/MSTeams/Logs"
+        }
       ],
       "deleteMode": "permanent"
     },
@@ -59,18 +136,43 @@
       "id": "app.slack.cache",
       "category": "Applications",
       "group": "Slack",
-      "name": { "tr": "Slack önbelleği", "en": "Slack cache" },
+      "name": {
+        "tr": "Slack önbelleği",
+        "en": "Slack cache",
+        "de": "Slack-Cache",
+        "ja": "Slack のキャッシュ",
+        "ko": "Slack 캐시",
+        "zh-Hans": "Slack 缓存"
+      },
       "explanation": {
         "tr": "Slack'in indirdiği geçici dosyalar ve günlükler. Oturumun etkilenmez.",
-        "en": "Temporary files and logs Slack downloaded. Your session is not affected."
+        "en": "Temporary files and logs Slack downloaded. Your session is not affected.",
+        "de": "Von Slack geladene temporäre Dateien und Protokolle. Deine Sitzung ist nicht betroffen.",
+        "ja": "Slack がダウンロードした一時ファイルとログ。サインイン状態には影響しません。",
+        "ko": "Slack이 내려받은 임시 파일과 로그. 로그인 상태에는 영향이 없습니다.",
+        "zh-Hans": "Slack 下载的临时文件与日志。不影响你的登录状态。"
       },
       "risk": "safe",
-      "blockingProcesses": ["slack"],
+      "blockingProcesses": [
+        "slack"
+      ],
       "roots": [
-        { "base": "RoamingAppData", "path": "Slack/Cache" },
-        { "base": "RoamingAppData", "path": "Slack/Code Cache" },
-        { "base": "RoamingAppData", "path": "Slack/GPUCache" },
-        { "base": "RoamingAppData", "path": "Slack/logs" }
+        {
+          "base": "RoamingAppData",
+          "path": "Slack/Cache"
+        },
+        {
+          "base": "RoamingAppData",
+          "path": "Slack/Code Cache"
+        },
+        {
+          "base": "RoamingAppData",
+          "path": "Slack/GPUCache"
+        },
+        {
+          "base": "RoamingAppData",
+          "path": "Slack/logs"
+        }
       ],
       "deleteMode": "permanent"
     },
@@ -78,16 +180,35 @@
       "id": "app.zoom.cache",
       "category": "Applications",
       "group": "Zoom",
-      "name": { "tr": "Zoom önbelleği ve günlükleri", "en": "Zoom cache and logs" },
+      "name": {
+        "tr": "Zoom önbelleği ve günlükleri",
+        "en": "Zoom cache and logs",
+        "de": "Zoom-Cache und Protokolle",
+        "ja": "Zoom のキャッシュとログ",
+        "ko": "Zoom 캐시와 로그",
+        "zh-Hans": "Zoom 缓存与日志"
+      },
       "explanation": {
         "tr": "Zoom'un geçici dosyaları ve günlükleri. Kayıtlarına dokunulmaz.",
-        "en": "Zoom temporary files and logs. Your recordings are untouched."
+        "en": "Zoom temporary files and logs. Your recordings are untouched.",
+        "de": "Temporäre Dateien und Protokolle von Zoom. Deine Aufzeichnungen bleiben unberührt.",
+        "ja": "Zoom の一時ファイルとログ。録画データはそのまま残ります。",
+        "ko": "Zoom의 임시 파일과 로그. 녹화본은 그대로 남습니다.",
+        "zh-Hans": "Zoom 的临时文件和日志。你的录制文件不受影响。"
       },
       "risk": "safe",
-      "blockingProcesses": ["Zoom"],
+      "blockingProcesses": [
+        "Zoom"
+      ],
       "roots": [
-        { "base": "RoamingAppData", "path": "Zoom/logs" },
-        { "base": "RoamingAppData", "path": "Zoom/data/Cache" }
+        {
+          "base": "RoamingAppData",
+          "path": "Zoom/logs"
+        },
+        {
+          "base": "RoamingAppData",
+          "path": "Zoom/data/Cache"
+        }
       ],
       "deleteMode": "permanent"
     },
@@ -95,17 +216,40 @@
       "id": "app.adobe.mediacache",
       "category": "Applications",
       "group": "Adobe",
-      "name": { "tr": "Adobe medya önbelleği", "en": "Adobe media cache" },
+      "name": {
+        "tr": "Adobe medya önbelleği",
+        "en": "Adobe media cache",
+        "de": "Adobe-Medien-Cache",
+        "ja": "Adobe のメディア キャッシュ",
+        "ko": "Adobe 미디어 캐시",
+        "zh-Hans": "Adobe 媒体缓存"
+      },
       "explanation": {
         "tr": "Premiere ve After Effects'in ses/video için ürettiği ara dosyalar. Onlarca gigabayta ulaşabilir; projeler açıldığında yeniden üretilir.",
-        "en": "Intermediate audio/video files generated by Premiere and After Effects. Can reach tens of gigabytes and is regenerated when projects open."
+        "en": "Intermediate audio/video files generated by Premiere and After Effects. Can reach tens of gigabytes and is regenerated when projects open.",
+        "de": "Zwischendateien für Audio und Video, die Premiere und After Effects erzeugen. Kann zweistellige Gigabyte erreichen und wird beim Öffnen der Projekte neu erstellt.",
+        "ja": "Premiere や After Effects が生成する音声・映像の中間ファイル。数十 GB になることがあり、プロジェクトを開くと再生成されます。",
+        "ko": "Premiere와 After Effects가 만드는 오디오·비디오 중간 파일. 수십 GB에 이를 수 있고 프로젝트를 열면 다시 만들어집니다.",
+        "zh-Hans": "Premiere 与 After Effects 生成的音视频中间文件。可达数十 GB，打开项目时会重新生成。"
       },
       "risk": "safe",
-      "blockingProcesses": ["Adobe Premiere Pro", "AfterFX"],
+      "blockingProcesses": [
+        "Adobe Premiere Pro",
+        "AfterFX"
+      ],
       "roots": [
-        { "base": "RoamingAppData", "path": "Adobe/Common/Media Cache" },
-        { "base": "RoamingAppData", "path": "Adobe/Common/Media Cache Files" },
-        { "base": "RoamingAppData", "path": "Adobe/Common/Peak Files" }
+        {
+          "base": "RoamingAppData",
+          "path": "Adobe/Common/Media Cache"
+        },
+        {
+          "base": "RoamingAppData",
+          "path": "Adobe/Common/Media Cache Files"
+        },
+        {
+          "base": "RoamingAppData",
+          "path": "Adobe/Common/Peak Files"
+        }
       ],
       "deleteMode": "permanent"
     },
@@ -113,16 +257,35 @@
       "id": "app.office.cache",
       "category": "Applications",
       "group": "Microsoft Office",
-      "name": { "tr": "Office belge önbelleği", "en": "Office document cache" },
+      "name": {
+        "tr": "Office belge önbelleği",
+        "en": "Office document cache",
+        "de": "Office-Dokumentcache",
+        "ja": "Office のドキュメント キャッシュ",
+        "ko": "Office 문서 캐시",
+        "zh-Hans": "Office 文档缓存"
+      },
       "explanation": {
         "tr": "Office'in bulut belgeleri için tuttuğu yerel kopyalar. Senkronize edilmemiş değişiklik varsa kaybolabilir; Office kapalıyken temizle.",
-        "en": "Local copies Office keeps for cloud documents. Unsynced changes could be lost, so clean this with Office closed."
+        "en": "Local copies Office keeps for cloud documents. Unsynced changes could be lost, so clean this with Office closed.",
+        "de": "Lokale Kopien, die Office für Clouddokumente behält. Nicht synchronisierte Änderungen könnten verloren gehen – bereinige das mit geschlossenem Office.",
+        "ja": "Office がクラウド文書用に保持するローカル コピー。未同期の変更が失われる恐れがあるため、Office を閉じてから実行してください。",
+        "ko": "Office가 클라우드 문서를 위해 보관하는 로컬 사본. 동기화되지 않은 변경이 사라질 수 있으니 Office를 닫고 정리하세요.",
+        "zh-Hans": "Office 为云端文档保留的本地副本。未同步的更改可能丢失，请在关闭 Office 后清理。"
       },
       "risk": "caution",
       "defaultEnabled": false,
-      "blockingProcesses": ["WINWORD", "EXCEL", "POWERPNT", "OUTLOOK"],
+      "blockingProcesses": [
+        "WINWORD",
+        "EXCEL",
+        "POWERPNT",
+        "OUTLOOK"
+      ],
       "roots": [
-        { "base": "LocalAppData", "path": "Microsoft/Office/16.0/OfficeFileCache" }
+        {
+          "base": "LocalAppData",
+          "path": "Microsoft/Office/16.0/OfficeFileCache"
+        }
       ],
       "deleteMode": "quarantine"
     },
@@ -130,22 +293,60 @@
       "id": "app.vscode.cache",
       "category": "Applications",
       "group": "Kod düzenleyiciler",
-      "name": { "tr": "VS Code / Cursor önbelleği", "en": "VS Code / Cursor cache" },
+      "name": {
+        "tr": "VS Code / Cursor önbelleği",
+        "en": "VS Code / Cursor cache",
+        "de": "VS Code / Cursor-Cache",
+        "ja": "VS Code / Cursor のキャッシュ",
+        "ko": "VS Code / Cursor 캐시",
+        "zh-Hans": "VS Code / Cursor 缓存"
+      },
       "explanation": {
         "tr": "Düzenleyicinin geçici verisi ve günlükleri. Ayarların, eklentilerin ve açık dosyaların etkilenmez.",
-        "en": "Editor temporary data and logs. Your settings, extensions and open files are untouched."
+        "en": "Editor temporary data and logs. Your settings, extensions and open files are untouched.",
+        "de": "Temporäre Daten und Protokolle des Editors. Einstellungen, Erweiterungen und geöffnete Dateien bleiben unberührt.",
+        "ja": "エディターの一時データとログ。設定・拡張機能・開いているファイルはそのまま残ります。",
+        "ko": "편집기의 임시 데이터와 로그. 설정, 확장, 열려 있는 파일은 그대로입니다.",
+        "zh-Hans": "编辑器的临时数据与日志。设置、扩展和已打开的文件不受影响。"
       },
       "risk": "safe",
-      "blockingProcesses": ["Code", "Cursor"],
+      "blockingProcesses": [
+        "Code",
+        "Cursor"
+      ],
       "roots": [
-        { "base": "RoamingAppData", "path": "Code/Cache" },
-        { "base": "RoamingAppData", "path": "Code/CachedData" },
-        { "base": "RoamingAppData", "path": "Code/Code Cache" },
-        { "base": "RoamingAppData", "path": "Code/GPUCache" },
-        { "base": "RoamingAppData", "path": "Code/logs" },
-        { "base": "RoamingAppData", "path": "Cursor/Cache" },
-        { "base": "RoamingAppData", "path": "Cursor/CachedData" },
-        { "base": "RoamingAppData", "path": "Cursor/logs" }
+        {
+          "base": "RoamingAppData",
+          "path": "Code/Cache"
+        },
+        {
+          "base": "RoamingAppData",
+          "path": "Code/CachedData"
+        },
+        {
+          "base": "RoamingAppData",
+          "path": "Code/Code Cache"
+        },
+        {
+          "base": "RoamingAppData",
+          "path": "Code/GPUCache"
+        },
+        {
+          "base": "RoamingAppData",
+          "path": "Code/logs"
+        },
+        {
+          "base": "RoamingAppData",
+          "path": "Cursor/Cache"
+        },
+        {
+          "base": "RoamingAppData",
+          "path": "Cursor/CachedData"
+        },
+        {
+          "base": "RoamingAppData",
+          "path": "Cursor/logs"
+        }
       ],
       "minAgeDays": 3,
       "deleteMode": "permanent"
@@ -154,18 +355,41 @@
       "id": "app.gpu.installer.leftovers",
       "category": "Applications",
       "group": "Sürücü kurulum artıkları",
-      "name": { "tr": "Ekran kartı kurulum artıkları", "en": "GPU installer leftovers" },
+      "name": {
+        "tr": "Ekran kartı kurulum artıkları",
+        "en": "GPU installer leftovers",
+        "de": "Reste von Grafiktreiber-Installern",
+        "ja": "GPU インストーラーの残骸",
+        "ko": "GPU 설치 프로그램 잔여물",
+        "zh-Hans": "显卡安装程序残留"
+      },
       "explanation": {
         "tr": "NVIDIA ve AMD sürücü kurulumlarının diskin köküne çıkardığı paketler. Kurulum bittikten sonra gereksizler, birkaç gigabayt tutabilirler.",
-        "en": "Packages NVIDIA and AMD driver installers extract to the drive root. Useless once installation finished and can take several gigabytes."
+        "en": "Packages NVIDIA and AMD driver installers extract to the drive root. Useless once installation finished and can take several gigabytes.",
+        "de": "Pakete, die NVIDIA- und AMD-Installer im Laufwerksstamm entpacken. Nach der Installation nutzlos und oft mehrere Gigabyte groß.",
+        "ja": "NVIDIA や AMD のドライバー インストーラーがドライブ直下に展開したパッケージ。インストール後は不要で、数 GB になることがあります。",
+        "ko": "NVIDIA와 AMD 드라이버 설치 프로그램이 드라이브 루트에 풀어 놓은 패키지. 설치가 끝나면 쓸모없고 수 GB를 차지합니다.",
+        "zh-Hans": "NVIDIA 与 AMD 驱动安装程序解压到盘符根目录的文件。安装完成后即无用，常占用数 GB。"
       },
       "risk": "safe",
       "requiresAdmin": true,
       "roots": [
-        { "base": "SystemDrive", "path": "NVIDIA" },
-        { "base": "SystemDrive", "path": "AMD" },
-        { "base": "SystemDrive", "path": "Intel/Logs" },
-        { "base": "ProgramData", "path": "NVIDIA Corporation/Downloader" }
+        {
+          "base": "SystemDrive",
+          "path": "NVIDIA"
+        },
+        {
+          "base": "SystemDrive",
+          "path": "AMD"
+        },
+        {
+          "base": "SystemDrive",
+          "path": "Intel/Logs"
+        },
+        {
+          "base": "ProgramData",
+          "path": "NVIDIA Corporation/Downloader"
+        }
       ],
       "minAgeDays": 7,
       "deleteMode": "permanent"

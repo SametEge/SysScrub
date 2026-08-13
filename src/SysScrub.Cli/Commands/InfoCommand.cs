@@ -9,7 +9,9 @@ internal static class InfoCommand
     {
         SystemSnapshot snapshot = new SystemInfoService().Capture();
 
-        Console.WriteLine(snapshot.OperatingSystem);
+        Console.WriteLine(snapshot.WindowsBuild.Length > 0
+            ? $"{snapshot.OperatingSystem} (derleme {snapshot.WindowsBuild})"
+            : snapshot.OperatingSystem);
         Console.WriteLine($"Makine       : {snapshot.MachineName}");
         Console.WriteLine($"Açık kalma   : {DurationText.Humanize(snapshot.Uptime)}");
         Console.WriteLine($"Yetki        : {(snapshot.IsElevated ? "yönetici" : "sınırlı")}");

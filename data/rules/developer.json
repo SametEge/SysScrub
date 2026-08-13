@@ -5,18 +5,41 @@
       "id": "dev.npm.cache",
       "category": "Developer",
       "group": "Node.js",
-      "name": { "tr": "npm / yarn / pnpm önbelleği", "en": "npm / yarn / pnpm cache" },
+      "name": {
+        "tr": "npm / yarn / pnpm önbelleği",
+        "en": "npm / yarn / pnpm cache",
+        "de": "npm / yarn / pnpm-Cache",
+        "ja": "npm / yarn / pnpm のキャッシュ",
+        "ko": "npm / yarn / pnpm 캐시",
+        "zh-Hans": "npm / yarn / pnpm 缓存"
+      },
       "explanation": {
         "tr": "İndirilmiş paket arşivleri. Silinince sonraki kurulumlar internetten yeniden indirir; çevrimdışı çalışıyorsan temizleme.",
-        "en": "Downloaded package archives. Later installs re-download them, so skip this if you work offline."
+        "en": "Downloaded package archives. Later installs re-download them, so skip this if you work offline.",
+        "de": "Heruntergeladene Paketarchive. Spätere Installationen laden sie erneut – überspringe das, wenn du offline arbeitest.",
+        "ja": "ダウンロード済みのパッケージ アーカイブ。次回のインストールで再取得されるため、オフライン作業時は削除しないでください。",
+        "ko": "내려받은 패키지 아카이브. 다음 설치 때 다시 받으므로 오프라인으로 작업한다면 건너뛰세요.",
+        "zh-Hans": "已下载的包归档。后续安装会重新下载，离线工作时请跳过此项。"
       },
       "risk": "safe",
       "defaultEnabled": false,
       "roots": [
-        { "base": "RoamingAppData", "path": "npm-cache" },
-        { "base": "LocalAppData", "path": "npm-cache" },
-        { "base": "LocalAppData", "path": "Yarn/Cache" },
-        { "base": "LocalAppData", "path": "pnpm/store" }
+        {
+          "base": "RoamingAppData",
+          "path": "npm-cache"
+        },
+        {
+          "base": "LocalAppData",
+          "path": "npm-cache"
+        },
+        {
+          "base": "LocalAppData",
+          "path": "Yarn/Cache"
+        },
+        {
+          "base": "LocalAppData",
+          "path": "pnpm/store"
+        }
       ],
       "deleteMode": "permanent"
     },
@@ -24,18 +47,41 @@
       "id": "dev.nuget.cache",
       "category": "Developer",
       "group": ".NET",
-      "name": { "tr": "NuGet paket önbelleği", "en": "NuGet package cache" },
+      "name": {
+        "tr": "NuGet paket önbelleği",
+        "en": "NuGet package cache",
+        "de": "NuGet-Paketcache",
+        "ja": "NuGet パッケージ キャッシュ",
+        "ko": "NuGet 패키지 캐시",
+        "zh-Hans": "NuGet 包缓存"
+      },
       "explanation": {
         "tr": "İndirilmiş NuGet paketleri ve HTTP önbelleği. Onlarca gigabayta ulaşabilir; sonraki derlemede yeniden indirilir.",
-        "en": "Downloaded NuGet packages and HTTP cache. Can reach tens of gigabytes and is re-downloaded on the next build."
+        "en": "Downloaded NuGet packages and HTTP cache. Can reach tens of gigabytes and is re-downloaded on the next build.",
+        "de": "Heruntergeladene NuGet-Pakete und HTTP-Cache. Kann zweistellige Gigabyte erreichen und wird beim nächsten Build neu geladen.",
+        "ja": "ダウンロード済みの NuGet パッケージと HTTP キャッシュ。数十 GB になることがあり、次のビルドで再取得されます。",
+        "ko": "내려받은 NuGet 패키지와 HTTP 캐시. 수십 GB에 이를 수 있고 다음 빌드에서 다시 받습니다.",
+        "zh-Hans": "已下载的 NuGet 包与 HTTP 缓存。可达数十 GB，下次构建时会重新下载。"
       },
       "risk": "safe",
       "defaultEnabled": false,
       "roots": [
-        { "base": "UserProfile", "path": ".nuget/packages" },
-        { "base": "LocalAppData", "path": "NuGet/v3-cache" },
-        { "base": "LocalAppData", "path": "NuGet/plugins-cache" },
-        { "base": "LocalAppData", "path": "Temp/NuGetScratch" }
+        {
+          "base": "UserProfile",
+          "path": ".nuget/packages"
+        },
+        {
+          "base": "LocalAppData",
+          "path": "NuGet/v3-cache"
+        },
+        {
+          "base": "LocalAppData",
+          "path": "NuGet/plugins-cache"
+        },
+        {
+          "base": "LocalAppData",
+          "path": "Temp/NuGetScratch"
+        }
       ],
       "deleteMode": "permanent"
     },
@@ -43,17 +89,36 @@
       "id": "dev.visualstudio.cache",
       "category": "Developer",
       "group": "Visual Studio",
-      "name": { "tr": "Visual Studio önbelleği", "en": "Visual Studio cache" },
+      "name": {
+        "tr": "Visual Studio önbelleği",
+        "en": "Visual Studio cache",
+        "de": "Visual Studio-Cache",
+        "ja": "Visual Studio のキャッシュ",
+        "ko": "Visual Studio 캐시",
+        "zh-Hans": "Visual Studio 缓存"
+      },
       "explanation": {
         "tr": "Bileşen modeli önbelleği ve geçici dosyalar. Bozulduğunda Visual Studio eklentileri kaybolur; temizlemek düzeltir.",
-        "en": "Component model cache and temporary files. When corrupted Visual Studio loses extensions, and clearing it fixes that."
+        "en": "Component model cache and temporary files. When corrupted Visual Studio loses extensions, and clearing it fixes that.",
+        "de": "Komponentenmodell-Cache und temporäre Dateien. Bei Beschädigung verliert Visual Studio Erweiterungen; Leeren behebt das.",
+        "ja": "コンポーネント モデル キャッシュと一時ファイル。破損すると拡張機能が失われることがあり、削除すると直ります。",
+        "ko": "구성 요소 모델 캐시와 임시 파일. 손상되면 확장이 사라질 수 있으며, 지우면 해결됩니다.",
+        "zh-Hans": "组件模型缓存与临时文件。损坏时 Visual Studio 会丢失扩展，清理即可修复。"
       },
       "risk": "safe",
       "defaultEnabled": false,
-      "blockingProcesses": ["devenv"],
+      "blockingProcesses": [
+        "devenv"
+      ],
       "roots": [
-        { "base": "LocalAppData", "path": "Microsoft/VisualStudio/*/ComponentModelCache" },
-        { "base": "LocalAppData", "path": "Microsoft/VisualStudio/*/ProjectAssemblies" }
+        {
+          "base": "LocalAppData",
+          "path": "Microsoft/VisualStudio/*/ComponentModelCache"
+        },
+        {
+          "base": "LocalAppData",
+          "path": "Microsoft/VisualStudio/*/ProjectAssemblies"
+        }
       ],
       "deleteMode": "permanent"
     },
@@ -61,30 +126,63 @@
       "id": "dev.python.cache",
       "category": "Developer",
       "group": "Python",
-      "name": { "tr": "pip önbelleği", "en": "pip cache" },
+      "name": {
+        "tr": "pip önbelleği",
+        "en": "pip cache",
+        "de": "pip-Cache",
+        "ja": "pip のキャッシュ",
+        "ko": "pip 캐시",
+        "zh-Hans": "pip 缓存"
+      },
       "explanation": {
         "tr": "İndirilmiş Python paket arşivleri. Sonraki kurulumda yeniden indirilir.",
-        "en": "Downloaded Python package archives. Re-downloaded on the next install."
+        "en": "Downloaded Python package archives. Re-downloaded on the next install.",
+        "de": "Heruntergeladene Python-Paketarchive. Werden bei der nächsten Installation erneut geladen.",
+        "ja": "ダウンロード済みの Python パッケージ アーカイブ。次回インストール時に再取得されます。",
+        "ko": "내려받은 Python 패키지 아카이브. 다음 설치 때 다시 받습니다.",
+        "zh-Hans": "已下载的 Python 包归档。下次安装时会重新下载。"
       },
       "risk": "safe",
       "defaultEnabled": false,
-      "roots": [{ "base": "LocalAppData", "path": "pip/cache" }],
+      "roots": [
+        {
+          "base": "LocalAppData",
+          "path": "pip/cache"
+        }
+      ],
       "deleteMode": "permanent"
     },
     {
       "id": "dev.jvm.cache",
       "category": "Developer",
       "group": "JVM",
-      "name": { "tr": "Gradle ve Maven önbelleği", "en": "Gradle and Maven cache" },
+      "name": {
+        "tr": "Gradle ve Maven önbelleği",
+        "en": "Gradle and Maven cache",
+        "de": "Gradle- und Maven-Cache",
+        "ja": "Gradle と Maven のキャッシュ",
+        "ko": "Gradle과 Maven 캐시",
+        "zh-Hans": "Gradle 与 Maven 缓存"
+      },
       "explanation": {
         "tr": "İndirilmiş Java bağımlılıkları ve Gradle derleme önbelleği. Sonraki derlemede yeniden indirilir.",
-        "en": "Downloaded Java dependencies and the Gradle build cache. Re-downloaded on the next build."
+        "en": "Downloaded Java dependencies and the Gradle build cache. Re-downloaded on the next build.",
+        "de": "Heruntergeladene Java-Abhängigkeiten und der Gradle-Build-Cache. Werden beim nächsten Build neu geladen.",
+        "ja": "ダウンロード済みの Java 依存関係と Gradle のビルド キャッシュ。次のビルドで再取得されます。",
+        "ko": "내려받은 Java 의존성과 Gradle 빌드 캐시. 다음 빌드에서 다시 받습니다.",
+        "zh-Hans": "已下载的 Java 依赖与 Gradle 构建缓存。下次构建时会重新下载。"
       },
       "risk": "safe",
       "defaultEnabled": false,
       "roots": [
-        { "base": "UserProfile", "path": ".gradle/caches" },
-        { "base": "UserProfile", "path": ".m2/repository" }
+        {
+          "base": "UserProfile",
+          "path": ".gradle/caches"
+        },
+        {
+          "base": "UserProfile",
+          "path": ".m2/repository"
+        }
       ],
       "deleteMode": "permanent"
     },
@@ -92,16 +190,33 @@
       "id": "dev.rust.go.cache",
       "category": "Developer",
       "group": "Rust ve Go",
-      "name": { "tr": "Cargo ve Go modül önbelleği", "en": "Cargo and Go module cache" },
+      "name": {
+        "tr": "Cargo ve Go modül önbelleği",
+        "en": "Cargo and Go module cache",
+        "de": "Cargo- und Go-Modul-Cache",
+        "ja": "Cargo と Go モジュールのキャッシュ",
+        "ko": "Cargo와 Go 모듈 캐시",
+        "zh-Hans": "Cargo 与 Go 模块缓存"
+      },
       "explanation": {
         "tr": "İndirilmiş Rust crate'leri ve Go modülleri. Sonraki derlemede yeniden indirilir.",
-        "en": "Downloaded Rust crates and Go modules. Re-downloaded on the next build."
+        "en": "Downloaded Rust crates and Go modules. Re-downloaded on the next build.",
+        "de": "Heruntergeladene Rust-Crates und Go-Module. Werden beim nächsten Build neu geladen.",
+        "ja": "ダウンロード済みの Rust クレートと Go モジュール。次のビルドで再取得されます。",
+        "ko": "내려받은 Rust 크레이트와 Go 모듈. 다음 빌드에서 다시 받습니다.",
+        "zh-Hans": "已下载的 Rust crate 与 Go 模块。下次构建时会重新下载。"
       },
       "risk": "safe",
       "defaultEnabled": false,
       "roots": [
-        { "base": "UserProfile", "path": ".cargo/registry/cache" },
-        { "base": "UserProfile", "path": "go/pkg/mod/cache/download" }
+        {
+          "base": "UserProfile",
+          "path": ".cargo/registry/cache"
+        },
+        {
+          "base": "UserProfile",
+          "path": "go/pkg/mod/cache/download"
+        }
       ],
       "deleteMode": "permanent"
     }

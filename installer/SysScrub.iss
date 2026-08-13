@@ -38,6 +38,12 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0.17763
 
+; Uygulama çalışırken güncelleme kurulabilsin: Yeniden Başlatma Yöneticisi
+; SysScrub.exe'yi kapatır. Yeniden açmayı biz üstleniyoruz ([Run] /RELAUNCH),
+; o yüzden RestartApplications kapalı.
+CloseApplications=yes
+RestartApplications=no
+
 OutputBaseFilename=SysScrub-Setup-{#AppVersion}
 Compression=lzma2/max
 SolidCompression=yes
@@ -73,6 +79,8 @@ Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExe}"; Tasks: desktopico
 
 [Run]
 Filename: "{app}\{#AppExe}"; Description: "{cm:LaunchApp}"; Flags: nowait postinstall skipifsilent runascurrentuser
+; Uygulamanın kendi güncellemesi sessiz kurar; kapattığımız pencereyi geri açıyoruz.
+Filename: "{app}\{#AppExe}"; Flags: nowait runascurrentuser; Check: ShouldRelaunch
 
 [UninstallDelete]
 ; Kaldırırken kendi artıklarımızı bırakmıyoruz — bir temizlik uygulamasının kirli çıkması olmaz.
@@ -80,6 +88,23 @@ Type: filesandordirs; Name: "{commonappdata}\SysScrub\logs"
 Type: dirifempty; Name: "{commonappdata}\SysScrub"
 
 [Code]
+{ Uygulama kendini güncellerken "/RELAUNCH" gönderir; kurulum bitince pencereyi
+  geri açalım. Kullanıcı setup'ı elle çalıştırdıysa bu bayrak yok, [Run]'ın
+  normal "Başlat" onay kutusu devrede kalır. }
+function ShouldRelaunch: Boolean;
+var
+  I: Integer;
+begin
+  Result := False;
+
+  for I := 1 to ParamCount do
+    if CompareText(ParamStr(I), '/RELAUNCH') = 0 then
+    begin
+      Result := True;
+      Exit;
+    end;
+end;
+
 { .NET 8 Masaüstü Çalışma Zamanı kurulu mu? Framework-dependent sürüm bunsuz açılmıyor. }
 function IsDotNetDesktopInstalled: Boolean;
 var

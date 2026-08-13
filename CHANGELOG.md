@@ -7,6 +7,42 @@ Release notları bu dosyanın ilgili sürüm bölümünden otomatik üretilir.
 
 ---
 
+## [0.14.0-alpha] — 2026-08-14
+
+Arayüz altı dilde tamamlandı ve uygulama kendi güncellemesini alabiliyor.
+
+### Eklenenler
+
+- **Kural çevirileri tamamlandı** — 48 temizleme kuralının adı ve açıklaması
+  Almanca, Japonca, Korece ve Basitleştirilmiş Çince'ye çevrildi. Arayüzde artık
+  Türkçe'ye düşen tek metin kalmadı
+- **GitHub Releases üzerinden otomatik güncelleme** — uygulama yayınlara bakar,
+  kurulum paketini indirir, yayınla birlikte gelen `SHA256SUMS.txt` ile doğrular
+  ve ancak ondan sonra çalıştırır. Özet tutmuyorsa dosya siliniyor
+- Ayarlar'da güncelleme kartı: açılış denetimi anahtarı, elle denetleme, indirme
+  ilerlemesi, doğrulama sonucu ve yayın notları
+- Kurulum betiğine `/RELAUNCH` bayrağı: sessiz güncelleme bitince uygulama
+  kendini geri açıyor
+
+### Kararlar
+
+- **Ön yayın kuralı kendiliğinden ayarlanıyor:** alfa çalıştıran kişiye ön
+  yayınlar önerilir, kararlı sürüm çalıştırana yalnızca kararlı sürüm. Kimse ne
+  beta'ya sürüklenir ne de alfa'da mahsur kalır
+- **Portatif kurulum kendini güncellemiyor** — kullanıcı bilerek kuruluma karşı
+  bir dağıtım seçmiş; yeni sürüm bildiriliyor, indirmesi kendisine bırakılıyor
+- Denetim başarısız olursa zaman damgası ilerlemiyor: ağ geri geldiğinde bir gün
+  beklemeden yeniden bakılıyor
+
+### Düzeltmeler
+
+- Windows sürüm satırındaki "derleme" kelimesi motor katmanından çıkarıldı;
+  cümleyi artık arayüz kuruyor ve altı dilde doğru yazılıyor
+- Ayarlar ekranında çeviriye bağlanmamış iki metin kalmıştı (sürüm satırı ve
+  ayar dosyası yolu) — ikisi de çeviriye taşındı
+
+---
+
 ## [0.13.0-alpha] — 2026-08-13
 
 Görünüm modellerinin ürettiği bütün cümleler çeviriye taşındı.

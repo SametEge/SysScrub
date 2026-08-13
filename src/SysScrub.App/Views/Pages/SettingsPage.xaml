@@ -322,6 +322,84 @@
                     </Grid>
                 </Border>
 
+                <!-- ==================== Uygulama güncellemesi ==================== -->
+                <TextBlock Text="{loc:Str Set_Update}" Style="{StaticResource SsSectionLabel}" Margin="2,20,0,10" />
+
+                <Border Style="{StaticResource SettingRow}" DataContext="{Binding Update}">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,20,0">
+                                <TextBlock Text="{loc:Str Set_Update_Auto}" Style="{StaticResource SsBodyText}"
+                                           FontWeight="SemiBold" />
+                                <TextBlock Text="{loc:Str Set_Update_Auto_Desc}"
+                                           Style="{StaticResource SsCaptionText}" Margin="0,3,0,0"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+
+                            <CheckBox Grid.Column="1" VerticalAlignment="Center"
+                                      IsChecked="{Binding AutoCheck}" />
+                        </Grid>
+
+                        <Rectangle Style="{StaticResource SsSeparator}" Height="1" Margin="0,14,0,12" />
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,20,0">
+                                <TextBlock Text="{Binding StatusMessage}" Style="{StaticResource SsBodyText}"
+                                           TextWrapping="Wrap" />
+
+                                <ProgressBar Value="{Binding ProgressPercent, Mode=OneWay}" Maximum="100"
+                                             Height="6" Margin="0,8,0,0"
+                                             Background="{DynamicResource SsSurfaceHover}"
+                                             Foreground="{DynamicResource SsAccent}"
+                                             BorderThickness="0"
+                                             Visibility="{Binding IsDownloading, Converter={StaticResource BoolToVisibility}}" />
+
+                                <TextBlock Text="{Binding VerificationNotice}"
+                                           Style="{StaticResource SsCaptionText}" Margin="0,6,0,0"
+                                           TextWrapping="Wrap"
+                                           Visibility="{Binding HasVerificationNotice, Converter={StaticResource BoolToVisibility}}" />
+
+                                <TextBlock Text="{Binding PortableNotice}"
+                                           Style="{StaticResource SsCaptionText}"
+                                           Foreground="{DynamicResource SsCaution}"
+                                           Margin="0,6,0,0" TextWrapping="Wrap"
+                                           Visibility="{Binding HasPortableNotice, Converter={StaticResource BoolToVisibility}}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                <Button Content="{loc:Str Set_Update_Page}" Style="{StaticResource SsSubtleButton}"
+                                        Command="{Binding OpenReleasePageCommand}" Margin="0,0,8,0"
+                                        Visibility="{Binding HasUpdate, Converter={StaticResource BoolToVisibility}}" />
+
+                                <Button Content="{loc:Str Set_Update_Download}" Style="{StaticResource SsSecondaryButton}"
+                                        Command="{Binding DownloadCommand}" Margin="0,0,8,0"
+                                        Visibility="{Binding CanDownload, Converter={StaticResource BoolToVisibility}}" />
+
+                                <Button Content="{loc:Str Set_Update_Install}" Style="{StaticResource SsPrimaryButton}"
+                                        Command="{Binding InstallCommand}" Margin="0,0,8,0"
+                                        Visibility="{Binding CanInstall, Converter={StaticResource BoolToVisibility}}" />
+
+                                <Button Content="{loc:Str Set_Update_Check}" Style="{StaticResource SsSubtleButton}"
+                                        Command="{Binding CheckCommand}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Text="{Binding ReleaseNotes}" Style="{StaticResource SsCaptionText}"
+                                   Margin="0,12,0,0" TextWrapping="Wrap" MaxHeight="120"
+                                   Visibility="{Binding HasReleaseNotes, Converter={StaticResource BoolToVisibility}}" />
+                    </StackPanel>
+                </Border>
+
                 <!-- ==================== Hakkında ==================== -->
                 <TextBlock Text="{loc:Str Set_About}" Style="{StaticResource SsSectionLabel}" Margin="2,20,0,10" />
 
@@ -335,7 +413,7 @@
                         <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,20,0">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="SysScrub" Style="{StaticResource SsBodyText}" FontWeight="SemiBold" />
-                                <TextBlock Text="{Binding VersionLabel, StringFormat=  sürüm {0}}"
+                                <TextBlock Text="{Binding VersionText}"
                                            Style="{StaticResource SsMonoText}" FontSize="11.5"
                                            VerticalAlignment="Center" Margin="6,0,0,0" />
                             </StackPanel>
@@ -357,7 +435,7 @@
                     </Grid>
                 </Border>
 
-                <TextBlock Text="{Binding SettingsFilePath, StringFormat=Ayar dosyası: {0}}"
+                <TextBlock Text="{Binding SettingsFileLabel}"
                            Style="{StaticResource SsCaptionText}" Margin="2,12,0,0"
                            TextTrimming="CharacterEllipsis" />
             </StackPanel>

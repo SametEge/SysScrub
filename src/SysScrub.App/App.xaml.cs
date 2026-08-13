@@ -1,4 +1,5 @@
 using System.IO;
+using System.Net.Http;
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +21,7 @@ using SysScrub.Core.Safety;
 using SysScrub.Core.Settings;
 using SysScrub.Core.Software;
 using SysScrub.Core.Startup;
+using SysScrub.Core.Updates;
 
 namespace SysScrub.App;
 
@@ -73,6 +75,12 @@ public partial class App : Application
 
                 // Yazılım güncelleyici
                 services.AddSingleton<WingetService>();
+
+                // Uygulamanın kendi güncellemesi. Tek HttpClient ömür boyu yaşıyor:
+                // istek başına yenisi soket tüketir, kısa ömürlüsü de gereksiz.
+                services.AddSingleton(_ => new HttpClient { Timeout = TimeSpan.FromMinutes(10) });
+                services.AddSingleton<UpdateService>();
+                services.AddSingleton<AppUpdateViewModel>();
 
                 // Sürücü zinciri
                 services.AddSingleton<DeviceInventory>();
@@ -162,6 +170,13 @@ public partial class App : Application
 
         MainWindow window = Resolve<MainWindow>();
 
+        if (WindowCapture.SizeFromArgs(e.Args) is { } size)
+        {
+            window.WindowState = WindowState.Normal;
+            window.Width = size.Width;
+            window.Height = size.Height;
+        }
+
         if (WindowCapture.PageFromArgs(e.Args) is { } pageTitle)
         {
             MainWindowViewModel viewModel = Resolve<MainWindowViewModel>();
@@ -181,6 +196,14 @@ public partial class App : Application
         }
 
         window.Show();
+
+        // Yeni sürüm denetimi açılışı bekletmiyor: pencere çizildikten sonra
+        // arka planda çalışır, sonucu Ayarlar'daki kartta görünür. Ekran
+        // görüntüsü alırken ağa hiç çıkılmıyor.
+        if (!automated)
+        {
+            _ = Resolve<AppUpdateViewModel>().CheckOnStartupAsync();
+        }
 
         if (WindowCapture.PathFromArgs(e.Args) is { } screenshotPath)
         {
@@ -369,6 +392,12 @@ public partial class App : Application
                         System.Windows.Input.CommandManager.InvalidateRequerySuggested();
                         await Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
                     }
+                }
+
+                if (WindowCapture.ScrollFromArgs(Environment.GetCommandLineArgs()) is { } fraction)
+                {
+                    WindowCapture.Scroll(window, fraction);
+                    await Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
                 }
 
                 WindowCapture.Save(window, screenshotPath);

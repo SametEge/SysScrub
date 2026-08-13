@@ -1,5 +1,7 @@
+using System.Globalization;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -11,14 +13,40 @@ namespace SysScrub.App.Services;
 ///
 /// Kullanım:  dotnet SysScrub.dll --screenshot=C:\yol\panel.png
 /// exe yerine dll üzerinden çalıştırmak, yönetici manifestini atlayarak UAC istemini önler.
+///
+/// Ek anahtarlar: <c>--page=</c> açılacak modül · <c>--lang=</c> geçici dil ·
+/// <c>--size=1300x1000</c> pencere ölçüsü · <c>--scroll=1</c> sayfayı aşağı kaydır.
 /// </summary>
 internal static class WindowCapture
 {
     private const string Switch = "--screenshot=";
     private const string PageSwitch = "--page=";
     private const string LanguageSwitch = "--lang=";
+    private const string SizeSwitch = "--size=";
+    private const string ScrollSwitch = "--scroll=";
 
     public static string? PathFromArgs(IReadOnlyList<string> args) => ValueOf(args, Switch);
+
+    /// <summary>
+    /// Pencere boyutunu sabitler: <c>--size=1440x1200</c>. README görüntülerinin
+    /// hepsi aynı ölçüde olsun ve uzun sayfalar kaydırmadan sığsın diye.
+    /// </summary>
+    public static Size? SizeFromArgs(IReadOnlyList<string> args)
+    {
+        if (ValueOf(args, SizeSwitch) is not { } value)
+        {
+            return null;
+        }
+
+        string[] parts = value.Split('x', 'X');
+
+        return parts.Length == 2 &&
+               int.TryParse(parts[0], out int width) &&
+               int.TryParse(parts[1], out int height) &&
+               width > 0 && height > 0
+            ? new Size(width, height)
+            : null;
+    }
 
     /// <summary>Ekran görüntüsü alınırken hangi modülün açık olacağı.</summary>
     public static string? PageFromArgs(IReadOnlyList<string> args) => ValueOf(args, PageSwitch);
@@ -28,6 +56,56 @@ internal static class WindowCapture
     /// her dilde ekran görüntüsü almak için.
     /// </summary>
     public static string? LanguageFromArgs(IReadOnlyList<string> args) => ValueOf(args, LanguageSwitch);
+
+    /// <summary>
+    /// Sayfayı dikeyde kaydırır: <c>--scroll=1</c> en alta, <c>--scroll=0.5</c> ortaya.
+    /// Ekrana sığmayan uzun sayfaların alt bölümünü görüntülemek için.
+    /// </summary>
+    public static double? ScrollFromArgs(IReadOnlyList<string> args) =>
+        ValueOf(args, ScrollSwitch) is { } value &&
+        double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out double fraction)
+            ? Math.Clamp(fraction, 0, 1)
+            : null;
+
+    /// <summary>Görünüm ağacındaki ilk kaydırma alanını verilen orana getirir.</summary>
+    public static void Scroll(DependencyObject root, double fraction)
+    {
+        if (FindScrollViewer(root) is not { } viewer)
+        {
+            return;
+        }
+
+        viewer.UpdateLayout();
+        viewer.ScrollToVerticalOffset(viewer.ScrollableHeight * fraction);
+        viewer.UpdateLayout();
+    }
+
+    /// <summary>
+    /// En çok kaydırılabilen alanı seçer. İlkini almak yetmiyor: sol gezinme
+    /// listesinin kendi kaydırıcısı görünüm ağacında önce geliyor ve hiç
+    /// kaydırılmıyor.
+    /// </summary>
+    private static ScrollViewer? FindScrollViewer(DependencyObject root)
+    {
+        ScrollViewer? best = null;
+
+        for (int i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++)
+        {
+            DependencyObject child = VisualTreeHelper.GetChild(root, i);
+
+            ScrollViewer? candidate = child is ScrollViewer viewer
+                ? viewer
+                : FindScrollViewer(child);
+
+            if (candidate is not null &&
+                (best is null || candidate.ScrollableHeight > best.ScrollableHeight))
+            {
+                best = candidate;
+            }
+        }
+
+        return best;
+    }
 
     private static string? ValueOf(IReadOnlyList<string> args, string prefix)
     {

@@ -5,17 +5,36 @@
       "id": "game.steam.downloading",
       "category": "Gaming",
       "group": "Steam",
-      "name": { "tr": "Yarım kalmış indirmeler", "en": "Interrupted downloads" },
+      "name": {
+        "tr": "Yarım kalmış indirmeler",
+        "en": "Interrupted downloads",
+        "de": "Abgebrochene Downloads",
+        "ja": "中断したダウンロード",
+        "ko": "중단된 다운로드",
+        "zh-Hans": "中断的下载"
+      },
       "explanation": {
         "tr": "İptal edilmiş veya takılmış Steam indirmelerinin parçaları. Kurulu oyunlarına dokunulmaz; devam eden bir indirme varsa Steam'i kapatıp temizle.",
-        "en": "Fragments of cancelled or stuck Steam downloads. Installed games are untouched; close Steam first if a download is in progress."
+        "en": "Fragments of cancelled or stuck Steam downloads. Installed games are untouched; close Steam first if a download is in progress.",
+        "de": "Fragmente abgebrochener oder hängender Steam-Downloads. Installierte Spiele bleiben unberührt; schließe Steam, wenn gerade ein Download läuft.",
+        "ja": "キャンセルまたは停止した Steam ダウンロードの断片。インストール済みのゲームには影響しません。ダウンロード中なら先に Steam を閉じてください。",
+        "ko": "취소되거나 멈춘 Steam 다운로드 조각. 설치된 게임에는 영향이 없습니다. 다운로드 중이라면 Steam을 먼저 닫으세요.",
+        "zh-Hans": "已取消或卡住的 Steam 下载碎片。不影响已安装的游戏；若正在下载请先关闭 Steam。"
       },
       "risk": "caution",
       "defaultEnabled": false,
-      "blockingProcesses": ["steam"],
+      "blockingProcesses": [
+        "steam"
+      ],
       "roots": [
-        { "base": "ProgramFilesX86", "path": "Steam/steamapps/downloading" },
-        { "base": "ProgramFilesX86", "path": "Steam/steamapps/temp" }
+        {
+          "base": "ProgramFilesX86",
+          "path": "Steam/steamapps/downloading"
+        },
+        {
+          "base": "ProgramFilesX86",
+          "path": "Steam/steamapps/temp"
+        }
       ],
       "deleteMode": "permanent"
     },
@@ -23,17 +42,39 @@
       "id": "game.steam.cache",
       "category": "Gaming",
       "group": "Steam",
-      "name": { "tr": "Steam önbelleği", "en": "Steam cache" },
+      "name": {
+        "tr": "Steam önbelleği",
+        "en": "Steam cache",
+        "de": "Steam-Cache",
+        "ja": "Steam のキャッシュ",
+        "ko": "Steam 캐시",
+        "zh-Hans": "Steam 缓存"
+      },
       "explanation": {
         "tr": "Steam istemcisinin mağaza ve kütüphane görselleri için tuttuğu önbellek ile günlükler. Oyunların ve oturumun etkilenmez.",
-        "en": "Cache the Steam client keeps for store and library artwork, plus logs. Your games and session are unaffected."
+        "en": "Cache the Steam client keeps for store and library artwork, plus logs. Your games and session are unaffected.",
+        "de": "Cache des Steam-Clients für Shop- und Bibliotheksgrafiken sowie Protokolle. Spiele und Sitzung sind nicht betroffen.",
+        "ja": "Steam クライアントがストアやライブラリの画像用に保持するキャッシュとログ。ゲームやサインイン状態には影響しません。",
+        "ko": "Steam 클라이언트가 상점·라이브러리 이미지를 위해 보관하는 캐시와 로그. 게임과 로그인에는 영향이 없습니다.",
+        "zh-Hans": "Steam 客户端为商店与库封面保存的缓存及日志。不影响游戏与登录状态。"
       },
       "risk": "safe",
-      "blockingProcesses": ["steam"],
+      "blockingProcesses": [
+        "steam"
+      ],
       "roots": [
-        { "base": "ProgramFilesX86", "path": "Steam/appcache/httpcache" },
-        { "base": "ProgramFilesX86", "path": "Steam/logs" },
-        { "base": "LocalAppData", "path": "Steam/htmlcache" }
+        {
+          "base": "ProgramFilesX86",
+          "path": "Steam/appcache/httpcache"
+        },
+        {
+          "base": "ProgramFilesX86",
+          "path": "Steam/logs"
+        },
+        {
+          "base": "LocalAppData",
+          "path": "Steam/htmlcache"
+        }
       ],
       "deleteMode": "permanent"
     },
@@ -41,17 +82,39 @@
       "id": "game.epic.cache",
       "category": "Gaming",
       "group": "Epic Games",
-      "name": { "tr": "Epic Games önbelleği", "en": "Epic Games cache" },
+      "name": {
+        "tr": "Epic Games önbelleği",
+        "en": "Epic Games cache",
+        "de": "Epic Games-Cache",
+        "ja": "Epic Games のキャッシュ",
+        "ko": "Epic Games 캐시",
+        "zh-Hans": "Epic Games 缓存"
+      },
       "explanation": {
         "tr": "Epic başlatıcısının web önbelleği ve günlükleri. Kurulu oyunlar etkilenmez.",
-        "en": "Web cache and logs of the Epic launcher. Installed games are unaffected."
+        "en": "Web cache and logs of the Epic launcher. Installed games are unaffected.",
+        "de": "Web-Cache und Protokolle des Epic-Launchers. Installierte Spiele sind nicht betroffen.",
+        "ja": "Epic ランチャーの Web キャッシュとログ。インストール済みのゲームには影響しません。",
+        "ko": "Epic 런처의 웹 캐시와 로그. 설치된 게임에는 영향이 없습니다.",
+        "zh-Hans": "Epic 启动器的网页缓存与日志。不影响已安装的游戏。"
       },
       "risk": "safe",
-      "blockingProcesses": ["EpicGamesLauncher"],
+      "blockingProcesses": [
+        "EpicGamesLauncher"
+      ],
       "roots": [
-        { "base": "LocalAppData", "path": "EpicGamesLauncher/Saved/webcache" },
-        { "base": "LocalAppData", "path": "EpicGamesLauncher/Saved/webcache_4147" },
-        { "base": "LocalAppData", "path": "EpicGamesLauncher/Saved/Logs" }
+        {
+          "base": "LocalAppData",
+          "path": "EpicGamesLauncher/Saved/webcache"
+        },
+        {
+          "base": "LocalAppData",
+          "path": "EpicGamesLauncher/Saved/webcache_4147"
+        },
+        {
+          "base": "LocalAppData",
+          "path": "EpicGamesLauncher/Saved/Logs"
+        }
       ],
       "deleteMode": "permanent"
     },
@@ -59,16 +122,36 @@
       "id": "game.battlenet.cache",
       "category": "Gaming",
       "group": "Battle.net",
-      "name": { "tr": "Battle.net önbelleği", "en": "Battle.net cache" },
+      "name": {
+        "tr": "Battle.net önbelleği",
+        "en": "Battle.net cache",
+        "de": "Battle.net-Cache",
+        "ja": "Battle.net のキャッシュ",
+        "ko": "Battle.net 캐시",
+        "zh-Hans": "Battle.net 缓存"
+      },
       "explanation": {
         "tr": "Blizzard başlatıcısının önbelleği. Bozulduğunda başlatıcı açılmaz; temizlemek bunu düzeltir.",
-        "en": "Cache of the Blizzard launcher. When corrupted the launcher fails to start, and clearing it fixes that."
+        "en": "Cache of the Blizzard launcher. When corrupted the launcher fails to start, and clearing it fixes that.",
+        "de": "Cache des Blizzard-Launchers. Bei Beschädigung startet der Launcher nicht; Leeren behebt das.",
+        "ja": "Blizzard ランチャーのキャッシュ。破損するとランチャーが起動しなくなり、削除すると直ります。",
+        "ko": "Blizzard 런처의 캐시. 손상되면 런처가 시작되지 않으며, 지우면 해결됩니다.",
+        "zh-Hans": "暴雪启动器的缓存。损坏时启动器无法启动，清理即可修复。"
       },
       "risk": "safe",
-      "blockingProcesses": ["Battle.net", "Agent"],
+      "blockingProcesses": [
+        "Battle.net",
+        "Agent"
+      ],
       "roots": [
-        { "base": "ProgramData", "path": "Battle.net/Cache" },
-        { "base": "LocalAppData", "path": "Battle.net/Cache" }
+        {
+          "base": "ProgramData",
+          "path": "Battle.net/Cache"
+        },
+        {
+          "base": "LocalAppData",
+          "path": "Battle.net/Cache"
+        }
       ],
       "deleteMode": "permanent"
     },
@@ -76,18 +159,45 @@
       "id": "game.ea.cache",
       "category": "Gaming",
       "group": "EA ve Ubisoft",
-      "name": { "tr": "EA / Ubisoft başlatıcı önbelleği", "en": "EA / Ubisoft launcher cache" },
+      "name": {
+        "tr": "EA / Ubisoft başlatıcı önbelleği",
+        "en": "EA / Ubisoft launcher cache",
+        "de": "EA / Ubisoft-Launcher-Cache",
+        "ja": "EA / Ubisoft ランチャーのキャッシュ",
+        "ko": "EA / Ubisoft 런처 캐시",
+        "zh-Hans": "EA / Ubisoft 启动器缓存"
+      },
       "explanation": {
         "tr": "EA App ve Ubisoft Connect'in geçici verisi ve günlükleri.",
-        "en": "Temporary data and logs of the EA App and Ubisoft Connect."
+        "en": "Temporary data and logs of the EA App and Ubisoft Connect.",
+        "de": "Temporäre Daten und Protokolle der EA App und von Ubisoft Connect.",
+        "ja": "EA App と Ubisoft Connect の一時データとログ。",
+        "ko": "EA App과 Ubisoft Connect의 임시 데이터와 로그.",
+        "zh-Hans": "EA App 与 Ubisoft Connect 的临时数据和日志。"
       },
       "risk": "safe",
-      "blockingProcesses": ["EADesktop", "upc", "UbisoftConnect"],
+      "blockingProcesses": [
+        "EADesktop",
+        "upc",
+        "UbisoftConnect"
+      ],
       "roots": [
-        { "base": "LocalAppData", "path": "Electronic Arts/EA Desktop/Cache" },
-        { "base": "LocalAppData", "path": "Electronic Arts/EA Desktop/Logs" },
-        { "base": "LocalAppData", "path": "Ubisoft Game Launcher/cache" },
-        { "base": "LocalAppData", "path": "Ubisoft Game Launcher/logs" }
+        {
+          "base": "LocalAppData",
+          "path": "Electronic Arts/EA Desktop/Cache"
+        },
+        {
+          "base": "LocalAppData",
+          "path": "Electronic Arts/EA Desktop/Logs"
+        },
+        {
+          "base": "LocalAppData",
+          "path": "Ubisoft Game Launcher/cache"
+        },
+        {
+          "base": "LocalAppData",
+          "path": "Ubisoft Game Launcher/logs"
+        }
       ],
       "deleteMode": "permanent"
     }

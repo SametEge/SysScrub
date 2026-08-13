@@ -5,33 +5,66 @@
       "id": "privacy.recent.items",
       "category": "Privacy",
       "group": "Son kullanılanlar",
-      "name": { "tr": "Son kullanılan dosyalar listesi", "en": "Recent files list" },
+      "name": {
+        "tr": "Son kullanılan dosyalar listesi",
+        "en": "Recent files list",
+        "de": "Liste zuletzt geöffneter Dateien",
+        "ja": "最近使ったファイルの一覧",
+        "ko": "최근 파일 목록",
+        "zh-Hans": "最近打开的文件列表"
+      },
       "explanation": {
         "tr": "Windows'un açtığın dosyaları hatırladığı liste. Dosyaların silinmez, yalnızca 'son kullanılanlar' listesi boşalır.",
-        "en": "The list Windows keeps of files you opened. Your files are not deleted, only the recent list is cleared."
+        "en": "The list Windows keeps of files you opened. Your files are not deleted, only the recent list is cleared.",
+        "de": "Die Liste, die Windows über von dir geöffnete Dateien führt. Deine Dateien werden nicht gelöscht, nur die Liste wird geleert.",
+        "ja": "Windows が保持する、開いたファイルの一覧。ファイル自体は削除されず、一覧だけが消えます。",
+        "ko": "Windows가 보관하는, 열어 본 파일 목록. 파일 자체는 지워지지 않고 목록만 비워집니다.",
+        "zh-Hans": "Windows 记录的你打开过的文件列表。文件本身不会被删除，只清空该列表。"
       },
       "risk": "safe",
       "defaultEnabled": false,
       "roots": [
-        { "base": "RoamingAppData", "path": "Microsoft/Windows/Recent" }
+        {
+          "base": "RoamingAppData",
+          "path": "Microsoft/Windows/Recent"
+        }
       ],
-      "include": ["**/*.lnk"],
+      "include": [
+        "**/*.lnk"
+      ],
       "deleteMode": "quarantine"
     },
     {
       "id": "privacy.jumplists",
       "category": "Privacy",
       "group": "Son kullanılanlar",
-      "name": { "tr": "Görev çubuğu atlama listeleri", "en": "Taskbar jump lists" },
+      "name": {
+        "tr": "Görev çubuğu atlama listeleri",
+        "en": "Taskbar jump lists",
+        "de": "Sprunglisten der Taskleiste",
+        "ja": "タスク バーのジャンプ リスト",
+        "ko": "작업 표시줄 점프 목록",
+        "zh-Hans": "任务栏跳转列表"
+      },
       "explanation": {
         "tr": "Görev çubuğundaki simgelere sağ tıklayınca çıkan 'son açılanlar' listeleri.",
-        "en": "The 'recent' entries you see when right-clicking taskbar icons."
+        "en": "The 'recent' entries you see when right-clicking taskbar icons.",
+        "de": "Die 'zuletzt verwendet'-Einträge, die beim Rechtsklick auf Taskleistensymbole erscheinen.",
+        "ja": "タスク バーのアイコンを右クリックしたときに表示される「最近使った項目」。",
+        "ko": "작업 표시줄 아이콘을 마우스 오른쪽 버튼으로 클릭할 때 나오는 '최근 항목'.",
+        "zh-Hans": "右键点击任务栏图标时出现的“最近使用”条目。"
       },
       "risk": "safe",
       "defaultEnabled": false,
       "roots": [
-        { "base": "RoamingAppData", "path": "Microsoft/Windows/Recent/AutomaticDestinations" },
-        { "base": "RoamingAppData", "path": "Microsoft/Windows/Recent/CustomDestinations" }
+        {
+          "base": "RoamingAppData",
+          "path": "Microsoft/Windows/Recent/AutomaticDestinations"
+        },
+        {
+          "base": "RoamingAppData",
+          "path": "Microsoft/Windows/Recent/CustomDestinations"
+        }
       ],
       "deleteMode": "quarantine"
     },
@@ -39,15 +72,29 @@
       "id": "privacy.clipboard.history",
       "category": "Privacy",
       "group": "Pano ve arama",
-      "name": { "tr": "Pano geçmişi", "en": "Clipboard history" },
+      "name": {
+        "tr": "Pano geçmişi",
+        "en": "Clipboard history",
+        "de": "Zwischenablageverlauf",
+        "ja": "クリップボードの履歴",
+        "ko": "클립보드 기록",
+        "zh-Hans": "剪贴板历史"
+      },
       "explanation": {
         "tr": "Windows+V ile açılan pano geçmişinde tutulan kopyalanmış içerikler.",
-        "en": "Copied content kept in the clipboard history opened with Windows+V."
+        "en": "Copied content kept in the clipboard history opened with Windows+V.",
+        "de": "Kopierte Inhalte im Verlauf, den du mit Windows+V öffnest.",
+        "ja": "Windows+V で開く履歴に残っているコピー済みの内容。",
+        "ko": "Windows+V로 여는 기록에 남아 있는 복사한 내용.",
+        "zh-Hans": "使用 Windows+V 打开的历史记录中保存的复制内容。"
       },
       "risk": "safe",
       "defaultEnabled": false,
       "roots": [
-        { "base": "LocalAppData", "path": "Microsoft/Windows/Clipboard" }
+        {
+          "base": "LocalAppData",
+          "path": "Microsoft/Windows/Clipboard"
+        }
       ],
       "deleteMode": "quarantine"
     },
@@ -55,15 +102,29 @@
       "id": "privacy.search.history",
       "category": "Privacy",
       "group": "Pano ve arama",
-      "name": { "tr": "Windows arama geçmişi", "en": "Windows search history" },
+      "name": {
+        "tr": "Windows arama geçmişi",
+        "en": "Windows search history",
+        "de": "Windows-Suchverlauf",
+        "ja": "Windows の検索履歴",
+        "ko": "Windows 검색 기록",
+        "zh-Hans": "Windows 搜索历史"
+      },
       "explanation": {
         "tr": "Başlat menüsünde yaptığın aramaların yerel geçmişi ve önbelleği.",
-        "en": "Local history and cache of the searches you typed in the Start menu."
+        "en": "Local history and cache of the searches you typed in the Start menu.",
+        "de": "Lokaler Verlauf und Cache der Suchbegriffe, die du im Startmenü eingegeben hast.",
+        "ja": "スタート メニューで入力した検索語のローカル履歴とキャッシュ。",
+        "ko": "시작 메뉴에 입력한 검색어의 로컬 기록과 캐시.",
+        "zh-Hans": "你在开始菜单中输入的搜索词的本地历史与缓存。"
       },
       "risk": "safe",
       "defaultEnabled": false,
       "roots": [
-        { "base": "LocalAppData", "path": "Packages/Microsoft.Windows.Search_cw5n1h2txyewy/LocalState/AppIconCache" }
+        {
+          "base": "LocalAppData",
+          "path": "Packages/Microsoft.Windows.Search_cw5n1h2txyewy/LocalState/AppIconCache"
+        }
       ],
       "deleteMode": "quarantine"
     }

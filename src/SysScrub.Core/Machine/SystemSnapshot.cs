@@ -3,7 +3,11 @@ namespace SysScrub.Core.Machine;
 /// <summary>Panelin gösterdiği anlık sistem durumu. Tamamen salt-okunur veriden oluşur.</summary>
 public sealed record SystemSnapshot
 {
+    /// <summary>"Windows 11 Pro 25H2" — derleme numarası ayrı, cümleyi arayüz kuruyor.</summary>
     public required string OperatingSystem { get; init; }
+
+    /// <summary>Windows derleme numarası; okunamazsa boş.</summary>
+    public string WindowsBuild { get; init; } = string.Empty;
 
     public required string MachineName { get; init; }
 

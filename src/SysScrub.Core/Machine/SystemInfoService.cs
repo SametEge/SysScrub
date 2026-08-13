@@ -15,7 +15,8 @@ public sealed class SystemInfoService
     {
         return new SystemSnapshot
         {
-            OperatingSystem = DescribeWindows(),
+            OperatingSystem = DescribeWindows(out string build),
+            WindowsBuild = build,
             MachineName = Environment.MachineName,
             Uptime = TimeSpan.FromMilliseconds(Environment.TickCount64),
             IsElevated = IsProcessElevated(),
@@ -97,8 +98,10 @@ public sealed class SystemInfoService
     /// Environment.OSVersion Windows 11'i de "10.0" olarak bildiriyor; gerçek pazarlama adı
     /// için derleme numarasına bakmak gerekiyor (22000 ve üstü = Windows 11).
     /// </summary>
-    private static string DescribeWindows()
+    private static string DescribeWindows(out string build)
     {
+        build = string.Empty;
+
         try
         {
             using var key = Registry.LocalMachine.OpenSubKey(
@@ -111,16 +114,17 @@ public sealed class SystemInfoService
 
             string product = key.GetValue("ProductName") as string ?? "Windows";
             string display = key.GetValue("DisplayVersion") as string ?? string.Empty;
-            string build = key.GetValue("CurrentBuildNumber") as string ?? "0";
+
+            build = key.GetValue("CurrentBuildNumber") as string ?? string.Empty;
 
             if (int.TryParse(build, out int buildNumber) && buildNumber >= 22000)
             {
                 product = product.Replace("Windows 10", "Windows 11", StringComparison.OrdinalIgnoreCase);
             }
 
-            return string.IsNullOrEmpty(display)
-                ? $"{product} (derleme {build})"
-                : $"{product} {display} (derleme {build})";
+            // "derleme 26200" cümlesi burada kurulmuyor: motor katmanının dili yok,
+            // çeviriyi arayüz ekliyor.
+            return string.IsNullOrEmpty(display) ? product : $"{product} {display}";
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or SecurityException)
         {

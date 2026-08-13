@@ -58,6 +58,18 @@ public sealed record AppSettings
     [JsonPropertyName("logRetentionDays")]
     public int LogRetentionDays { get; init; } = DefaultLogRetentionDays;
 
+    /// <summary>
+    /// Açılışta GitHub'daki yayınlara bakılsın mı. Varsayılan açık: dağıtım
+    /// kanalı GitHub olan bir uygulamada bu kapalıysa herkes ilk indirdiği
+    /// sürümde kalır. Denetim yalnızca sürüm numarası okur, hiçbir şey göndermez.
+    /// </summary>
+    [JsonPropertyName("autoCheckUpdates")]
+    public bool AutoCheckUpdates { get; init; } = true;
+
+    /// <summary>Son otomatik denetimin zamanı; günde birden fazla sorgulamamak için.</summary>
+    [JsonPropertyName("lastUpdateCheck")]
+    public DateTimeOffset? LastUpdateCheck { get; init; }
+
     public const int DefaultRetentionDays = 7;
     public const int MinimumRetentionDays = 1;
     public const int MaximumRetentionDays = 90;
