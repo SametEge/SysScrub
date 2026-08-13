@@ -6,6 +6,7 @@ using SysScrub.Core.Cleaning;
 using SysScrub.Core.RegistryCleaning;
 using SysScrub.Core.Safety;
 using SysScrub.Core.Windows;
+using SysScrub.Core.Formatting;
 
 namespace SysScrub.Core.Programs;
 
@@ -49,12 +50,12 @@ public sealed record UninstallResult
 
     public string Describe() => Outcome switch
     {
-        UninstallOutcome.Removed => $"{ProgramName} kaldırıldı.",
+        UninstallOutcome.Removed => CoreText.Format("Pr_U_Done", "{0} kaldırıldı.", ProgramName),
         UninstallOutcome.StillPresent =>
-            $"{ProgramName} hâlâ kayıtlı. Kaldırma iptal edilmiş ya da arka planda sürüyor olabilir.",
-        UninstallOutcome.NoUninstaller => $"{ProgramName} için kaldırma komutu tanımlı değil.",
-        UninstallOutcome.Cancelled => $"{ProgramName} kaldırması beklenmedi; işlem arka planda sürüyor olabilir.",
-        _ => Message is null ? $"{ProgramName} kaldırılamadı." : $"{ProgramName} kaldırılamadı: {Message}"
+            CoreText.Format("Pr_U_StillThere", "{0} hâlâ kayıtlı. Kaldırma iptal edilmiş ya da arka planda sürüyor olabilir.", ProgramName),
+        UninstallOutcome.NoUninstaller => CoreText.Format("Pr_U_NoCommand", "{0} için kaldırma komutu tanımlı değil.", ProgramName),
+        UninstallOutcome.Cancelled => CoreText.Format("Pr_U_NotWaited", "{0} kaldırması beklenmedi; işlem arka planda sürüyor olabilir.", ProgramName),
+        _ => Message is null ? CoreText.Format("Pr_U_Failed", "{0} kaldırılamadı.", ProgramName) : CoreText.Format("Pr_U_FailedWhy", "{0} kaldırılamadı: {1}", ProgramName, Message)
     };
 }
 
@@ -276,7 +277,7 @@ public sealed class ProgramUninstaller(
                             RuleId = "programs.leftover",
                             Bytes = bytes,
                             Outcome = HistoryItemOutcome.RecycleBin,
-                            Message = "Kaldırma sonrası kalan kurulum klasörü"
+                            Message = CoreText.Get("Pr_U_Leftover", "Kaldırma sonrası kalan kurulum klasörü")
                         }
                     ]);
             }

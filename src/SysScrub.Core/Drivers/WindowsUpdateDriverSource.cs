@@ -2,6 +2,7 @@ using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Win32;
+using SysScrub.Core.Formatting;
 
 namespace SysScrub.Core.Drivers;
 
@@ -55,14 +56,14 @@ public sealed record DriverSearchResult
     public string Describe() => Outcome switch
     {
         DriverSearchOutcome.Completed when Updates.Count == 0 =>
-            "Windows Update yeni sürücü sunmuyor. Sürücülerin güncel.",
+            CoreText.Get("Dr_U_None", "Windows Update yeni sürücü sunmuyor. Sürücülerin güncel."),
         DriverSearchOutcome.Completed =>
-            $"{Updates.Count} sürücü güncellemesi bulundu.",
+            CoreText.Format("Dr_U_Found", "{0} sürücü güncellemesi bulundu.", Updates.Count),
         DriverSearchOutcome.DisabledByPolicy =>
-            "Sürücü güncellemeleri Windows ayarlarıyla kapatılmış. Windows Update ayarlarından açabilirsin.",
+            CoreText.Get("Dr_U_Disabled", "Sürücü güncellemeleri Windows ayarlarıyla kapatılmış. Windows Update ayarlarından açabilirsin."),
         DriverSearchOutcome.Unavailable =>
-            "Windows Update servisine ulaşılamadı. İnternet bağlantını kontrol et.",
-        _ => Message ?? "Sürücü araması başarısız."
+            CoreText.Get("Dr_U_Offline", "Windows Update servisine ulaşılamadı. İnternet bağlantını kontrol et."),
+        _ => Message ?? CoreText.Get("Dr_U_Failed", "Sürücü araması başarısız.")
     };
 }
 
@@ -141,7 +142,7 @@ public sealed class WindowsUpdateDriverSource(ILogger<WindowsUpdateDriverSource>
             return new DriverSearchResult
             {
                 Outcome = DriverSearchOutcome.Unavailable,
-                Message = "Windows Update Agent bu sistemde bulunamadı."
+                Message = CoreText.Get("Dr_U_NoAgent", "Windows Update Agent bu sistemde bulunamadı.")
             };
         }
 
@@ -172,7 +173,7 @@ public sealed class WindowsUpdateDriverSource(ILogger<WindowsUpdateDriverSource>
                 found.Add(new DriverUpdate
                 {
                     UpdateId = SafeString(() => update.Identity.UpdateID) ?? Guid.NewGuid().ToString(),
-                    Title = SafeString(() => update.Title) ?? "Bilinmeyen sürücü",
+                    Title = SafeString(() => update.Title) ?? CoreText.Get("Dr_U_UnknownDriver", "Bilinmeyen sürücü"),
                     Description = SafeString(() => update.Description),
                     Manufacturer = SafeString(() => update.DriverManufacturer),
                     Model = SafeString(() => update.DriverModel),

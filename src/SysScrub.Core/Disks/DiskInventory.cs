@@ -4,6 +4,7 @@ using System.Security.Principal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Win32.SafeHandles;
+using SysScrub.Core.Formatting;
 
 namespace SysScrub.Core.Disks;
 
@@ -97,8 +98,8 @@ public sealed class DiskInventory(
         {
             return baseInfo with
             {
-                StatusReason = "S.M.A.R.T. verisi yönetici hakkı olmadan okunamıyor.",
-                AccessMessage = "Yönetici olarak çalıştırıldığında disk sağlığı görünür."
+                StatusReason = CoreText.Get("Dh_E_SmartNeedsAdmin", "S.M.A.R.T. verisi yönetici hakkı olmadan okunamıyor."),
+                AccessMessage = CoreText.Get("Dh_E_SmartNeedsAdminHint", "Yönetici olarak çalıştırıldığında disk sağlığı görünür.")
             };
         }
 
@@ -111,8 +112,8 @@ public sealed class DiskInventory(
 
             return baseInfo with
             {
-                StatusReason = "Diske sağlık sorgusu gönderilemedi.",
-                AccessMessage = $"Disk açılamadı (hata {error})."
+                StatusReason = CoreText.Get("Dh_E_NoHealthQuery", "Diske sağlık sorgusu gönderilemedi."),
+                AccessMessage = CoreText.Format("Dh_E_OpenFailed", "Disk açılamadı (hata {0}).", error)
             };
         }
 
@@ -129,7 +130,7 @@ public sealed class DiskInventory(
         {
             return disk with
             {
-                StatusReason = "NVMe sağlık günlüğü okunamadı.",
+                StatusReason = CoreText.Get("Dh_E_NvmeLog", "NVMe sağlık günlüğü okunamadı."),
                 AccessMessage = message
             };
         }
@@ -164,9 +165,9 @@ public sealed class DiskInventory(
         {
             return disk with
             {
-                StatusReason = "S.M.A.R.T. verisi okunamadı.",
+                StatusReason = CoreText.Get("Dh_E_SmartUnreadable", "S.M.A.R.T. verisi okunamadı."),
                 // USB kutularının çoğu ATA komutlarını geçirmiyor; sebebi bu.
-                AccessMessage = message ?? "Bu bağlantı üzerinden S.M.A.R.T. okunamıyor."
+                AccessMessage = message ?? CoreText.Get("Dh_E_SmartUnsupported", "Bu bağlantı üzerinden S.M.A.R.T. okunamıyor.")
             };
         }
 

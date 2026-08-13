@@ -70,7 +70,7 @@ public sealed partial class TimelineEntryViewModel : ObservableObject
                 parts.Add(T("Tl_Measured", ByteSize.Format(Run.MeasuredGain)));
             }
 
-            parts.Add($"{Run.Duration.TotalSeconds:F1} sn");
+            parts.Add(DurationText.FromMilliseconds((int)Run.Duration.TotalMilliseconds));
 
             return string.Join(" · ", parts);
         }

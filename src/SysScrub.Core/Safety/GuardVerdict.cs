@@ -1,3 +1,4 @@
+using SysScrub.Core.Formatting;
 namespace SysScrub.Core.Safety;
 
 /// <summary>Bir yolun neden silinemeyeceği. Kullanıcıya gösterilen açıklamalar buradan üretilir.</summary>
@@ -40,15 +41,15 @@ public readonly record struct GuardVerdict(bool IsAllowed, GuardDenialReason Rea
     /// <summary>Kullanıcıya gösterilecek tek cümlelik açıklama.</summary>
     public string Describe() => Reason switch
     {
-        GuardDenialReason.None => "İzin verildi.",
-        GuardDenialReason.InvalidPath => "Yol geçersiz ya da çözümlenemedi.",
-        GuardDenialReason.NonLocalPath => "Ağ veya aygıt yolu; yerel temizlik kapsamı dışında.",
-        GuardDenialReason.OutsideAllowedRoot => "Kuralın izin verilen klasörünün dışında.",
-        GuardDenialReason.ProtectedSystemDirectory => "Korumalı Windows bileşeni.",
-        GuardDenialReason.UserContent => "Kullanıcı belgesi; temizlik kapsamı dışında.",
-        GuardDenialReason.ReparsePoint => "Bağlantı noktası (junction/symlink); hedefteki veriyi silmemek için atlandı.",
-        GuardDenialReason.CloudPlaceholder => "Bulut yer tutucusu; silinirse buluttaki dosya da gider.",
-        GuardDenialReason.ApplicationOwnData => "SysScrub'ın kendi dosyaları.",
-        _ => "Bilinmeyen sebeple reddedildi."
+        GuardDenialReason.None => CoreText.Get("Gv_Allowed", "İzin verildi."),
+        GuardDenialReason.InvalidPath => CoreText.Get("Gv_BadPath", "Yol geçersiz ya da çözümlenemedi."),
+        GuardDenialReason.NonLocalPath => CoreText.Get("Gv_Remote", "Ağ veya aygıt yolu; yerel temizlik kapsamı dışında."),
+        GuardDenialReason.OutsideAllowedRoot => CoreText.Get("Gv_OutsideRoot", "Kuralın izin verilen klasörünün dışında."),
+        GuardDenialReason.ProtectedSystemDirectory => CoreText.Get("Gv_Protected", "Korumalı Windows bileşeni."),
+        GuardDenialReason.UserContent => CoreText.Get("Gv_UserDocument", "Kullanıcı belgesi; temizlik kapsamı dışında."),
+        GuardDenialReason.ReparsePoint => CoreText.Get("Gv_Reparse", "Bağlantı noktası (junction/symlink); hedefteki veriyi silmemek için atlandı."),
+        GuardDenialReason.CloudPlaceholder => CoreText.Get("Gv_CloudPlaceholder", "Bulut yer tutucusu; silinirse buluttaki dosya da gider."),
+        GuardDenialReason.ApplicationOwnData => CoreText.Get("Gv_OwnFiles", "SysScrub'ın kendi dosyaları."),
+        _ => CoreText.Get("Gv_UnknownReason", "Bilinmeyen sebeple reddedildi.")
     };
 }

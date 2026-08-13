@@ -2,6 +2,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Principal;
 using Microsoft.Win32;
+using SysScrub.Core.Formatting;
 
 namespace SysScrub.Core.Machine;
 
@@ -60,7 +61,7 @@ public sealed class SystemInfoService
                 result.Add(new DriveSnapshot
                 {
                     Name = drive.Name,
-                    Label = string.IsNullOrWhiteSpace(drive.VolumeLabel) ? "Yerel disk" : drive.VolumeLabel,
+                    Label = string.IsNullOrWhiteSpace(drive.VolumeLabel) ? CoreText.Get("Sys_LocalDisk", "Yerel disk") : drive.VolumeLabel,
                     Format = drive.DriveFormat,
                     TotalBytes = drive.TotalSize,
                     FreeBytes = drive.AvailableFreeSpace

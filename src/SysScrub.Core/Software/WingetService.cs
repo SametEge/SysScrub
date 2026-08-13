@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using SysScrub.Core.Formatting;
 
 namespace SysScrub.Core.Software;
 
@@ -76,7 +77,7 @@ public sealed class WingetService(ILogger<WingetService>? logger = null)
 
         if (winget is null)
         {
-            return new SoftwareUpgradeResult(packageId, false, "winget bulunamadı.");
+            return new SoftwareUpgradeResult(packageId, false, CoreText.Get("Sw_NotFound", "winget bulunamadı."));
         }
 
         ProcessResult result = await RunAsync(
@@ -93,7 +94,7 @@ public sealed class WingetService(ILogger<WingetService>? logger = null)
         }
 
         // winget hata metnini standart çıkışa yazıyor; son anlamlı satır en açıklayıcısı.
-        string message = LastMeaningfulLine(result.Output) ?? result.Error ?? "Bilinmeyen hata.";
+        string message = LastMeaningfulLine(result.Output) ?? result.Error ?? CoreText.Get("Sw_UnknownError", "Bilinmeyen hata.");
 
         _logger.LogWarning("{Package} güncellenemedi: {Message}", packageId, message);
 

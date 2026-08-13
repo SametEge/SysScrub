@@ -124,7 +124,7 @@ public sealed partial class CleanerViewModel : ObservableObject
 
     public bool CanEditSelection => Stage is CleanerStage.Ready or CleanerStage.Reviewing or CleanerStage.Finished;
 
-    public string ProgressPercentLabel => $"%{Math.Round(ProgressFraction * 100)}";
+    public string ProgressPercentLabel => PercentText.FromFraction(ProgressFraction);
 
     public string FoundLabel => FoundFiles == 0 ? "—" : ByteSize.Format(FoundBytes);
 
@@ -390,8 +390,10 @@ public sealed partial class CleanerViewModel : ObservableObject
 
     private string BuildScanSummary(ScanReport report)
     {
-        string text = $"{ByteSize.Format(report.TotalBytes)} temizlenebilir alan bulundu " +
-                      $"({report.TotalCount:N0} dosya, {report.Duration.TotalSeconds:F1} saniye).";
+        string text = T("Cl_ScanSummary",
+            ByteSize.Format(report.TotalBytes),
+            report.TotalCount.ToString("N0"),
+            DurationText.FromMilliseconds((int)report.Duration.TotalMilliseconds));
 
         if (report.SkippedForElevation > 0)
         {
@@ -403,7 +405,7 @@ public sealed partial class CleanerViewModel : ObservableObject
 
     private void BuildResultText(CleanResult result)
     {
-        ResultSummary = $"{ByteSize.Format(result.BytesFreed)} temizlendi";
+        ResultSummary = T("Cl_Freed", ByteSize.Format(result.BytesFreed));
 
         var parts = new List<string>();
 

@@ -6,6 +6,7 @@ using SysScrub.App.Localization;
 using static SysScrub.App.Localization.L;
 using SysScrub.Core.Drivers;
 using SysScrub.Core.Machine;
+using SysScrub.Core.Formatting;
 
 namespace SysScrub.App.ViewModels;
 
@@ -242,9 +243,10 @@ public sealed partial class DriversViewModel : ObservableObject
             HasLoaded = true;
 
             StatusMessage = _lastInventory.ProblemDevices.Count > 0
-                ? $"{_lastInventory.ProblemDevices.Count} cihaz sorun bildiriyor."
-                : $"{_lastInventory.Devices.Count:N0} cihaz okundu " +
-                  $"({_lastInventory.Duration.TotalSeconds:F1} saniye).";
+                ? T("Dr_ProblemCount", _lastInventory.ProblemDevices.Count)
+                : T("Dr_ReadCount",
+                    _lastInventory.Devices.Count.ToString("N0"),
+                    DurationText.FromMilliseconds((int)_lastInventory.Duration.TotalMilliseconds));
         }
         catch (OperationCanceledException)
         {

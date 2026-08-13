@@ -1,3 +1,4 @@
+using SysScrub.Core.Formatting;
 namespace SysScrub.Core.Drivers;
 
 /// <summary>Bir cihazın sürücüsünün güncellik durumu.</summary>
@@ -33,8 +34,8 @@ public sealed record DriverStatusRow
     {
         get
         {
-            string version = Device.DriverVersion ?? "sürüm yok";
-            string date = Device.DriverDate?.ToString("dd.MM.yyyy") ?? "tarih yok";
+            string version = Device.DriverVersion ?? CoreText.Get("Dr_S_NoVersion", "sürüm yok");
+            string date = Device.DriverDate?.ToString("dd.MM.yyyy") ?? CoreText.Get("Dr_S_NoDate", "tarih yok");
 
             return $"{version}  ·  {date}";
         }
@@ -48,12 +49,12 @@ public sealed record DriverStatusRow
             if (Update is null)
             {
                 return Status == DriverStatus.PossiblyOutdated
-                    ? "üreticide olabilir"
-                    : "güncel";
+                    ? CoreText.Get("Dr_S_CheckVendor", "üreticide olabilir")
+                    : CoreText.Get("Dr_S_UpToDate", "güncel");
             }
 
-            string version = Update.Version ?? "yeni sürüm";
-            string date = Update.Date?.ToString("dd.MM.yyyy") ?? "tarih yok";
+            string version = Update.Version ?? CoreText.Get("Dr_S_NewVersion", "yeni sürüm");
+            string date = Update.Date?.ToString("dd.MM.yyyy") ?? CoreText.Get("Dr_S_NoDate", "tarih yok");
 
             return $"{version}  ·  {date}";
         }
@@ -71,7 +72,7 @@ public sealed record DriverStatusRow
 
             int years = (int)(age.TotalDays / 365);
 
-            return years >= 2 ? $"{years} yıl eski" : string.Empty;
+            return years >= 2 ? CoreText.Format("Dr_S_YearsOld", "{0} yıl eski", years) : string.Empty;
         }
     }
 }
@@ -81,7 +82,7 @@ public sealed record DriverStatusReport
 {
     public required IReadOnlyList<DriverStatusRow> Rows { get; init; }
 
-    /// <summary>Windows Update sorgulandı mı. Sorgulanmadıysa "güncel" iddiası zayıftır.</summary>
+    /// <summary>Windows Update sorgulandı mı. Sorgulanmadıysa CoreText.Get("Dr_S_UpToDate", "güncel") iddiası zayıftır.</summary>
     public required bool UpdateSourceQueried { get; init; }
 
     public string? UpdateSourceMessage { get; init; }

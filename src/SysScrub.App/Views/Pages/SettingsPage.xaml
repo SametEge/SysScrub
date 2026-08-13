@@ -231,7 +231,7 @@
                                         Style="{StaticResource SsSecondaryButton}"
                                         Command="{Binding PurgeQuarantineCommand}"
                                         IsEnabled="{Binding HasQuarantine}"
-                                        ToolTip="Yalnızca saklama süresini aşmış kayıtlar silinir. Bu işlem geri alınamaz." />
+                                        ToolTip="{loc:Str Set_PurgeExpired_Tip}" />
                             </StackPanel>
                         </Grid>
                     </StackPanel>

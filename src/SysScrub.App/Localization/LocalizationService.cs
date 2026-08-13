@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text.Json;
+using SysScrub.Core.Formatting;
 
 namespace SysScrub.App.Localization;
 
@@ -70,6 +71,10 @@ public sealed class LocalizationService : INotifyPropertyChanged
             .ThenByDescending(l => l.CoveragePercent)
             .ThenBy(l => l.NativeName, StringComparer.CurrentCultureIgnoreCase)
             .ToArray();
+
+        // Use() aynı dile geçişte erken dönüyor; başlangıç dili için de bağlansın.
+        BindDurationWords();
+        BindCoreText();
     }
 
     public static LocalizationService Instance { get; } = new();
@@ -178,10 +183,38 @@ public sealed class LocalizationService : INotifyPropertyChanged
         CultureInfo.CurrentCulture = info;
         CultureInfo.CurrentUICulture = info;
 
+        BindDurationWords();
+        BindCoreText();
+
         // "Item[]" tüm dizin bağlamalarını yeniler.
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Item[]"));
         LanguageChanged?.Invoke(this, EventArgs.Empty);
     }
+
+    /// <summary>
+    /// Motor katmanındaki süre biçimlendiricisine birim sözcüklerini verir.
+    /// Aritmetik orada, sözcükler burada: "2 saat 19 dakika" cümlesinin hesabı
+    /// tek yerde kalıyor ama dili arayüzden geliyor.
+    /// </summary>
+    private void BindDurationWords() => DurationText.Words = new DurationWords(
+        this["Dur_Day"],
+        this["Dur_Hour"],
+        this["Dur_Minute"],
+        this["Dur_Second"],
+        this["Dur_SecondShort"]);
+
+    /// <summary>
+    /// Motor katmanının ekrana çıkan metinlerini kataloğa bağlar: registry
+    /// tarayıcı adları, disk sağlığı yorumları, sürücü durumları ve hata
+    /// nedenleri motorda üretiliyor ama kullanıcı onları arayüzde okuyor.
+    ///
+    /// Bulunmayan anahtarda null dönüyoruz; motor kendi Türkçe karşılığına
+    /// düşüyor — arayüzdeki eksik anahtar davranışının aynısı.
+    /// </summary>
+    private void BindCoreText() => CoreText.Source = key =>
+        _active.TryGetValue(key, out string? value) ? value
+        : _neutral.TryGetValue(key, out string? fallback) ? fallback
+        : null;
 
     public LanguageOption? Find(string culture) =>
         Languages.FirstOrDefault(l => l.Culture == culture);

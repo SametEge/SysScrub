@@ -2,9 +2,17 @@ using System.Globalization;
 
 namespace SysScrub.Core.Formatting;
 
-/// <summary>Süreleri okunabilir Türkçe metne çevirir. Arayüz ve komut satırı aynı biçimi kullanır.</summary>
+/// <summary>
+/// Süreleri okunabilir metne çevirir. Arayüz ve komut satırı aynı biçimi kullanır.
+///
+/// Sayılar burada, sözcükler <see cref="Words"/>'te: arayüz açılışta kendi
+/// kataloğunu bağlıyor, komut satırı varsayılan Türkçe'de kalıyor.
+/// </summary>
 public static class DurationText
 {
+    /// <summary>Birim sözcükleri. Arayüz dil değiştikçe bunu yeniliyor.</summary>
+    public static DurationWords Words { get; set; } = DurationWords.Turkish;
+
     /// <summary>
     /// Kısa gecikme gösterimi: "420 ms", "1,3 sn", "12 sn".
     /// Açılış gecikmeleri milisaniye geliyor ve saniyeye yuvarlamak farkı siliyor.
@@ -25,8 +33,8 @@ public static class DurationText
 
         // 10 saniyeden sonra ondalık bilgi taşımıyor.
         return seconds >= 10
-            ? $"{Math.Round(seconds).ToString("N0", CultureInfo.CurrentCulture)} sn"
-            : $"{seconds.ToString("N1", CultureInfo.CurrentCulture)} sn";
+            ? $"{Math.Round(seconds).ToString("N0", CultureInfo.CurrentCulture)} {Words.ShortSecond}"
+            : $"{seconds.ToString("N1", CultureInfo.CurrentCulture)} {Words.ShortSecond}";
     }
 
     /// <summary>"3 gün 4 saat", "2 saat 19 dakika", "7 dakika", "42 saniye".</summary>
@@ -34,42 +42,21 @@ public static class DurationText
     {
         duration = Clamp(duration);
 
+        DurationWords words = Words;
+
         if (duration.TotalDays >= 1)
         {
-            return $"{(int)duration.TotalDays} gün {duration.Hours} saat";
+            return $"{(int)duration.TotalDays} {words.Day} {duration.Hours} {words.Hour}";
         }
 
         if (duration.TotalHours >= 1)
         {
-            return $"{(int)duration.TotalHours} saat {duration.Minutes} dakika";
+            return $"{(int)duration.TotalHours} {words.Hour} {duration.Minutes} {words.Minute}";
         }
 
         return duration.TotalMinutes >= 1
-            ? $"{(int)duration.TotalMinutes} dakika"
-            : $"{(int)duration.TotalSeconds} saniye";
-    }
-
-    /// <summary>
-    /// "… açık" biçimi. Ek son birime göre değiştiği için (saattir / dakikadır / gündür)
-    /// Humanize'ın sonuna eklenemiyor, ayrı kurulması gerekiyor.
-    /// </summary>
-    public static string HumanizeUptime(TimeSpan uptime)
-    {
-        uptime = Clamp(uptime);
-
-        if (uptime.TotalDays >= 1)
-        {
-            return $"{(int)uptime.TotalDays} gün {uptime.Hours} saattir açık";
-        }
-
-        if (uptime.TotalHours >= 1)
-        {
-            return $"{(int)uptime.TotalHours} saat {uptime.Minutes} dakikadır açık";
-        }
-
-        return uptime.TotalMinutes >= 1
-            ? $"{(int)uptime.TotalMinutes} dakikadır açık"
-            : $"{(int)uptime.TotalSeconds} saniyedir açık";
+            ? $"{(int)duration.TotalMinutes} {words.Minute}"
+            : $"{(int)duration.TotalSeconds} {words.Second}";
     }
 
     private static TimeSpan Clamp(TimeSpan value) => value < TimeSpan.Zero ? TimeSpan.Zero : value;

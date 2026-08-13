@@ -1,3 +1,5 @@
+using SysScrub.Core.Formatting;
+
 namespace SysScrub.Core.Drivers;
 
 /// <summary>Bir cihazın çalışma durumu.</summary>
@@ -64,29 +66,29 @@ public sealed record DeviceInfo
         DriverProvider is not null &&
         DriverProvider.Contains("Microsoft", StringComparison.OrdinalIgnoreCase);
 
-    /// <summary>Aygıt Yöneticisi sorun kodunun Türkçe karşılığı.</summary>
+    /// <summary>Aygıt Yöneticisi sorun kodunun okunabilir karşılığı.</summary>
     public string ProblemDescription => ProblemCode switch
     {
         0 => string.Empty,
-        1 => "Sürücü yapılandırılmamış.",
-        3 => "Sürücü bozuk ya da bellek yetersiz.",
-        10 => "Cihaz başlatılamıyor.",
-        12 => "Yeterli boş kaynak bulunamadı.",
-        14 => "Bilgisayarın yeniden başlatılması gerekiyor.",
-        16 => "Cihazın kullandığı kaynaklar tam olarak belirlenemedi.",
-        18 => "Sürücülerin yeniden yüklenmesi gerekiyor.",
-        19 => "Kayıt defteri bilgisi bozuk ya da eksik.",
-        21 => "Windows cihazı kaldırıyor.",
-        22 => "Cihaz devre dışı bırakılmış.",
-        24 => "Cihaz takılı değil ya da düzgün çalışmıyor.",
-        28 => "Sürücü yüklü değil.",
-        31 => "Windows bu cihaz için gereken sürücüleri yükleyemiyor.",
-        32 => "Cihazın başlatma servisi devre dışı.",
-        37 => "Sürücü başlatılamadı.",
-        39 => "Sürücü bozuk ya da eksik.",
-        43 => "Cihaz bir sorun bildirdiği için Windows onu durdurdu.",
-        45 => "Cihaz şu an bilgisayara bağlı değil.",
-        _ => $"Aygıt Yöneticisi sorun kodu {ProblemCode}."
+        1 => CoreText.Get("Dv_P1", "Sürücü yapılandırılmamış."),
+        3 => CoreText.Get("Dv_P3", "Sürücü bozuk ya da bellek yetersiz."),
+        10 => CoreText.Get("Dv_P10", "Cihaz başlatılamıyor."),
+        12 => CoreText.Get("Dv_P12", "Yeterli boş kaynak bulunamadı."),
+        14 => CoreText.Get("Dv_P14", "Bilgisayarın yeniden başlatılması gerekiyor."),
+        16 => CoreText.Get("Dv_P16", "Cihazın kullandığı kaynaklar tam olarak belirlenemedi."),
+        18 => CoreText.Get("Dv_P18", "Sürücülerin yeniden yüklenmesi gerekiyor."),
+        19 => CoreText.Get("Dv_P19", "Kayıt defteri bilgisi bozuk ya da eksik."),
+        21 => CoreText.Get("Dv_P21", "Windows cihazı kaldırıyor."),
+        22 => CoreText.Get("Dv_P22", "Cihaz devre dışı bırakılmış."),
+        24 => CoreText.Get("Dv_P24", "Cihaz takılı değil ya da düzgün çalışmıyor."),
+        28 => CoreText.Get("Dv_P28", "Sürücü yüklü değil."),
+        31 => CoreText.Get("Dv_P31", "Windows bu cihaz için gereken sürücüleri yükleyemiyor."),
+        32 => CoreText.Get("Dv_P32", "Cihazın başlatma servisi devre dışı."),
+        37 => CoreText.Get("Dv_P37", "Sürücü başlatılamadı."),
+        39 => CoreText.Get("Dv_P39", "Sürücü bozuk ya da eksik."),
+        43 => CoreText.Get("Dv_P43", "Cihaz bir sorun bildirdiği için Windows onu durdurdu."),
+        45 => CoreText.Get("Dv_P45", "Cihaz şu an bilgisayara bağlı değil."),
+        _ => CoreText.Format("Dv_PUnknown", "Aygıt Yöneticisi sorun kodu {0}.", ProblemCode)
     };
 
     public override string ToString() => $"{Name} ({DriverVersion})";
@@ -127,60 +129,66 @@ public sealed record DeviceInventoryReport
             .ToArray();
 }
 
-/// <summary>Windows cihaz sınıfı adlarının Türkçe karşılıkları.</summary>
+/// <summary>Windows cihaz sınıfı adlarının okunabilir karşılıkları.</summary>
 public static class DeviceClassNames
 {
-    private static readonly Dictionary<string, string> Names = new(StringComparer.OrdinalIgnoreCase)
+    /// <summary>
+    /// Windows cihaz sınıfı -> (katalog anahtarı, Türkçe karşılık).
+    /// Anahtar sabit, sözcük dile göre değişiyor.
+    /// </summary>
+    private static readonly Dictionary<string, (string Key, string Turkish)> Names = new(StringComparer.OrdinalIgnoreCase)
     {
-        ["Display"] = "Ekran kartları",
-        ["Net"] = "Ağ bağdaştırıcıları",
-        ["Media"] = "Ses, video ve oyun denetleyicileri",
-        ["AudioEndpoint"] = "Ses girişleri ve çıkışları",
-        ["USB"] = "USB denetleyicileri",
-        ["DiskDrive"] = "Disk sürücüleri",
-        ["SCSIAdapter"] = "Depolama denetleyicileri",
-        ["HIDClass"] = "İnsan arabirim aygıtları",
-        ["Keyboard"] = "Klavyeler",
-        ["Mouse"] = "Fare ve işaret aygıtları",
-        ["Monitor"] = "Monitörler",
-        ["Printer"] = "Yazıcılar",
-        ["Bluetooth"] = "Bluetooth",
-        ["Camera"] = "Kameralar",
-        ["Image"] = "Görüntü aygıtları",
-        ["Battery"] = "Piller",
-        ["Processor"] = "İşlemciler",
-        ["System"] = "Sistem aygıtları",
-        ["Computer"] = "Bilgisayar",
-        ["Firmware"] = "Bellenim",
-        ["Ports"] = "Bağlantı noktaları",
-        ["SoftwareComponent"] = "Yazılım bileşenleri",
-        ["SoftwareDevice"] = "Yazılım aygıtları",
-        ["Volume"] = "Birimler",
-        ["SecurityDevices"] = "Güvenlik aygıtları",
-        ["SmartCardReader"] = "Akıllı kart okuyucuları",
-        ["Sensor"] = "Algılayıcılar",
-        ["Net_Virtual"] = "Sanal ağ bağdaştırıcıları",
-        ["MEDIA"] = "Ses, video ve oyun denetleyicileri",
-        ["AudioProcessingObject"] = "Ses işleme bileşenleri",
-        ["MediaStreamingDevices"] = "Medya akış aygıtları",
-        ["PrintQueue"] = "Yazdırma kuyrukları",
-        ["Display_Virtual"] = "Sanal ekranlar",
-        ["Extension"] = "Aygıt uzantıları",
-        ["USBDevice"] = "USB aygıtları",
-        ["WSDPrintDevice"] = "Ağ yazıcıları",
-        ["Biometric"] = "Biyometrik aygıtlar",
-        ["DigitalMediaDevices"] = "Dijital medya aygıtları",
-        ["Modem"] = "Modemler",
-        ["CDROM"] = "DVD/CD-ROM sürücüleri",
-        ["FloppyDisk"] = "Disket sürücüleri",
-        ["hdc"] = "IDE ATA/ATAPI denetleyicileri",
-        ["MTD"] = "Bellek teknolojisi aygıtları",
-        ["Net Service"] = "Ağ hizmetleri",
-        ["NetTrans"] = "Ağ protokolleri",
-        ["NetClient"] = "Ağ istemcileri",
-        ["Other"] = "Diğer aygıtlar"
+        ["Display"] = ("Dv_C_Display", "Ekran kartları"),
+        ["Net"] = ("Dv_C_Net", "Ağ bağdaştırıcıları"),
+        ["Media"] = ("Dv_C_Media", "Ses, video ve oyun denetleyicileri"),
+        ["AudioEndpoint"] = ("Dv_C_AudioEndpoint", "Ses girişleri ve çıkışları"),
+        ["USB"] = ("Dv_C_USB", "USB denetleyicileri"),
+        ["DiskDrive"] = ("Dv_C_DiskDrive", "Disk sürücüleri"),
+        ["SCSIAdapter"] = ("Dv_C_SCSIAdapter", "Depolama denetleyicileri"),
+        ["HIDClass"] = ("Dv_C_HIDClass", "İnsan arabirim aygıtları"),
+        ["Keyboard"] = ("Dv_C_Keyboard", "Klavyeler"),
+        ["Mouse"] = ("Dv_C_Mouse", "Fare ve işaret aygıtları"),
+        ["Monitor"] = ("Dv_C_Monitor", "Monitörler"),
+        ["Printer"] = ("Dv_C_Printer", "Yazıcılar"),
+        ["Bluetooth"] = ("Dv_C_Bluetooth", "Bluetooth"),
+        ["Camera"] = ("Dv_C_Camera", "Kameralar"),
+        ["Image"] = ("Dv_C_Image", "Görüntü aygıtları"),
+        ["Battery"] = ("Dv_C_Battery", "Piller"),
+        ["Processor"] = ("Dv_C_Processor", "İşlemciler"),
+        ["System"] = ("Dv_C_System", "Sistem aygıtları"),
+        ["Computer"] = ("Dv_C_Computer", "Bilgisayar"),
+        ["Firmware"] = ("Dv_C_Firmware", "Bellenim"),
+        ["Ports"] = ("Dv_C_Ports", "Bağlantı noktaları"),
+        ["SoftwareComponent"] = ("Dv_C_SoftwareComponent", "Yazılım bileşenleri"),
+        ["SoftwareDevice"] = ("Dv_C_SoftwareDevice", "Yazılım aygıtları"),
+        ["Volume"] = ("Dv_C_Volume", "Birimler"),
+        ["SecurityDevices"] = ("Dv_C_SecurityDevices", "Güvenlik aygıtları"),
+        ["SmartCardReader"] = ("Dv_C_SmartCardReader", "Akıllı kart okuyucuları"),
+        ["Sensor"] = ("Dv_C_Sensor", "Algılayıcılar"),
+        ["Net_Virtual"] = ("Dv_C_NetVirtual", "Sanal ağ bağdaştırıcıları"),
+        ["MEDIA"] = ("Dv_C_MEDIA", "Ses, video ve oyun denetleyicileri"),
+        ["AudioProcessingObject"] = ("Dv_C_AudioProcessingObject", "Ses işleme bileşenleri"),
+        ["MediaStreamingDevices"] = ("Dv_C_MediaStreamingDevices", "Medya akış aygıtları"),
+        ["PrintQueue"] = ("Dv_C_PrintQueue", "Yazdırma kuyrukları"),
+        ["Display_Virtual"] = ("Dv_C_DisplayVirtual", "Sanal ekranlar"),
+        ["Extension"] = ("Dv_C_Extension", "Aygıt uzantıları"),
+        ["USBDevice"] = ("Dv_C_USBDevice", "USB aygıtları"),
+        ["WSDPrintDevice"] = ("Dv_C_WSDPrintDevice", "Ağ yazıcıları"),
+        ["Biometric"] = ("Dv_C_Biometric", "Biyometrik aygıtlar"),
+        ["DigitalMediaDevices"] = ("Dv_C_DigitalMediaDevices", "Dijital medya aygıtları"),
+        ["Modem"] = ("Dv_C_Modem", "Modemler"),
+        ["CDROM"] = ("Dv_C_CDROM", "DVD/CD-ROM sürücüleri"),
+        ["FloppyDisk"] = ("Dv_C_FloppyDisk", "Disket sürücüleri"),
+        ["hdc"] = ("Dv_C_hdc", "IDE ATA/ATAPI denetleyicileri"),
+        ["MTD"] = ("Dv_C_MTD", "Bellek teknolojisi aygıtları"),
+        ["Net Service"] = ("Dv_C_NetService", "Ağ hizmetleri"),
+        ["NetTrans"] = ("Dv_C_NetTrans", "Ağ protokolleri"),
+        ["NetClient"] = ("Dv_C_NetClient", "Ağ istemcileri"),
+        ["Other"] = ("Dv_C_Other", "Diğer aygıtlar"),
     };
 
     public static string Describe(string? className) =>
-        className is not null && Names.TryGetValue(className, out string? name) ? name : className ?? "Diğer aygıtlar";
+        className is not null && Names.TryGetValue(className, out (string Key, string Turkish) name)
+            ? CoreText.Get(name.Key, name.Turkish)
+            : className ?? CoreText.Get("Dv_C_Other", "Diğer aygıtlar");
 }

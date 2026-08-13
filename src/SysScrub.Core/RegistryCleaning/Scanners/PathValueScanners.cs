@@ -1,4 +1,5 @@
 using Microsoft.Win32;
+using SysScrub.Core.Formatting;
 using SysScrub.Core.Rules;
 
 namespace SysScrub.Core.RegistryCleaning.Scanners;
@@ -30,7 +31,7 @@ public abstract class PathValueScannerBase : IRegistryScanner
     protected RegistryFinding? ProbeValue(
         RegistryLocation location,
         string? rawValue,
-        string reason = "İşaret ettiği dosya yok")
+        string? reason = null)
     {
         if (RegistryPathProbe.Probe(rawValue, out string resolved) != RegistryPathProbe.ProbeResult.Missing)
         {
@@ -41,7 +42,8 @@ public abstract class PathValueScannerBase : IRegistryScanner
         {
             ScannerId = Id,
             Location = location,
-            Reason = reason,
+            // Varsayılan neden burada çözülüyor: çeviri derleme zamanı sabiti olamaz.
+            Reason = reason ?? CoreText.Get("Rs_R_NoFile", "İşaret ettiği dosya yok"),
             Target = resolved,
             Risk = Risk
         };
@@ -55,11 +57,14 @@ public sealed class SharedDllScanner : PathValueScannerBase
 
     public override string Id => "shared-dlls";
 
-    public override string Title => "Eksik paylaşılan DLL kayıtları";
+    public override string Title =>
+        CoreText.Get("Rs_SharedDlls_Title", "Eksik paylaşılan DLL kayıtları");
 
     public override string Explanation =>
+        CoreText.Get("Rs_SharedDlls_Desc",
         "Programlar, ortak kullandıkları kütüphaneleri burada sayar. Program kaldırıldığında " +
-        "sayaç bazen geride kalır. Dosyası artık var olmayan kayıtlar hiçbir işe yaramaz.";
+        "sayaç bazen geride kalır. Dosyası artık var olmayan kayıtlar hiçbir işe yaramaz.");
+
 
     public override bool RequiresAdmin => true;
 
@@ -100,11 +105,13 @@ public sealed class AppPathScanner : PathValueScannerBase
 
     public override string Id => "app-paths";
 
-    public override string Title => "Geçersiz uygulama yolları";
+    public override string Title =>
+        CoreText.Get("Rs_AppPaths_Title", "Geçersiz uygulama yolları");
 
     public override string Explanation =>
+        CoreText.Get("Rs_AppPaths_Desc",
         "Çalıştır kutusuna kısa ad yazınca (örneğin \"chrome\") Windows programı burada arar. " +
-        "Program kaldırıldığında kayıt bazen kalır ve kısa ad çalışmayan bir yola işaret eder.";
+        "Program kaldırıldığında kayıt bazen kalır ve kısa ad çalışmayan bir yola işaret eder.");
 
     public override bool RequiresAdmin => true;
 
@@ -152,11 +159,14 @@ public sealed class StartupEntryScanner : PathValueScannerBase
 
     public override string Id => "startup-entries";
 
-    public override string Title => "Hedefi olmayan başlangıç kayıtları";
+    public override string Title =>
+        CoreText.Get("Rs_StartupEntries_Title", "Hedefi olmayan başlangıç kayıtları");
 
     public override string Explanation =>
+        CoreText.Get("Rs_StartupEntries_Desc",
         "Windows açılışta bu kayıtlardaki programları çalıştırmayı dener. Program silinmişse " +
-        "her açılışta boşuna aranır. Bunları temizlemek açılışı biraz hızlandırır.";
+        "her açılışta boşuna aranır. Bunları temizlemek açılışı biraz hızlandırır.");
+
 
     public override IEnumerable<RegistryFinding> Scan(CancellationToken cancellationToken)
     {
@@ -198,11 +208,14 @@ public sealed class MuiCacheScanner : PathValueScannerBase
 
     public override string Id => "muicache";
 
-    public override string Title => "MUICache ölü kayıtları";
+    public override string Title =>
+        CoreText.Get("Rs_MuiCache_Title", "MUICache ölü kayıtları");
 
     public override string Explanation =>
+        CoreText.Get("Rs_MuiCache_Desc",
         "Windows, çalıştırdığın programların görünen adlarını burada saklar. Silinen programların " +
-        "kayıtları kalır ve yıllar içinde birikir. Temizlenmesi hiçbir şeyi etkilemez.";
+        "kayıtları kalır ve yıllar içinde birikir. Temizlenmesi hiçbir şeyi etkilemez.");
+
 
     public override IEnumerable<RegistryFinding> Scan(CancellationToken cancellationToken)
     {
@@ -250,11 +263,14 @@ public sealed class InstallerFolderScanner : PathValueScannerBase
 
     public override string Id => "installer-folders";
 
-    public override string Title => "Kırık yükleyici klasör kayıtları";
+    public override string Title =>
+        CoreText.Get("Rs_InstallerFolders_Title", "Kırık yükleyici klasör kayıtları");
 
     public override string Explanation =>
+        CoreText.Get("Rs_InstallerFolders_Desc",
         "Windows Installer, kurulum yaptığı klasörleri burada listeler. Klasör silindiğinde " +
-        "kayıt kalır ve zamanla birikir.";
+        "kayıt kalır ve zamanla birikir.");
+
 
     public override bool RequiresAdmin => true;
 
@@ -275,7 +291,7 @@ public sealed class InstallerFolderScanner : PathValueScannerBase
                     ValueName = valueName
                 },
                 valueName,
-                "İşaret ettiği klasör yok");
+                CoreText.Get("Rs_R_NoFolder", "İşaret ettiği klasör yok"));
 
             if (finding is not null)
             {
@@ -292,11 +308,14 @@ public sealed class SoundEventScanner : PathValueScannerBase
 
     public override string Id => "sound-events";
 
-    public override string Title => "Sahipsiz ses olayları";
+    public override string Title =>
+        CoreText.Get("Rs_SoundEvents_Title", "Sahipsiz ses olayları");
 
     public override string Explanation =>
+        CoreText.Get("Rs_SoundEvents_Desc",
         "Sistem olaylarına atanmış ses dosyaları. Dosya silindiğinde olay sessiz kalır " +
-        "ama kayıt durur. Temizlemek yalnızca ölü kaydı kaldırır, sesli olayları etkilemez.";
+        "ama kayıt durur. Temizlemek yalnızca ölü kaydı kaldırır, sesli olayları etkilemez.");
+
 
     public override bool DefaultEnabled => false;
 
@@ -332,7 +351,7 @@ public sealed class SoundEventScanner : PathValueScannerBase
                         ValueName = string.Empty
                     },
                     wav,
-                    "İşaret ettiği ses dosyası yok");
+                    CoreText.Get("Rs_R_NoSound", "İşaret ettiği ses dosyası yok"));
 
                 if (finding is not null)
                 {

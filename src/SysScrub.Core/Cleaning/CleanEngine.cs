@@ -5,6 +5,7 @@ using SysScrub.Core.Machine;
 using SysScrub.Core.Rules;
 using SysScrub.Core.Safety;
 using SysScrub.Core.Windows;
+using SysScrub.Core.Formatting;
 
 namespace SysScrub.Core.Cleaning;
 
@@ -265,7 +266,7 @@ public sealed class CleanEngine
             return;
         }
 
-        RecordFailure(item, rule, state, error ?? "Karantinaya taşınamadı.");
+        RecordFailure(item, rule, state, error ?? CoreText.Get("Cl_E_Quarantine", "Karantinaya taşınamadı."));
     }
 
     private void DeletePermanently(ScanItem item, CleaningRule rule, CleanState state, CleanOptions options)
@@ -293,7 +294,7 @@ public sealed class CleanEngine
                 }
             }
 
-            RecordFailure(item, rule, state, "Erişim reddedildi.");
+            RecordFailure(item, rule, state, CoreText.Get("Cl_E_Denied", "Erişim reddedildi."));
         }
         catch (IOException ex)
         {
@@ -338,7 +339,7 @@ public sealed class CleanEngine
         {
             foreach (string path in paths)
             {
-                state.Failures.Add(new CleanFailure(path, rule.Id, "Geri Dönüşüm Kutusu'na gönderilemedi."));
+                state.Failures.Add(new CleanFailure(path, rule.Id, CoreText.Get("Cl_E_Recycle", "Geri Dönüşüm Kutusu'na gönderilemedi.")));
             }
         }
 
@@ -373,7 +374,7 @@ public sealed class CleanEngine
             }
             else
             {
-                state.Failures.Add(new CleanFailure(item.Path, result.Rule.Id, "Geri Dönüşüm Kutusu boşaltılamadı."));
+                state.Failures.Add(new CleanFailure(item.Path, result.Rule.Id, CoreText.Get("Cl_E_RecycleEmpty", "Geri Dönüşüm Kutusu boşaltılamadı.")));
             }
         }
     }

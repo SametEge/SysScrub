@@ -1,3 +1,4 @@
+using SysScrub.Core.Formatting;
 namespace SysScrub.Core.Disks;
 
 /// <summary>
@@ -30,7 +31,7 @@ public static class DiskBusType
         0x0C => "SD",
         0x0D => "MMC",
         0x0E => "Sanal",
-        0x0F => "Dosya tabanlı sanal",
+        0x0F => CoreText.Get("Dh_Bus_FileBacked", "Dosya tabanlı sanal"),
         Spaces => "Storage Spaces",
         Nvme => "NVMe",
         0x12 => "SCM",

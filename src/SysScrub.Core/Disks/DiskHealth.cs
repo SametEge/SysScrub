@@ -131,27 +131,27 @@ public sealed record NvmeHealth
 
             if ((CriticalWarning & 0x01) != 0)
             {
-                warnings.Add("Yedek blok kapasitesi eşiğin altına düştü");
+                warnings.Add(CoreText.Get("Dh_W_Spare", "Yedek blok kapasitesi eşiğin altına düştü"));
             }
 
             if ((CriticalWarning & 0x02) != 0)
             {
-                warnings.Add("Sıcaklık güvenli aralığın dışında");
+                warnings.Add(CoreText.Get("Dh_W_Temperature", "Sıcaklık güvenli aralığın dışında"));
             }
 
             if ((CriticalWarning & 0x04) != 0)
             {
-                warnings.Add("Güvenilirlik düştü; disk arızalanmak üzere olabilir");
+                warnings.Add(CoreText.Get("Dh_W_Reliability", "Güvenilirlik düştü; disk arızalanmak üzere olabilir"));
             }
 
             if ((CriticalWarning & 0x08) != 0)
             {
-                warnings.Add("Disk salt okunur moda geçti");
+                warnings.Add(CoreText.Get("Dh_W_ReadOnly", "Disk salt okunur moda geçti"));
             }
 
             if ((CriticalWarning & 0x10) != 0)
             {
-                warnings.Add("Yedek belleğin kalıcı kaydı başarısız");
+                warnings.Add(CoreText.Get("Dh_W_Volatile", "Yedek belleğin kalıcı kaydı başarısız"));
             }
 
             return warnings;

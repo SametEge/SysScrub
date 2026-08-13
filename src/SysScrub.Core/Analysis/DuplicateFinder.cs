@@ -20,6 +20,9 @@ public sealed record DuplicateGroup
     public string SizeLabel => ByteSize.Format(SizeBytes);
 
     public string RecoverableLabel => ByteSize.Format(RecoverableBytes);
+
+    /// <summary>Rozette görünen hâli: "kazanç 1,2 GB".</summary>
+    public string RecoverableText => CoreText.Format("Da_Gain", "kazanç {0}", RecoverableLabel);
 }
 
 public sealed record DuplicateScanResult
@@ -127,7 +130,7 @@ public sealed class DuplicateFinder(ILogger<DuplicateFinder>? logger = null)
 
         int candidates = sizeGroups.Sum(g => g.Count());
 
-        progress?.Report(new DuplicateScanProgress("Boyutlar karşılaştırılıyor", 0, candidates));
+        progress?.Report(new DuplicateScanProgress(CoreText.Get("Du_P_Sizes", "Boyutlar karşılaştırılıyor"), 0, candidates));
 
         // 2. aşama: baş ve son parçanın özeti.
         var sampleGroups = new Dictionary<string, List<(string Path, long Size)>>(StringComparer.Ordinal);
@@ -159,7 +162,7 @@ public sealed class DuplicateFinder(ILogger<DuplicateFinder>? logger = null)
 
                 if (processed % 50 == 0)
                 {
-                    progress?.Report(new DuplicateScanProgress("İçerik örnekleniyor", processed, candidates));
+                    progress?.Report(new DuplicateScanProgress(CoreText.Get("Du_P_Sampling", "İçerik örnekleniyor"), processed, candidates));
                 }
             }
         }
@@ -196,7 +199,7 @@ public sealed class DuplicateFinder(ILogger<DuplicateFinder>? logger = null)
 
                 if (hashed % 20 == 0)
                 {
-                    progress?.Report(new DuplicateScanProgress("Dosyalar karşılaştırılıyor", hashed, toHash));
+                    progress?.Report(new DuplicateScanProgress(CoreText.Get("Du_P_Comparing", "Dosyalar karşılaştırılıyor"), hashed, toHash));
                 }
             }
 

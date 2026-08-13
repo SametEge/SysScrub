@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Win32;
 using SysScrub.Core.Cleaning;
+using SysScrub.Core.Formatting;
 
 namespace SysScrub.Core.Startup;
 
@@ -48,9 +49,9 @@ public sealed class StartupManager(
     {
         if (entry.Control == StartupControl.ReadOnly)
         {
-            return StartupChangeResult.Fail(
+            return StartupChangeResult.Fail(CoreText.Get("St_E_ServiceReadOnly",
                 "Servislerin başlangıç türü bu ekrandan değiştirilemez. Yanlış kapatılan bir servis " +
-                "sistemin açılışını etkileyebilir; bunun için Hizmetler konsolunu kullanın.");
+                "sistemin açılışını etkileyebilir; bunun için Hizmetler konsolunu kullanın."));
         }
 
         StartupChangeResult result = entry.Source switch
@@ -75,7 +76,7 @@ public sealed class StartupManager(
     {
         if (entry.ApprovalScope is not { } scope || string.IsNullOrEmpty(entry.ApprovalValueName))
         {
-            return StartupChangeResult.Fail("Bu öğenin Windows'taki karşılığı çözülemedi.");
+            return StartupChangeResult.Fail(CoreText.Get("St_E_Unresolved", "Bu öğenin Windows'taki karşılığı çözülemedi."));
         }
 
         RegistryHive hive = entry.IsMachineHive ? RegistryHive.LocalMachine : RegistryHive.CurrentUser;
@@ -87,8 +88,8 @@ public sealed class StartupManager(
 
         return StartupChangeResult.Fail(
             entry.IsMachineHive
-                ? "Tüm kullanıcıları etkileyen öğeyi değiştirmek için yönetici hakkı gerekiyor."
-                : "Kayıt yazılamadı; öğe değiştirilemedi.");
+                ? CoreText.Get("St_E_NeedsAdmin", "Tüm kullanıcıları etkileyen öğeyi değiştirmek için yönetici hakkı gerekiyor.")
+                : CoreText.Get("St_E_WriteFailed", "Kayıt yazılamadı; öğe değiştirilemedi."));
     }
 
     /// <summary>
@@ -99,14 +100,14 @@ public sealed class StartupManager(
     {
         if (string.IsNullOrEmpty(entry.TaskPath))
         {
-            return StartupChangeResult.Fail("Görev yolu bilinmiyor.");
+            return StartupChangeResult.Fail(CoreText.Get("St_E_NoTaskPath", "Görev yolu bilinmiyor."));
         }
 
         Type? serviceType = Type.GetTypeFromProgID("Schedule.Service");
 
         if (serviceType is null)
         {
-            return StartupChangeResult.Fail("Görev Zamanlayıcı hizmetine erişilemedi.");
+            return StartupChangeResult.Fail(CoreText.Get("St_E_NoScheduler", "Görev Zamanlayıcı hizmetine erişilemedi."));
         }
 
         dynamic? service = null;
@@ -117,7 +118,7 @@ public sealed class StartupManager(
 
             if (service is null)
             {
-                return StartupChangeResult.Fail("Görev Zamanlayıcı hizmetine erişilemedi.");
+                return StartupChangeResult.Fail(CoreText.Get("St_E_NoScheduler", "Görev Zamanlayıcı hizmetine erişilemedi."));
             }
 
             service.Connect();
@@ -132,13 +133,13 @@ public sealed class StartupManager(
         }
         catch (UnauthorizedAccessException)
         {
-            return StartupChangeResult.Fail("Bu görevi değiştirmek için yönetici hakkı gerekiyor.");
+            return StartupChangeResult.Fail(CoreText.Get("St_E_TaskNeedsAdmin", "Bu görevi değiştirmek için yönetici hakkı gerekiyor."));
         }
         catch (Exception ex) when (ex is COMException or Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
         {
             _logger.LogWarning(ex, "Zamanlanmış görev değiştirilemedi: {Task}", entry.TaskPath);
 
-            return StartupChangeResult.Fail($"Görev değiştirilemedi: {ex.Message}");
+            return StartupChangeResult.Fail(CoreText.Format("St_E_TaskFailed", "Görev değiştirilemedi: {0}", ex.Message));
         }
         finally
         {
@@ -172,7 +173,10 @@ public sealed class StartupManager(
                     RuleId = enabled ? "startup.enable" : "startup.disable",
                     Bytes = 0,
                     Outcome = HistoryItemOutcome.Changed,
-                    Message = $"{entry.Name} — {(enabled ? "açıldı" : "devre dışı bırakıldı")} ({entry.SourceLabel})"
+                    Message = CoreText.Format(
+                        enabled ? "St_Log_Enabled" : "St_Log_Disabled",
+                        enabled ? "{0} — açıldı ({1})" : "{0} — devre dışı bırakıldı ({1})",
+                        entry.Name, entry.SourceLabel)
                 }
             ]);
     }

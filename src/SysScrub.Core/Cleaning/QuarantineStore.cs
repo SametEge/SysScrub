@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using SysScrub.Core.Machine;
 using SysScrub.Core.Safety;
+using SysScrub.Core.Formatting;
 
 namespace SysScrub.Core.Cleaning;
 
@@ -103,7 +104,7 @@ public sealed class QuarantineStore
 
         if (manifest is null)
         {
-            return new RestoreResult(0, 0, 0, ["Karantina kaydı bulunamadı."]);
+            return new RestoreResult(0, 0, 0, [CoreText.Get("Cl_E_NoRun", "Karantina kaydı bulunamadı.")]);
         }
 
         string filesDirectory = GetFilesDirectory(runId);

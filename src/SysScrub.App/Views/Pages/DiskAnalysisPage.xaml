@@ -267,7 +267,7 @@
                                                            VerticalAlignment="Center" />
                                                 <Border Style="{StaticResource SsBadge}" Margin="10,0,0,0" Padding="7,1"
                                                         Background="{DynamicResource SsGoodTint}">
-                                                    <TextBlock Text="{Binding RecoverableLabel, StringFormat=kazanç {0}}"
+                                                    <TextBlock Text="{Binding RecoverableText}"
                                                                FontSize="10.5" FontWeight="SemiBold"
                                                                Foreground="{DynamicResource SsGood}" />
                                                 </Border>

@@ -426,7 +426,8 @@ public partial class App : Application
         Log.Fatal(e.Exception, "Arayüzde yakalanmamış hata");
 
         MessageBox.Show(
-            $"Beklenmeyen bir hata oluştu.\n\n{e.Exception.Message}\n\nAyrıntılar günlük dosyasında:\n{AppPaths.DataDirectory}",
+            LocalizationService.Instance.Format(
+                "Msg_Crash", e.Exception.Message, AppPaths.DataDirectory),
             "SysScrub",
             MessageBoxButton.OK,
             MessageBoxImage.Error);

@@ -1,6 +1,7 @@
 using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
+using SysScrub.Core.Formatting;
 
 namespace SysScrub.Core.Disks;
 
@@ -36,9 +37,9 @@ public static class NvmeHealthReader
         {
             message = error switch
             {
-                5 => "SMART okumak için yönetici hakkı gerekiyor.",
-                1 or 50 => "Sürücü bu sorguyu desteklemiyor.",
-                _ => $"NVMe sağlık günlüğü okunamadı (hata {error})."
+                5 => CoreText.Get("Dh_E_NeedsAdmin", "SMART okumak için yönetici hakkı gerekiyor."),
+                1 or 50 => CoreText.Get("Dh_E_NoQuery", "Sürücü bu sorguyu desteklemiyor."),
+                _ => CoreText.Format("Dh_E_NvmeFailed", "NVMe sağlık günlüğü okunamadı (hata {0}).", error)
             };
 
             return null;

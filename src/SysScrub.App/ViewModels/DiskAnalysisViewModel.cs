@@ -253,7 +253,8 @@ public sealed partial class DiskAnalysisViewModel : ObservableObject
         _cancellation = new CancellationTokenSource();
 
         var progress = new Progress<DiskScanProgress>(p =>
-            BusyDetail = $"{p.Files:N0} dosya  ·  {ByteSize.Format(p.Bytes)}\n{p.CurrentPath}");
+            BusyDetail = T("Da_ScanProgress", p.Files.ToString("N0"), ByteSize.Format(p.Bytes)) +
+                         "\n" + p.CurrentPath);
 
         try
         {

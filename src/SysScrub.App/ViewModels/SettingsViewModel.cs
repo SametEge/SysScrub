@@ -391,7 +391,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         choices.AddRange(_localization.Languages.Select(option => new LanguageChoice(
             option.Culture,
             option.NativeName,
-            option.IsComplete ? string.Empty : $"%{option.CoveragePercent}",
+            option.IsComplete ? string.Empty : PercentText.Format(option.CoveragePercent),
             selected == option.Culture)));
 
         Languages = choices;

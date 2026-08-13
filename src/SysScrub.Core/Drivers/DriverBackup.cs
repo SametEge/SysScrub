@@ -3,14 +3,15 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using SysScrub.Core.Machine;
+using SysScrub.Core.Formatting;
 
 namespace SysScrub.Core.Drivers;
 
 public sealed record DriverBackupResult(bool Succeeded, string? Path, int PackageCount, string? Message)
 {
     public string Describe() => Succeeded
-        ? $"{PackageCount} sürücü paketi yedeklendi."
-        : Message ?? "Yedekleme başarısız.";
+        ? CoreText.Format("Dr_B_Done", "{0} sürücü paketi yedeklendi.", PackageCount)
+        : Message ?? CoreText.Get("Dr_B_Failed", "Yedekleme başarısız.");
 }
 
 /// <summary>DriverStore'daki bir sürücü paketi.</summary>
@@ -60,7 +61,7 @@ public sealed class DriverBackup(ILogger<DriverBackup>? logger = null)
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            return new DriverBackupResult(false, null, 0, $"Yedek klasörü oluşturulamadı: {ex.Message}");
+            return new DriverBackupResult(false, null, 0, CoreText.Format("Dr_B_NoFolder", "Yedek klasörü oluşturulamadı: {0}", ex.Message));
         }
 
         ProcessResult result = await RunPnpUtilAsync(
@@ -68,7 +69,7 @@ public sealed class DriverBackup(ILogger<DriverBackup>? logger = null)
 
         if (!result.Succeeded)
         {
-            return new DriverBackupResult(false, directory, 0, result.Error ?? "pnputil hata verdi.");
+            return new DriverBackupResult(false, directory, 0, result.Error ?? CoreText.Get("Dr_B_PnpFailed", "pnputil hata verdi."));
         }
 
         int count = CountExportedPackages(directory);

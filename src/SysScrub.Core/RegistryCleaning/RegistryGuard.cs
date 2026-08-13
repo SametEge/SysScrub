@@ -1,4 +1,5 @@
 using Microsoft.Win32;
+using SysScrub.Core.Formatting;
 
 namespace SysScrub.Core.RegistryCleaning;
 
@@ -30,13 +31,13 @@ public readonly record struct RegistryVerdict(bool IsAllowed, RegistryDenialReas
 
     public string Describe() => Reason switch
     {
-        RegistryDenialReason.None => "İzin verildi.",
-        RegistryDenialReason.InvalidLocation => "Geçersiz registry konumu.",
-        RegistryDenialReason.TooCloseToRoot => "Kovanın köküne çok yakın; silinemez.",
-        RegistryDenialReason.ProtectedSystemKey => "Windows'un çalışması için gereken korumalı dal.",
-        RegistryDenialReason.ProtectedPolicy => "Grup ilkesi veya güvenlik ayarı.",
-        RegistryDenialReason.OutsideAllowedScope => "Temizleyicinin yetkili olduğu alanların dışında.",
-        _ => "Bilinmeyen sebeple reddedildi."
+        RegistryDenialReason.None => CoreText.Get("Gv_Allowed", "İzin verildi."),
+        RegistryDenialReason.InvalidLocation => CoreText.Get("Rg_Invalid", "Geçersiz registry konumu."),
+        RegistryDenialReason.TooCloseToRoot => CoreText.Get("Rg_TooShallow", "Kovanın köküne çok yakın; silinemez."),
+        RegistryDenialReason.ProtectedSystemKey => CoreText.Get("Rg_Protected", "Windows'un çalışması için gereken korumalı dal."),
+        RegistryDenialReason.ProtectedPolicy => CoreText.Get("Rg_Policy", "Grup ilkesi veya güvenlik ayarı."),
+        RegistryDenialReason.OutsideAllowedScope => CoreText.Get("Rg_OutOfScope", "Temizleyicinin yetkili olduğu alanların dışında."),
+        _ => CoreText.Get("Gv_UnknownReason", "Bilinmeyen sebeple reddedildi.")
     };
 }
 

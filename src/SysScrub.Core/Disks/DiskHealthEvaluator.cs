@@ -1,3 +1,5 @@
+using SysScrub.Core.Formatting;
+
 namespace SysScrub.Core.Disks;
 
 /// <summary>
@@ -40,45 +42,54 @@ public static class DiskHealthEvaluator
         if (health.MediaErrors > 0)
         {
             return (DiskHealthStatus.Bad,
-                $"{health.MediaErrors:N0} düzeltilemeyen veri hatası var. Verilerinizi hemen yedekleyin.",
+                CoreText.Format("Dh_Ev_MediaErrors",
+                    "{0} düzeltilemeyen veri hatası var. Verilerinizi hemen yedekleyin.",
+                    health.MediaErrors.ToString("N0")),
                 healthPercent);
         }
 
         if (health.AvailableSpareThreshold > 0 && health.AvailableSpare <= health.AvailableSpareThreshold)
         {
             return (DiskHealthStatus.Bad,
-                $"Yedek blok kapasitesi %{health.AvailableSpare} — üreticinin eşiği olan " +
-                $"%{health.AvailableSpareThreshold} seviyesine indi.",
+                CoreText.Format("Dh_Ev_SpareLow",
+                    "Yedek blok kapasitesi %{0} — üreticinin eşiği olan %{1} seviyesine indi.",
+                    health.AvailableSpare, health.AvailableSpareThreshold),
                 healthPercent);
         }
 
         if (health.PercentageUsed >= UsedLifeBad)
         {
             return (DiskHealthStatus.Caution,
-                "Üreticinin öngördüğü yazma ömrü doldu. Disk çalışmaya devam edebilir " +
-                "ama artık yedeksiz bırakılmamalı.",
+                CoreText.Get("Dh_Ev_LifeSpent",
+                    "Üreticinin öngördüğü yazma ömrü doldu. Disk çalışmaya devam edebilir " +
+                    "ama artık yedeksiz bırakılmamalı."),
                 healthPercent);
         }
 
         if (health.TemperatureCelsius >= TemperatureBad)
         {
             return (DiskHealthStatus.Bad,
-                $"Sıcaklık {health.TemperatureCelsius} °C. Bu seviyede disk kendini yavaşlatır ve ömrü kısalır.",
+                CoreText.Format("Dh_Ev_TooHot",
+                    "Sıcaklık {0} °C. Bu seviyede disk kendini yavaşlatır ve ömrü kısalır.",
+                    health.TemperatureCelsius),
                 healthPercent);
         }
 
         if (health.PercentageUsed >= UsedLifeCaution)
         {
             return (DiskHealthStatus.Caution,
-                $"Yazma ömrünün %{health.PercentageUsed}'i tüketilmiş. Yakın zamanda değişim planlayın.",
+                CoreText.Format("Dh_Ev_LifeHigh",
+                    "Yazma ömrünün %{0}'i tüketilmiş. Yakın zamanda değişim planlayın.",
+                    health.PercentageUsed),
                 healthPercent);
         }
 
         if (health.TemperatureCelsius >= SsdTemperatureCaution)
         {
             return (DiskHealthStatus.Caution,
-                $"Sıcaklık {health.TemperatureCelsius} °C — uzun vadede ömrü kısaltan seviyede. " +
-                "Hava akışını kontrol edin.",
+                CoreText.Format("Dh_Ev_Warm",
+                    "Sıcaklık {0} °C — uzun vadede ömrü kısaltan seviyede. Hava akışını kontrol edin.",
+                    health.TemperatureCelsius),
                 healthPercent);
         }
 
@@ -87,20 +98,21 @@ public static class DiskHealthEvaluator
 
     private static string DescribeGood(NvmeHealth health)
     {
-        var parts = new List<string> { "Sorun bildiren bir değer yok" };
+        var parts = new List<string> { CoreText.Get("Dh_Ev_NoIssue", "Sorun bildiren bir değer yok") };
 
         if (health.PercentageUsed > 0)
         {
-            parts.Add($"yazma ömrünün %{health.PercentageUsed}'i tüketilmiş");
+            parts.Add(CoreText.Format("Dh_Ev_LifeUsed",
+                "yazma ömrünün %{0}'i tüketilmiş", health.PercentageUsed));
         }
         else
         {
-            parts.Add("yazma ömrü neredeyse hiç tüketilmemiş");
+            parts.Add(CoreText.Get("Dh_Ev_LifeFresh", "yazma ömrü neredeyse hiç tüketilmemiş"));
         }
 
         if (health.TemperatureCelsius > 0)
         {
-            parts.Add($"sıcaklık {health.TemperatureCelsius} °C");
+            parts.Add(CoreText.Format("Dh_Ev_Temp", "sıcaklık {0} °C", health.TemperatureCelsius));
         }
 
         return string.Join(", ", parts) + ".";
@@ -114,7 +126,8 @@ public static class DiskHealthEvaluator
 
         if (attributes.Count == 0)
         {
-            return (DiskHealthStatus.Unknown, "S.M.A.R.T. verisi okunamadı.", null);
+            return (DiskHealthStatus.Unknown,
+                CoreText.Get("Dh_E_SmartUnreadable", "S.M.A.R.T. verisi okunamadı."), null);
         }
 
         int? healthPercent = LifeLeft(attributes);
@@ -123,8 +136,10 @@ public static class DiskHealthEvaluator
         if (attributes.FirstOrDefault(a => a.IsBelowThreshold) is { } failing)
         {
             return (DiskHealthStatus.Bad,
-                $"\"{failing.Name}\" üreticinin belirlediği eşiğin altına düştü " +
-                $"({failing.Current} ≤ {failing.Threshold}). Verilerinizi hemen yedekleyin.",
+                CoreText.Format("Dh_Ev_BelowThreshold",
+                    "\"{0}\" üreticinin belirlediği eşiğin altına düştü ({1} ≤ {2}). " +
+                    "Verilerinizi hemen yedekleyin.",
+                    failing.Name, failing.Current, failing.Threshold),
                 healthPercent);
         }
 
@@ -132,23 +147,29 @@ public static class DiskHealthEvaluator
         if (attributes.FirstOrDefault(a => a.Id == 0xC6 && a.Raw > 0) is { } uncorrectable)
         {
             return (DiskHealthStatus.Bad,
-                $"{uncorrectable.Raw:N0} sektör hiçbir şekilde okunamıyor. Veri kaybı olmuş olabilir.",
+                CoreText.Format("Dh_Ev_Uncorrectable",
+                    "{0} sektör hiçbir şekilde okunamıyor. Veri kaybı olmuş olabilir.",
+                    uncorrectable.Raw.ToString("N0")),
                 healthPercent);
         }
 
         if (attributes.FirstOrDefault(a => a.Id == 0xC5 && a.Raw > 0) is { } pending)
         {
             return (DiskHealthStatus.Caution,
-                $"{pending.Raw:N0} sektör okunmakta zorlanıyor. Bu sayı artıyorsa disk arızalanmak üzere; " +
-                "şimdi yedek alın.",
+                CoreText.Format("Dh_Ev_Pending",
+                    "{0} sektör okunmakta zorlanıyor. Bu sayı artıyorsa disk arızalanmak üzere; " +
+                    "şimdi yedek alın.",
+                    pending.Raw.ToString("N0")),
                 healthPercent);
         }
 
         if (attributes.FirstOrDefault(a => a.Id == 0x05 && a.Raw > 0) is { } reallocated)
         {
             return (DiskHealthStatus.Caution,
-                $"{reallocated.Raw:N0} sektör bozulduğu için yedeğiyle değiştirilmiş. " +
-                "Sayı sabit kaldığı sürece disk kullanılabilir.",
+                CoreText.Format("Dh_Ev_Reallocated",
+                    "{0} sektör bozulduğu için yedeğiyle değiştirilmiş. " +
+                    "Sayı sabit kaldığı sürece disk kullanılabilir.",
+                    reallocated.Raw.ToString("N0")),
                 healthPercent);
         }
 
@@ -157,14 +178,18 @@ public static class DiskHealthEvaluator
         if (critical.Length > 0)
         {
             return (DiskHealthStatus.Caution,
-                $"\"{critical[0].Name}\" sıfırdan büyük ({critical[0].Raw:N0}). " +
-                (critical[0].Id is 0xC7 or 0xB7
-                    ? "Genelde veri kablosu sorunudur, diskin kendisi değil."
-                    : "İzlemeye değer."),
+                CoreText.Format("Dh_Ev_Critical", "\"{0}\" sıfırdan büyük ({1}). {2}",
+                    critical[0].Name,
+                    critical[0].Raw.ToString("N0"),
+                    critical[0].Id is 0xC7 or 0xB7
+                        ? CoreText.Get("Dh_Ev_CableHint",
+                            "Genelde veri kablosu sorunudur, diskin kendisi değil.")
+                        : CoreText.Get("Dh_Ev_WatchHint", "İzlemeye değer.")),
                 healthPercent);
         }
 
-        return (DiskHealthStatus.Good, "Sorun bildiren bir öznitelik yok.", healthPercent);
+        return (DiskHealthStatus.Good,
+            CoreText.Get("Dh_Ev_NoBadAttribute", "Sorun bildiren bir öznitelik yok."), healthPercent);
     }
 
     /// <summary>SSD kalan ömrünü bildiren öznitelikler; ilki bulunan kullanılır.</summary>

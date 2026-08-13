@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using SysScrub.Core.Formatting;
 
 namespace SysScrub.Core.Machine;
 
@@ -121,7 +122,7 @@ public sealed class ScheduledMaintenance(ILogger<ScheduledMaintenance>? logger =
         {
             return MaintenanceTaskState.Missing with
             {
-                Message = $"{CliFileName} bulunamadı; zamanlanmış görev bu kuruluma eklenemiyor."
+                Message = CoreText.Format("Sm_NoCli", "{0} bulunamadı; zamanlanmış görev bu kuruluma eklenemiyor.", CliFileName)
             };
         }
 
@@ -133,7 +134,7 @@ public sealed class ScheduledMaintenance(ILogger<ScheduledMaintenance>? logger =
 
             if (service is null)
             {
-                return MaintenanceTaskState.Missing with { Message = "Görev Zamanlayıcı hizmetine erişilemedi." };
+                return MaintenanceTaskState.Missing with { Message = CoreText.Get("St_E_NoScheduler", "Görev Zamanlayıcı hizmetine erişilemedi.") };
             }
 
             dynamic folder = service.GetFolder("\\");
@@ -172,7 +173,7 @@ public sealed class ScheduledMaintenance(ILogger<ScheduledMaintenance>? logger =
         {
             return MaintenanceTaskState.Missing with
             {
-                Message = "Görev oluşturmak için yönetici hakkı gerekiyor."
+                Message = CoreText.Get("Sm_NeedsAdmin", "Görev oluşturmak için yönetici hakkı gerekiyor.")
             };
         }
         catch (Exception ex) when (ex is COMException
@@ -180,7 +181,7 @@ public sealed class ScheduledMaintenance(ILogger<ScheduledMaintenance>? logger =
         {
             _logger.LogWarning(ex, "Zamanlanmış görev kaydedilemedi");
 
-            return MaintenanceTaskState.Missing with { Message = $"Görev oluşturulamadı: {ex.Message}" };
+            return MaintenanceTaskState.Missing with { Message = CoreText.Format("Sm_Failed", "Görev oluşturulamadı: {0}", ex.Message) };
         }
         finally
         {

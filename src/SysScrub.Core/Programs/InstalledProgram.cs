@@ -1,4 +1,5 @@
 using Microsoft.Win32;
+using SysScrub.Core.Formatting;
 
 namespace SysScrub.Core.Programs;
 
@@ -83,7 +84,7 @@ public sealed record InstalledProgram
     public string SourceLabel => Source switch
     {
         ProgramSource.Store => "Microsoft Store",
-        _ => IsMachineWide ? "Tüm kullanıcılar" : "Bu kullanıcı"
+        _ => IsMachineWide ? CoreText.Get("Pr_AllUsers", "Tüm kullanıcılar") : CoreText.Get("Pr_ThisUser", "Bu kullanıcı")
     };
 
     /// <summary>Kurulum klasörü taranabilir mi — boyut ölçümü ve artık taraması için.</summary>

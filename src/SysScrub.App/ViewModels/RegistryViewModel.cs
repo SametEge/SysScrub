@@ -198,7 +198,7 @@ public sealed partial class RegistryViewModel : ObservableObject
 
     public bool IsBusy => Stage is CleanerStage.Scanning or CleanerStage.Cleaning;
 
-    public string ProgressPercentLabel => $"%{Math.Round(ProgressFraction * 100)}";
+    public string ProgressPercentLabel => PercentText.FromFraction(ProgressFraction);
 
     public string FoundLabel => FoundCount == 0 ? "—" : $"{FoundCount:N0}";
 

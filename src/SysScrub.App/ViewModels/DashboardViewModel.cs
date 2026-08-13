@@ -118,7 +118,8 @@ public sealed partial class DashboardViewModel : ObservableObject, IDisposable
     {
         CleanerStage.Scanning => T("Db_Scanning"),
         CleanerStage.Reviewing when Cleaner.FoundFiles == 0 => T("Db_NothingToClean"),
-        CleanerStage.Reviewing or CleanerStage.Finished => $"{Cleaner.FoundFiles:N0} dosya temizlenebilir",
+        CleanerStage.Reviewing or CleanerStage.Finished =>
+            T("Db_FilesCleanable", Cleaner.FoundFiles.ToString("N0")),
         _ => T("Db_NotScanned")
     };
 
@@ -160,7 +161,7 @@ public sealed partial class DashboardViewModel : ObservableObject, IDisposable
 
         OsLabel = snapshot.OperatingSystem;
         MachineLabel = snapshot.MachineName;
-        UptimeLabel = DurationText.HumanizeUptime(snapshot.Uptime);
+        UptimeLabel = T("Db_Uptime", DurationText.Humanize(snapshot.Uptime));
         IsElevated = snapshot.IsElevated;
         OnPropertyChanged(nameof(ShowElevationWarning));
         OnPropertyChanged(nameof(CanRestartElevated));
@@ -169,14 +170,14 @@ public sealed partial class DashboardViewModel : ObservableObject, IDisposable
         {
             SystemDriveName = system.Name.TrimEnd('\\');
             SystemDriveFree = ByteSize.Format(system.FreeBytes);
-            SystemDriveDetail = $"{ByteSize.Format(system.UsedBytes)} / {ByteSize.Format(system.TotalBytes)} dolu";
+            SystemDriveDetail = T("Db_DriveUsed", ByteSize.Format(system.UsedBytes), ByteSize.Format(system.TotalBytes));
             SystemDriveUsedRatio = system.UsedRatio;
             IsSystemDriveCriticallyFull = system.IsCriticallyFull;
         }
 
         MemoryUsedRatio = snapshot.Memory.UsedRatio;
         MemoryLabel = ByteSize.Format(snapshot.Memory.UsedBytes);
-        MemoryDetail = $"{ByteSize.Format(snapshot.Memory.TotalBytes)} toplam bellek";
+        MemoryDetail = T("Db_MemoryTotal", ByteSize.Format(snapshot.Memory.TotalBytes));
 
         Drives.Clear();
 

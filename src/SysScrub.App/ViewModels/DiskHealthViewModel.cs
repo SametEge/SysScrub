@@ -132,7 +132,8 @@ public sealed partial class DiskHealthViewModel : ObservableObject
     /// <summary>Halka göstergesi 0–1 arasında; ölçüm yoksa halka boş kalır.</summary>
     public double HealthFraction => (SelectedDisk?.HealthPercent ?? 0) / 100d;
 
-    public string HealthPercentLabel => SelectedDisk?.HealthPercent is { } percent ? $"%{percent}" : "—";
+    public string HealthPercentLabel =>
+        SelectedDisk?.HealthPercent is { } percent ? PercentText.Format(percent) : "—";
 
     public bool HasHealthPercent => SelectedDisk?.HealthPercent is not null;
 
@@ -326,13 +327,13 @@ public sealed partial class DiskHealthViewModel : ObservableObject
 
         yield return new DiskMetric(
             T("Dh_M_Life"),
-            $"%{Math.Clamp(100 - nvme.PercentageUsed, 0, 100)}",
+            PercentText.Format(Math.Clamp(100 - nvme.PercentageUsed, 0, 100)),
             T(nvme.PercentageUsed >= 80 ? "Dh_M_LifePlan" : "Dh_M_LifeOk"),
             nvme.PercentageUsed >= 100 ? "danger" : nvme.PercentageUsed >= 80 ? "caution" : "good");
 
         yield return new DiskMetric(
             T("Dh_M_Spare"),
-            $"%{nvme.AvailableSpare}",
+            PercentText.Format(nvme.AvailableSpare),
             T("Dh_M_SpareThreshold", nvme.AvailableSpareThreshold),
             nvme.AvailableSpare <= nvme.AvailableSpareThreshold ? "danger" : "good");
 

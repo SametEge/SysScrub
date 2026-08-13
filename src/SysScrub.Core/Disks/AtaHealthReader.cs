@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
+using SysScrub.Core.Formatting;
 
 namespace SysScrub.Core.Disks;
 
@@ -38,9 +39,9 @@ public static class AtaHealthReader
         {
             message = error switch
             {
-                5 => "SMART okumak için yönetici hakkı gerekiyor.",
-                1 or 50 => "Bu bağlantı üzerinden SMART okunamıyor.",
-                _ => $"ATA SMART okunamadı (hata {error})."
+                5 => CoreText.Get("Dh_E_NeedsAdmin", "SMART okumak için yönetici hakkı gerekiyor."),
+                1 or 50 => CoreText.Get("Dh_E_Unsupported", "Bu bağlantı üzerinden SMART okunamıyor."),
+                _ => CoreText.Format("Dh_E_AtaFailed", "ATA SMART okunamadı (hata {0}).", error)
             };
 
             return [];

@@ -1,6 +1,7 @@
 using System.Management;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
+using SysScrub.Core.Formatting;
 
 namespace SysScrub.Core.Machine;
 
@@ -31,11 +32,11 @@ public sealed record RestorePointResult(RestorePointOutcome Outcome, string? Mes
 
     public string Describe() => Outcome switch
     {
-        RestorePointOutcome.Created => "Sistem geri yükleme noktası oluşturuldu.",
-        RestorePointOutcome.Throttled => "Yakın zamanda oluşturulmuş bir geri yükleme noktası zaten var.",
-        RestorePointOutcome.Disabled => "Sistem Koruması kapalı olduğu için geri yükleme noktası oluşturulamadı.",
-        RestorePointOutcome.NotElevated => "Geri yükleme noktası için yönetici hakkı gerekiyor.",
-        _ => Message ?? "Geri yükleme noktası oluşturulamadı."
+        RestorePointOutcome.Created => CoreText.Get("Sr_Created", "Sistem geri yükleme noktası oluşturuldu."),
+        RestorePointOutcome.Throttled => CoreText.Get("Sr_Recent", "Yakın zamanda oluşturulmuş bir geri yükleme noktası zaten var."),
+        RestorePointOutcome.Disabled => CoreText.Get("Sr_Disabled", "Sistem Koruması kapalı olduğu için geri yükleme noktası oluşturulamadı."),
+        RestorePointOutcome.NotElevated => CoreText.Get("Sr_NeedsAdmin", "Geri yükleme noktası için yönetici hakkı gerekiyor."),
+        _ => Message ?? CoreText.Get("Sr_Failed", "Geri yükleme noktası oluşturulamadı.")
     };
 }
 

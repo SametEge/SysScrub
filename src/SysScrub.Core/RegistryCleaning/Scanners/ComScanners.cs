@@ -1,4 +1,5 @@
 using Microsoft.Win32;
+using SysScrub.Core.Formatting;
 using SysScrub.Core.Rules;
 
 namespace SysScrub.Core.RegistryCleaning.Scanners;
@@ -8,12 +9,15 @@ public sealed class FileExtensionScanner : PathValueScannerBase
 {
     public override string Id => "file-extensions";
 
-    public override string Title => "Sahipsiz dosya uzantıları";
+    public override string Title =>
+        CoreText.Get("Rs_FileExtensions_Title", "Sahipsiz dosya uzantıları");
 
     public override string Explanation =>
+        CoreText.Get("Rs_FileExtensions_Desc",
         "Her dosya uzantısı bir program türüne (ProgID) bağlıdır. Program kaldırıldığında " +
         "uzantı kaydı bazen kalır ve artık var olmayan bir türe işaret eder. Bu, dosyaya " +
-        "çift tıklandığında Windows'un ne yapacağını bilememesine yol açar.";
+        "çift tıklandığında Windows'un ne yapacağını bilememesine yol açar.");
+
 
     public override RiskLevel Risk => RiskLevel.Caution;
 
@@ -57,7 +61,7 @@ public sealed class FileExtensionScanner : PathValueScannerBase
                         Hive = hive,
                         KeyPath = $@"SOFTWARE\Classes\{name}"
                     },
-                    Reason = "İşaret ettiği dosya türü kayıtlı değil",
+                    Reason = CoreText.Get("Rs_R_NoFileType", "İşaret ettiği dosya türü kayıtlı değil"),
                     Target = progId,
                     Risk = Risk
                 };
@@ -87,11 +91,14 @@ public sealed class ProgIdClassScanner : PathValueScannerBase
 {
     public override string Id => "progid-clsid";
 
-    public override string Title => "Geçersiz program türü kayıtları";
+    public override string Title =>
+        CoreText.Get("Rs_ProgIdClsid_Title", "Geçersiz program türü kayıtları");
 
     public override string Explanation =>
+        CoreText.Get("Rs_ProgIdClsid_Desc",
         "Bir program türü, kendisini açacak COM bileşenine (CLSID) işaret eder. Bileşen " +
-        "kayıtlı değilse tür de çalışmaz; kayıt boşuna durur.";
+        "kayıtlı değilse tür de çalışmaz; kayıt boşuna durur.");
+
 
     public override RiskLevel Risk => RiskLevel.Caution;
 
@@ -136,7 +143,7 @@ public sealed class ProgIdClassScanner : PathValueScannerBase
                         Hive = hive,
                         KeyPath = $@"SOFTWARE\Classes\{name}\CLSID"
                     },
-                    Reason = "İşaret ettiği COM bileşeni kayıtlı değil",
+                    Reason = CoreText.Get("Rs_R_NoComComponent", "İşaret ettiği COM bileşeni kayıtlı değil"),
                     Target = classId,
                     Risk = Risk
                 };
@@ -152,12 +159,15 @@ public sealed class ComServerScanner : PathValueScannerBase
 
     public override string Id => "com-servers";
 
-    public override string Title => "Kayıp COM bileşenleri";
+    public override string Title =>
+        CoreText.Get("Rs_ComServers_Title", "Kayıp COM bileşenleri");
 
     public override string Explanation =>
+        CoreText.Get("Rs_ComServers_Desc",
         "COM bileşenleri, kendilerini sağlayan DLL veya EXE dosyasına işaret eder. Dosya " +
         "silinmişse bileşen çalışmaz; kayıt yalnızca yer kaplar ve bileşeni arayan " +
-        "programları bekletir.";
+        "programları bekletir.");
+
 
     public override RiskLevel Risk => RiskLevel.Caution;
 
@@ -215,11 +225,14 @@ public sealed class TypeLibraryScanner : PathValueScannerBase
 {
     public override string Id => "type-libraries";
 
-    public override string Title => "Kırık tip kütüphaneleri";
+    public override string Title =>
+        CoreText.Get("Rs_TypeLibraries_Title", "Kırık tip kütüphaneleri");
 
     public override string Explanation =>
+        CoreText.Get("Rs_TypeLibraries_Desc",
         "Tip kütüphaneleri, COM arayüzlerinin nasıl çağrılacağını tarif eder. Dosyası " +
-        "silinmiş bir kütüphane kaydı hiçbir işe yaramaz.";
+        "silinmiş bir kütüphane kaydı hiçbir işe yaramaz.");
+
 
     public override RiskLevel Risk => RiskLevel.Caution;
 
@@ -283,11 +296,14 @@ public sealed class ShellExtensionScanner : PathValueScannerBase
 
     public override string Id => "shell-extensions";
 
-    public override string Title => "Onaylı kabuk uzantısı artıkları";
+    public override string Title =>
+        CoreText.Get("Rs_ShellExtensions_Title", "Onaylı kabuk uzantısı artıkları");
 
     public override string Explanation =>
+        CoreText.Get("Rs_ShellExtensions_Desc",
         "Dosya Gezgini'nin sağ tık menüsüne ve önizlemelerine karışan bileşenlerin onay listesi. " +
-        "Kaldırılmış programların girdileri burada kalır ve Gezgin her açılışta bunları arar.";
+        "Kaldırılmış programların girdileri burada kalır ve Gezgin her açılışta bunları arar.");
+
 
     public override bool RequiresAdmin => true;
 
@@ -315,7 +331,7 @@ public sealed class ShellExtensionScanner : PathValueScannerBase
                     KeyPath = KeyPath,
                     ValueName = valueName
                 },
-                Reason = "İşaret ettiği bileşen kayıtlı değil",
+                Reason = CoreText.Get("Rs_R_NoComponent", "İşaret ettiği bileşen kayıtlı değil"),
                 Target = RegistryReader.StringValue(key, valueName) ?? valueName,
                 Risk = Risk
             };
@@ -334,11 +350,13 @@ public sealed class UninstallEntryScanner : PathValueScannerBase
 
     public override string Id => "uninstall-entries";
 
-    public override string Title => "Ölü kaldırma girdileri";
+    public override string Title =>
+        CoreText.Get("Rs_UninstallEntries_Title", "Ölü kaldırma girdileri");
 
     public override string Explanation =>
+        CoreText.Get("Rs_UninstallEntries_Desc",
         "Programlar ve Özellikler listesini besleyen kayıtlar. Kaldırma programı silinmişse " +
-        "girdi listede görünür ama kaldırılamaz — \"bu program zaten kaldırılmış\" hatası verir.";
+        "girdi listede görünür ama kaldırılamaz — \"bu program zaten kaldırılmış\" hatası verir.");
 
     public override RiskLevel Risk => RiskLevel.Caution;
 
@@ -386,7 +404,7 @@ public sealed class UninstallEntryScanner : PathValueScannerBase
                             KeyPath = $@"{keyPath}\{entryName}"
                         },
                         uninstallString,
-                        "Kaldırma programı yok");
+                        CoreText.Get("Rs_R_NoUninstaller", "Kaldırma programı yok"));
 
                     if (finding is not null)
                     {

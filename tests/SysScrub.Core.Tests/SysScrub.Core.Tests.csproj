@@ -18,4 +18,13 @@
     <ProjectReference Include="..\..\src\SysScrub.Core\SysScrub.Core.csproj" />
   </ItemGroup>
 
+  <!--
+    Çeviri katalogları arayüz derlemesinde yaşıyor ama testleri burada: bir dilin
+    geride kalması iki kez gözden kaçtı, bir daha kaçmasın.
+  -->
+  <ItemGroup>
+    <None Include="..\..\data\i18n\*.json" Link="i18n\%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

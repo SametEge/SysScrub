@@ -68,7 +68,7 @@ public sealed class FolderNode
 /// <summary>Dosya türüne göre toplam.</summary>
 public sealed record FileTypeSummary(string Extension, long SizeBytes, int Count)
 {
-    public string Label => Extension.Length == 0 ? "uzantısız" : Extension;
+    public string Label => Extension.Length == 0 ? CoreText.Get("Da_NoExtension", "uzantısız") : Extension;
 
     public string SizeLabel => ByteSize.Format(SizeBytes);
 }

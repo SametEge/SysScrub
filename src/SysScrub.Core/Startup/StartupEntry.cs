@@ -1,3 +1,4 @@
+using SysScrub.Core.Formatting;
 namespace SysScrub.Core.Startup;
 
 /// <summary>Bir başlangıç öğesinin nereden geldiği.</summary>
@@ -91,21 +92,21 @@ public sealed record StartupEntry
 
     public string SourceLabel => Source switch
     {
-        StartupSource.RegistryRun => IsMachineWide ? "Kayıt defteri (tüm kullanıcılar)" : "Kayıt defteri",
-        StartupSource.RegistryRunOnce => "Kayıt defteri (bir kerelik)",
-        StartupSource.StartupFolder => IsMachineWide ? "Başlangıç klasörü (ortak)" : "Başlangıç klasörü",
-        StartupSource.ScheduledTask => "Zamanlanmış görev",
-        StartupSource.Service => "Servis",
-        _ => "Bilinmiyor"
+        StartupSource.RegistryRun => IsMachineWide ? CoreText.Get("St_Src_RegistryAll", "Kayıt defteri (tüm kullanıcılar)") : CoreText.Get("St_Src_Registry", "Kayıt defteri"),
+        StartupSource.RegistryRunOnce => CoreText.Get("St_Src_RegistryOnce", "Kayıt defteri (bir kerelik)"),
+        StartupSource.StartupFolder => IsMachineWide ? CoreText.Get("St_Src_FolderCommon", "Başlangıç klasörü (ortak)") : CoreText.Get("St_Src_Folder", "Başlangıç klasörü"),
+        StartupSource.ScheduledTask => CoreText.Get("St_Src_Task", "Zamanlanmış görev"),
+        StartupSource.Service => CoreText.Get("St_Src_Service", "Servis"),
+        _ => CoreText.Get("Common_Unknown", "bilinmiyor")
     };
 
     /// <summary>Açılışa etkisinin sözel karşılığı.</summary>
     public string ImpactLabel => BootDelayMs switch
     {
-        null => "ölçülmedi",
-        < 300 => "düşük",
-        < 1000 => "orta",
-        _ => "yüksek"
+        null => CoreText.Get("St_Im_Unmeasured", "ölçülmedi"),
+        < 300 => CoreText.Get("St_Im_Low", "düşük"),
+        < 1000 => CoreText.Get("St_Im_Medium", "orta"),
+        _ => CoreText.Get("St_Im_High", "yüksek")
     };
 
     public override string ToString() => $"{Name} ({SourceLabel})";

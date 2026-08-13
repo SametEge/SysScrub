@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using SysScrub.App.Localization;
 using static SysScrub.App.Localization.L;
 using SysScrub.Core.Software;
+using SysScrub.Core.Formatting;
 
 namespace SysScrub.App.ViewModels;
 
@@ -110,7 +111,7 @@ public sealed partial class SoftwareUpdatesViewModel : ObservableObject
 
     public bool CanUpdateSelected => !IsBusy && SelectedCount > 0;
 
-    public string ProgressPercentLabel => $"%{Math.Round(ProgressFraction * 100)}";
+    public string ProgressPercentLabel => PercentText.FromFraction(ProgressFraction);
 
     public string HeadlineText
     {

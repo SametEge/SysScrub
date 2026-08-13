@@ -50,14 +50,37 @@ public sealed class DurationTextTests
     public void NegatifSureSifirlanir() =>
         Assert.Equal("0 saniye", DurationText.Humanize(TimeSpan.FromSeconds(-10)));
 
-    [Theory]
-    [InlineData(3, 4, 0, "3 gün 4 saattir açık")]
-    [InlineData(0, 2, 19, "2 saat 19 dakikadır açık")]
-    [InlineData(0, 0, 7, "7 dakikadır açık")]
-    public void AcikKalmaEkiSonBirimeUyar(int days, int hours, int minutes, string expected) =>
-        Assert.Equal(expected, DurationText.HumanizeUptime(new TimeSpan(days, hours, minutes, 0)));
+    // ------------------------------------------------------------------ birim sözcükleri
+
+    /// <summary>
+    /// Sözcükler dışarıdan geliyor: arayüz dili değişince aynı hesap başka dilde
+    /// yazılmalı, sayıların yeniden hesaplanması gerekmemeli.
+    /// </summary>
+    [Fact]
+    public void BirimSozcukleriDegistirilebilir()
+    {
+        DurationWords original = DurationText.Words;
+
+        try
+        {
+            DurationText.Words = new DurationWords("days", "hours", "minutes", "seconds", "s");
+
+            Assert.Equal("3 days 4 hours", DurationText.Humanize(new TimeSpan(3, 4, 30, 0)));
+            Assert.Equal("2 hours 19 minutes", DurationText.Humanize(new TimeSpan(2, 19, 45)));
+            Assert.Equal("7 minutes", DurationText.Humanize(TimeSpan.FromMinutes(7.9)));
+            Assert.Equal("42 seconds", DurationText.Humanize(TimeSpan.FromSeconds(42)));
+            Assert.Equal("12 s", DurationText.FromMilliseconds(12400));
+
+            // Milisaniye her dilde "ms"; çevrilecek bir şey yok.
+            Assert.Equal("420 ms", DurationText.FromMilliseconds(420));
+        }
+        finally
+        {
+            DurationText.Words = original;
+        }
+    }
 
     [Fact]
-    public void BirDakikaAltiAcikKalmaSaniyeEkiAlir() =>
-        Assert.Equal("30 saniyedir açık", DurationText.HumanizeUptime(TimeSpan.FromSeconds(30)));
+    public void VarsayilanSozcuklerTurkce() =>
+        Assert.Equal(DurationWords.Turkish, DurationText.Words);
 }

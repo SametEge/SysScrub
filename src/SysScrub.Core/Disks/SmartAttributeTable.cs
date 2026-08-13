@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using SysScrub.Core.Formatting;
 
 namespace SysScrub.Core.Disks;
 
@@ -65,7 +66,7 @@ public sealed class SmartAttributeTable
             Id = raw.Id,
             // Tanınmayan kimlik gizlenmiyor: üreticiye özel bir öznitelik olabilir
             // ve ham değerini görmek teknisyen için hâlâ bilgi.
-            Name = definition?.Name ?? $"Üreticiye özel öznitelik (0x{raw.Id:X2})",
+            Name = definition?.Name ?? CoreText.Format("Dh_A_VendorSpecific", "Üreticiye özel öznitelik (0x{0})", raw.Id.ToString("X2")),
             Description = definition?.Description,
             Current = raw.Current,
             Worst = raw.Worst,

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Win32;
 using SysScrub.Core.Cleaning;
 using SysScrub.Core.Machine;
+using SysScrub.Core.Formatting;
 
 namespace SysScrub.Core.RegistryCleaning;
 
@@ -131,7 +132,7 @@ public sealed class RegistryCleanEngine
                     Duration = stopwatch.Elapsed,
                     Removed = 0,
                     SkippedByGuard = skipped,
-                    Failures = [$"Yedek alınamadı, hiçbir kayıt silinmedi: {ex.Message}"]
+                    Failures = [CoreText.Format("Rc_E_NoBackup", "Yedek alınamadı, hiçbir kayıt silinmedi: {0}", ex.Message)]
                 };
             }
 
@@ -285,7 +286,7 @@ public sealed class RegistryCleanEngine
         }
         catch (Exception ex) when (ex is UnauthorizedAccessException or SecurityException)
         {
-            error = "Erişim reddedildi (yönetici hakkı gerekebilir).";
+            error = CoreText.Get("Rc_E_Denied", "Erişim reddedildi (yönetici hakkı gerekebilir).");
             return false;
         }
         catch (IOException ex)

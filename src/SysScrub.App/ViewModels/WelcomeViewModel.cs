@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using SysScrub.App.Localization;
 using SysScrub.Core.Machine;
 using SysScrub.Core.Settings;
+using SysScrub.Core.Formatting;
 
 namespace SysScrub.App.ViewModels;
 
@@ -22,7 +23,8 @@ public sealed partial class LanguageChoiceViewModel(LanguageOption option, bool 
     /// <summary>Bilgisayarın dilinden saptanan seçenek; kullanıcı hangisinin neden seçili olduğunu görsün.</summary>
     public bool IsDetected { get; } = isDetected;
 
-    public string CoverageLabel => Option.IsComplete ? string.Empty : $"%{Option.CoveragePercent}";
+    public string CoverageLabel =>
+        Option.IsComplete ? string.Empty : PercentText.Format(Option.CoveragePercent);
 
     public bool ShowCoverage => !Option.IsComplete;
 }

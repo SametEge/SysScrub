@@ -36,10 +36,27 @@ Arayüz altı dilde tamamlandı ve uygulama kendi güncellemesini alabiliyor.
 
 ### Düzeltmeler
 
+- **Motor katmanının ürettiği metinler çeviriye bağlandı.** Registry tarayıcı
+  adları ve açıklamaları, disk sağlığı yorumları, sürücü durumları, cihaz sınıfı
+  adları, başlangıç kaynakları, güvenlik denetimi gerekçeleri — hepsi motorda
+  üretiliyordu ve arayüz İngilizce'yken de Türkçe çıkıyordu. 200'ün üzerinde
+  metin altı dile taşındı
+- **Süre ve yüzde biçimleri dile uyuyor:** "2 saat 19 dakika" / "2 hours
+  19 minutes", "%97" / "97%" / "97 %". Aritmetik motorda kaldı, sözcükler
+  arayüzden geliyor
 - Windows sürüm satırındaki "derleme" kelimesi motor katmanından çıkarıldı;
-  cümleyi artık arayüz kuruyor ve altı dilde doğru yazılıyor
-- Ayarlar ekranında çeviriye bağlanmamış iki metin kalmıştı (sürüm satırı ve
-  ayar dosyası yolu) — ikisi de çeviriye taşındı
+  cümleyi artık arayüz kuruyor
+- Ayarlar ekranında çeviriye bağlanmamış üç metin kalmıştı (sürüm satırı, ayar
+  dosyası yolu, karantina ipucu)
+- Panel, temizleyici, sürücüler, zaman tüneli ve disk analizi ekranlarındaki
+  durum satırları çeviriye taşındı
+
+### Test
+
+- **Katalog denetimi testleri:** altı dilin anahtar kümesi birebir aynı mı, boş
+  çeviri var mı, yer tutucular ({0}, {1}) her dilde tutuyor mu. Eksik anahtar
+  çalışma zamanında sessizce Türkçe'ye düşüyor — bu hata iki kez gözden kaçtı,
+  artık derlemede yakalanıyor
 
 ---
 

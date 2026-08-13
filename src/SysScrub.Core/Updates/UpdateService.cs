@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using SysScrub.Core.Formatting;
 using SysScrub.Core.Machine;
 
 namespace SysScrub.Core.Updates;
@@ -357,7 +358,7 @@ public sealed class UpdateService
             response.Headers.TryGetValues("x-ratelimit-remaining", out IEnumerable<string>? remaining) &&
             remaining.FirstOrDefault() == "0")
         {
-            return "GitHub istek sınırı doldu.";
+            return CoreText.Get("Up_RateLimit", "GitHub istek sınırı doldu.");
         }
 
         return $"HTTP {(int)response.StatusCode} {response.ReasonPhrase}";
