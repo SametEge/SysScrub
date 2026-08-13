@@ -76,6 +76,67 @@ public sealed class RiskBrushConverter : IValueConverter
         throw new NotSupportedException();
 }
 
+/// <summary>
+/// Durum anahtarını ("good" / "caution" / "danger" / "none") fırçaya çevirir.
+/// Vurgu rengi kullanılmıyor: turuncu etkileşim için ayrılmış, durum için değil.
+/// </summary>
+public sealed class SeverityBrushConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        string key = (value as string) switch
+        {
+            "good" => "SsGood",
+            "caution" => "SsCaution",
+            "danger" => "SsDanger",
+            _ => "SsText"
+        };
+
+        return Application.Current?.TryFindResource(key);
+    }
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        throw new NotSupportedException();
+}
+
+/// <summary>Durum anahtarını rozet dolgusuna çevirir.</summary>
+public sealed class SeverityTintConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        string key = (value as string) switch
+        {
+            "good" => "SsGoodTint",
+            "caution" => "SsCautionTint",
+            "danger" => "SsDangerTint",
+            _ => "SsSurfaceHover"
+        };
+
+        return Application.Current?.TryFindResource(key);
+    }
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        throw new NotSupportedException();
+}
+
+/// <summary>0–1 arası oranı, parametredeki toplam genişliğe göre piksele çevirir.</summary>
+public sealed class FractionWidthConverter : IValueConverter
+{
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        double fraction = value is double d ? d : 0;
+        double total = parameter is string text &&
+                       double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out double parsed)
+            ? parsed
+            : 0;
+
+        return Math.Clamp(fraction, 0, 1) * total;
+    }
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        throw new NotSupportedException();
+}
+
 /// <summary>Risk seviyesini arka plan tonuna çevirir (rozet dolgusu).</summary>
 public sealed class RiskTintConverter : IValueConverter
 {

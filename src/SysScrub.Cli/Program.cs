@@ -27,6 +27,7 @@ internal static class Program
                 "drivers" => await DriversCommand.RunAsync(args),
                 "startup" => await StartupCommand.RunAsync(args),
                 "programs" => await ProgramsCommand.RunAsync(args),
+                "disk" => await DiskCommand.RunAsync(args),
                 "history" => HistoryCommand.List(),
                 "undo" => HistoryCommand.Undo(args),
                 "version" => PrintVersion(),
@@ -55,6 +56,7 @@ internal static class Program
         Console.WriteLine("  drivers             Donanım envanterini ve eski sürücüleri listeler");
         Console.WriteLine("  startup             Açılışta çalışan öğeleri listeler (--disable/--enable <ad>)");
         Console.WriteLine("  programs            Kurulu programları listeler (--size ile gerçek boyut)");
+        Console.WriteLine("  disk                Disk sağlığını ve S.M.A.R.T. verisini okur (yönetici gerekir)");
         Console.WriteLine("  history             Geçmiş temizlikleri listeler");
         Console.WriteLine("  undo <kimlik>       Bir temizliği geri alır (karantinadan geri yükler)");
         Console.WriteLine("  version             Sürüm bilgisini yazdırır");

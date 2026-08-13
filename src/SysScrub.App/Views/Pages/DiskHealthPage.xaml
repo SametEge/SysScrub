@@ -1,0 +1,382 @@
+<UserControl x:Class="SysScrub.App.Views.Pages.DiskHealthPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:conv="clr-namespace:SysScrub.App.Converters"
+             xmlns:controls="clr-namespace:SysScrub.App.Controls"
+             xmlns:vm="clr-namespace:SysScrub.App.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance vm:DiskHealthViewModel}">
+
+    <UserControl.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVisibility" />
+        <conv:StringToVisibilityConverter x:Key="StringToVisibility" />
+        <conv:SeverityBrushConverter x:Key="SeverityBrush" />
+        <conv:SeverityTintConverter x:Key="SeverityTint" />
+        <conv:FractionWidthConverter x:Key="FractionWidth" />
+
+        <!-- Üstteki disk seçici kart -->
+        <DataTemplate x:Key="DiskCardTemplate" DataType="{x:Type vm:DiskCardViewModel}">
+            <Button Command="{Binding DataContext.SelectDiskCommand,
+                              RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                    CommandParameter="{Binding}"
+                    HorizontalContentAlignment="Stretch"
+                    Margin="0,0,10,0" Padding="0">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource SsSubtleButton}">
+                        <Setter Property="MinHeight" Value="0" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource SsAccentTint}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+
+                <Border Padding="16,13" MinWidth="250"
+                        CornerRadius="{StaticResource SsRadiusControl}"
+                        BorderThickness="1">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="BorderBrush" Value="{DynamicResource SsBorder}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                    <Setter Property="BorderBrush" Value="{DynamicResource SsAccent}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse Width="9" Height="9" VerticalAlignment="Center"
+                                     Fill="{Binding Severity, Converter={StaticResource SeverityBrush}}" />
+
+                            <TextBlock Text="{Binding StatusLabel}" Margin="8,0,0,0"
+                                       FontSize="11.5" FontWeight="SemiBold"
+                                       VerticalAlignment="Center"
+                                       Foreground="{Binding Severity, Converter={StaticResource SeverityBrush}}" />
+
+                            <TextBlock Text="{Binding TemperatureLabel}" Margin="10,0,0,0"
+                                       Style="{StaticResource SsCaptionText}" VerticalAlignment="Center"
+                                       Visibility="{Binding HasTemperature, Converter={StaticResource BoolToVisibility}}" />
+                        </StackPanel>
+
+                        <TextBlock Text="{Binding Model}" Style="{StaticResource SsBodyText}"
+                                   FontWeight="SemiBold" Margin="0,7,0,0"
+                                   TextTrimming="CharacterEllipsis" />
+
+                        <TextBlock Text="{Binding Summary}" Style="{StaticResource SsCaptionText}"
+                                   Margin="0,3,0,0" TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                </Border>
+            </Button>
+        </DataTemplate>
+
+        <!-- Ölçüm kutusu -->
+        <DataTemplate x:Key="MetricTemplate" DataType="{x:Type vm:DiskMetric}">
+            <Border Padding="16,14" Margin="0,0,10,10" MinWidth="196"
+                    CornerRadius="{StaticResource SsRadiusControl}"
+                    Background="{DynamicResource SsSurfaceRaised}"
+                    BorderBrush="{DynamicResource SsBorder}"
+                    BorderThickness="1">
+                <StackPanel>
+                    <TextBlock Text="{Binding Label}" Style="{StaticResource SsSectionLabel}" />
+
+                    <TextBlock Text="{Binding Value}" Margin="0,8,0,0"
+                               Style="{StaticResource SsMetricValue}" FontSize="21"
+                               Foreground="{Binding Severity, Converter={StaticResource SeverityBrush}}" />
+
+                    <TextBlock Text="{Binding Detail}" Style="{StaticResource SsCaptionText}"
+                               Margin="0,4,0,0" TextWrapping="Wrap" MaxWidth="220"
+                               HorizontalAlignment="Left"
+                               Visibility="{Binding HasDetail, Converter={StaticResource BoolToVisibility}}" />
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid>
+      <Grid Margin="{StaticResource SsPagePadding}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- ==================== Başlık ==================== -->
+        <Grid Grid.Row="0" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0">
+                <TextBlock Text="Disk sağlığı" Style="{StaticResource SsDisplayText}" />
+                <TextBlock Style="{StaticResource SsSecondaryText}" Margin="0,6,0,0"
+                           Text="Veri diskin kendisinden okunur; diske hiçbir şey yazılmaz. Okunamayan disk listeden düşmez — neden okunamadığı yazar." />
+            </StackPanel>
+
+            <Button Grid.Column="1" Content="Yeniden oku"
+                    Style="{StaticResource SsSecondaryButton}"
+                    Command="{Binding LoadCommand}"
+                    VerticalAlignment="Bottom" MinWidth="126" />
+        </Grid>
+
+        <!-- ==================== Yönetici uyarısı ==================== -->
+        <Border Grid.Row="1" Style="{StaticResource SsCard}" Margin="0,0,0,12"
+                Background="{DynamicResource SsCautionTint}"
+                Visibility="{Binding ShowElevationNotice, Converter={StaticResource BoolToVisibility}}">
+            <StackPanel Orientation="Horizontal">
+                <Path Style="{StaticResource SsIcon}" Data="{StaticResource IconStatusCaution}"
+                      Fill="{DynamicResource SsCaution}" VerticalAlignment="Center" />
+                <TextBlock Style="{StaticResource SsBodyText}" Margin="12,0,0,0"
+                           VerticalAlignment="Center" TextWrapping="Wrap"
+                           Text="S.M.A.R.T. verisi diske komut göndermeyi gerektiriyor, bu da yönetici hakkı demek. Uygulamayı yönetici olarak açtığında sağlık verisi görünür." />
+            </StackPanel>
+        </Border>
+
+        <!-- ==================== Disk seçici şerit ==================== -->
+        <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
+                      Margin="0,0,0,16"
+                      Visibility="{Binding HasDisks, Converter={StaticResource BoolToVisibility}}">
+            <ItemsControl ItemsSource="{Binding Disks}" ItemTemplate="{StaticResource DiskCardTemplate}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- ==================== Seçili disk ==================== -->
+        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
+            <StackPanel Visibility="{Binding HasDisks, Converter={StaticResource BoolToVisibility}}">
+
+                <!-- Büyük sağlık göstergesi -->
+                <Border Style="{StaticResource SsCard}" Padding="24" Margin="0,0,0,14">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Grid.Column="0" Width="132" Height="132" Margin="0,0,26,0">
+                            <controls:ScanRing Width="132" Height="132" Thickness="11"
+                                               Progress="{Binding HealthFraction, Mode=OneWay}"
+                                               TrackBrush="{DynamicResource SsSurfaceHover}"
+                                               ProgressBrush="{Binding SelectedSeverity, Converter={StaticResource SeverityBrush}}" />
+
+                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding HealthPercentLabel}"
+                                           Style="{StaticResource SsMetricValue}" FontSize="30"
+                                           HorizontalAlignment="Center" />
+                                <TextBlock Text="kalan ömür" Style="{StaticResource SsCaptionText}"
+                                           HorizontalAlignment="Center" Margin="0,1,0,0"
+                                           Visibility="{Binding HasHealthPercent, Converter={StaticResource BoolToVisibility}}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal">
+                                <Border Style="{StaticResource SsBadge}" Padding="10,3"
+                                        Background="{Binding SelectedSeverity, Converter={StaticResource SeverityTint}}">
+                                    <TextBlock Text="{Binding SelectedStatusLabel}"
+                                               FontSize="12" FontWeight="SemiBold"
+                                               Foreground="{Binding SelectedSeverity, Converter={StaticResource SeverityBrush}}" />
+                                </Border>
+                            </StackPanel>
+
+                            <TextBlock Text="{Binding SelectedTitle}" Style="{StaticResource SsTitleText}"
+                                       Margin="0,10,0,0" TextTrimming="CharacterEllipsis" />
+
+                            <TextBlock Text="{Binding SelectedSubtitle}" Style="{StaticResource SsCaptionText}"
+                                       Margin="0,4,0,0" TextTrimming="CharacterEllipsis" />
+
+                            <TextBlock Text="{Binding SelectedReason}" Style="{StaticResource SsBodyText}"
+                                       Margin="0,12,0,0" TextWrapping="Wrap" MaxWidth="640"
+                                       HorizontalAlignment="Left" />
+
+                            <TextBlock Text="{Binding AccessMessage}" Style="{StaticResource SsCaptionText}"
+                                       Foreground="{DynamicResource SsCaution}"
+                                       Margin="0,6,0,0" TextWrapping="Wrap" MaxWidth="640"
+                                       HorizontalAlignment="Left"
+                                       Visibility="{Binding AccessMessage, Converter={StaticResource StringToVisibility}}" />
+
+                            <!-- Yazma ömrü çubuğu -->
+                            <StackPanel Margin="0,16,0,0" MaxWidth="640" HorizontalAlignment="Left"
+                                        Visibility="{Binding HasUsedLife, Converter={StaticResource BoolToVisibility}}">
+                                <TextBlock Text="{Binding UsedLifeLabel}" Style="{StaticResource SsCaptionText}" />
+
+                                <Border Height="8" Margin="0,6,0,0" Width="360" HorizontalAlignment="Left"
+                                        CornerRadius="4" Background="{DynamicResource SsSurfaceHover}">
+                                    <Border HorizontalAlignment="Left" CornerRadius="4"
+                                            Background="{Binding SelectedSeverity, Converter={StaticResource SeverityBrush}}"
+                                            Width="{Binding UsedLifeFraction,
+                                                    Converter={StaticResource FractionWidth},
+                                                    ConverterParameter=360}" />
+                                </Border>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Ölçüm kutuları -->
+                <ItemsControl ItemsSource="{Binding Metrics}" ItemTemplate="{StaticResource MetricTemplate}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+
+                <!-- Tam S.M.A.R.T. tablosu -->
+                <Border Style="{StaticResource SsCard}" Padding="0" Margin="0,6,0,0"
+                        Visibility="{Binding HasAttributes, Converter={StaticResource BoolToVisibility}}">
+                    <StackPanel>
+                        <DockPanel Margin="20,14,20,10">
+                            <Button DockPanel.Dock="Right" Style="{StaticResource SsSubtleButton}"
+                                    Command="{Binding ToggleAllAttributesCommand}"
+                                    MinHeight="26" Padding="10,0" FontSize="11.5">
+                                <TextBlock>
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Text" Value="Tüm öznitelikleri göster" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ShowAllAttributes}" Value="True">
+                                                    <Setter Property="Text" Value="Yalnızca anlamlı olanlar" />
+                                                    <Setter Property="Foreground" Value="{DynamicResource SsAccentText}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </Button>
+
+                            <TextBlock Text="S.M.A.R.T. ÖZNİTELİKLERİ" Style="{StaticResource SsSectionLabel}"
+                                       VerticalAlignment="Center" />
+                        </DockPanel>
+
+                        <ItemsControl ItemsSource="{Binding Attributes}" Margin="14,0,14,14">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Padding="12,10" Margin="0,0,0,4"
+                                            CornerRadius="{StaticResource SsRadiusSmall}"
+                                            Background="{DynamicResource SsSurfaceRaised}"
+                                            ToolTip="{Binding Description}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <Ellipse Grid.Column="0" Width="8" Height="8"
+                                                     VerticalAlignment="Center" Margin="0,0,12,0">
+                                                <Ellipse.Style>
+                                                    <Style TargetType="Ellipse">
+                                                        <Setter Property="Fill" Value="{DynamicResource SsGood}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Status}" Value="Caution">
+                                                                <Setter Property="Fill" Value="{DynamicResource SsCaution}" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Status}" Value="Bad">
+                                                                <Setter Property="Fill" Value="{DynamicResource SsDanger}" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Ellipse.Style>
+                                            </Ellipse>
+
+                                            <TextBlock Grid.Column="1" Text="{Binding Id, StringFormat=0x{0:X2}}"
+                                                       Style="{StaticResource SsMonoText}" FontSize="11.5"
+                                                       VerticalAlignment="Center" Margin="0,0,14,0" />
+
+                                            <TextBlock Grid.Column="2" Text="{Binding Name}"
+                                                       Style="{StaticResource SsBodyText}"
+                                                       VerticalAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis" Margin="0,0,12,0" />
+
+                                            <StackPanel Grid.Column="3" Orientation="Horizontal"
+                                                        VerticalAlignment="Center" Margin="0,0,16,0">
+                                                <TextBlock Text="{Binding Current}" Style="{StaticResource SsMonoText}"
+                                                           FontSize="11.5" MinWidth="30" TextAlignment="Right" />
+                                                <TextBlock Text=" / " Style="{StaticResource SsCaptionText}" />
+                                                <TextBlock Text="{Binding Worst}" Style="{StaticResource SsMonoText}"
+                                                           FontSize="11.5" MinWidth="30" />
+                                                <TextBlock Text="  eşik " Style="{StaticResource SsCaptionText}" />
+                                                <TextBlock Text="{Binding Threshold}" Style="{StaticResource SsMonoText}"
+                                                           FontSize="11.5" MinWidth="26" />
+                                            </StackPanel>
+
+                                            <TextBlock Grid.Column="4" Text="{Binding RawHex}"
+                                                       Style="{StaticResource SsMonoText}" FontSize="11.5"
+                                                       Foreground="{DynamicResource SsTextSecondary}"
+                                                       VerticalAlignment="Center" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Boş durum -->
+        <Border Grid.Row="3" Style="{StaticResource SsCard}" Padding="40" MaxWidth="560"
+                HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,40,0,0"
+                Visibility="{Binding HasDisks, Converter={StaticResource InverseBoolToVisibility}}">
+            <StackPanel HorizontalAlignment="Center">
+                <Border Width="64" Height="64" CornerRadius="{StaticResource SsRadiusPanel}"
+                        Background="{DynamicResource SsSurfaceHover}" HorizontalAlignment="Center">
+                    <Path Data="{StaticResource IconDiskHealth}" Fill="{DynamicResource SsTextSecondary}"
+                          Stretch="Uniform" Width="30" Height="30"
+                          HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+
+                <TextBlock Text="{Binding HeadlineText}" Style="{StaticResource SsSubtitleText}"
+                           HorizontalAlignment="Center" Margin="0,18,0,0" />
+
+                <TextBlock Style="{StaticResource SsSecondaryText}" TextAlignment="Center" Margin="0,8,0,0"
+                           Text="NVMe sağlık günlüğü ve ATA S.M.A.R.T. tablosu doğrudan diskten okunur. Sıcaklık, yazılan toplam veri, kalan ömür ve yedek blok durumu burada görünür." />
+            </StackPanel>
+        </Border>
+
+        <!-- ==================== Durum ==================== -->
+        <Border Grid.Row="4" Style="{StaticResource SsCard}" Margin="0,14,0,0"
+                Background="{DynamicResource SsSurfaceRaised}"
+                Visibility="{Binding StatusMessage, Converter={StaticResource StringToVisibility}}">
+            <TextBlock Text="{Binding StatusMessage}" Style="{StaticResource SsBodyText}" TextWrapping="Wrap" />
+        </Border>
+      </Grid>
+
+      <!-- ==================== İşlem örtüsü ==================== -->
+      <Grid Background="{DynamicResource SsScrim}"
+            Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}">
+          <Border Style="{StaticResource SsCard}" Padding="40,36" MinWidth="360"
+                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                  Effect="{StaticResource SsShadowHigh}">
+              <StackPanel HorizontalAlignment="Center">
+                  <controls:ScanRing Width="110" Height="110" Thickness="9"
+                                     IsIndeterminate="True"
+                                     TrackBrush="{DynamicResource SsSurfaceHover}"
+                                     ProgressBrush="{DynamicResource SsAccentGradient}" />
+
+                  <TextBlock Text="Diskler okunuyor" Style="{StaticResource SsTitleText}"
+                             HorizontalAlignment="Center" Margin="0,22,0,0" />
+
+                  <TextBlock Style="{StaticResource SsSecondaryText}" HorizontalAlignment="Center"
+                             TextAlignment="Center" MaxWidth="300" Margin="0,6,0,0"
+                             Text="Her diske sağlık sorgusu gönderiliyor..." />
+              </StackPanel>
+          </Border>
+      </Grid>
+    </Grid>
+
+</UserControl>

@@ -8,6 +8,7 @@ using SysScrub.App.Services;
 using SysScrub.App.ViewModels;
 using SysScrub.App.Views;
 using SysScrub.Core.Cleaning;
+using SysScrub.Core.Disks;
 using SysScrub.Core.Drivers;
 using SysScrub.Core.Machine;
 using SysScrub.Core.Programs;
@@ -71,6 +72,10 @@ public partial class App : Application
                 services.AddSingleton<DriverBackup>();
                 services.AddSingleton<WindowsUpdateDriverSource>();
 
+                // Disk sağlığı
+                services.AddSingleton<SmartAttributeTable>();
+                services.AddSingleton<DiskInventory>();
+
                 // Program kaldırıcı
                 services.AddSingleton<ProgramInventory>();
                 services.AddSingleton<ProgramSizeCalculator>();
@@ -95,6 +100,7 @@ public partial class App : Application
                 services.AddSingleton<SoftwareUpdatesViewModel>();
                 services.AddSingleton<StartupViewModel>();
                 services.AddSingleton<ProgramsViewModel>();
+                services.AddSingleton<DiskHealthViewModel>();
                 services.AddSingleton<TimelineViewModel>();
                 services.AddTransient<DashboardViewModel>();
 
@@ -132,7 +138,8 @@ public partial class App : Application
                 e.Args.Contains("--devscan"),
                 e.Args.Contains("--wingetscan"),
                 e.Args.Contains("--startupscan"),
-                e.Args.Contains("--programscan"));
+                e.Args.Contains("--programscan"),
+                e.Args.Contains("--diskscan"));
         }
     }
 
@@ -149,12 +156,22 @@ public partial class App : Application
         bool deviceScan = false,
         bool wingetScan = false,
         bool startupScan = false,
-        bool programScan = false)
+        bool programScan = false,
+        bool diskScan = false)
     {
         window.ContentRendered += (_, _) => Dispatcher.BeginInvoke(
             DispatcherPriority.ApplicationIdle,
             async () =>
             {
+                if (diskScan)
+                {
+                    await Resolve<DiskHealthViewModel>().LoadCommand.ExecuteAsync(null);
+
+                    await Task.Delay(250);
+                    System.Windows.Input.CommandManager.InvalidateRequerySuggested();
+                    await Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
+                }
+
                 if (programScan)
                 {
                     await Resolve<ProgramsViewModel>().LoadCommand.ExecuteAsync(null);

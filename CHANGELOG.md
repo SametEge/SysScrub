@@ -7,6 +7,55 @@ Release notları bu dosyanın ilgili sürüm bölümünden otomatik üretilir.
 
 ---
 
+## [0.8.0-alpha] — 2026-08-13
+
+Disk sağlığı çalışır durumda.
+
+### Eklenenler
+
+- **NVMe sağlık günlüğü** — `IOCTL_STORAGE_QUERY_PROPERTY` üzerinden log sayfası
+  0x02 okunuyor. Modern dahili SSD'lerin tamamını kapsıyor, ek sürücü gerekmiyor.
+  Sıcaklık, kalan yedek blok ve üreticinin uyarı eşiği, tüketilen yazma ömrü,
+  yazılan/okunan toplam veri, açık kalma süresi, açılma sayısı, ani kapanma,
+  düzeltilemeyen veri hatası ve denetleyicinin kendi kritik uyarı bitleri
+- **ATA S.M.A.R.T.** — `SMART_RCV_DRIVE_DATA` ile öznitelik ve eşik tabloları.
+  Eşikler kimliğe göre eşleştiriliyor, konuma göre değil: iki tablonun sırası
+  aynı olmak zorunda değil
+- **Öznitelik tablosu veri olarak** (`data/smart-attributes.json`) — aynı öznitelik
+  kimliği üreticiden üreticiye farklı anlama geliyor. Tablo derlemeye kaynak olarak
+  gömülü; yeni üretici desteği kod değişikliği değil, satır eklemek
+- **Sağlık ekranı** — üstte disk seçici şerit, büyük kalan ömür halkası, tek cümlelik
+  gerekçe, yazma ömrü çubuğu, ölçüm kutuları ve tam S.M.A.R.T. tablosu. Her satırda
+  sade Türkçe açıklama ipucu olarak duruyor
+- **`disk` komutu** — `sysscrub-cli disk`; `--verbose` ek sıcaklık sensörlerini de yazar
+
+### Bilmediğimize "iyi" demiyoruz
+
+S.M.A.R.T. okunamadıysa durum "bilinmiyor" kalıyor ve nedeni yazılıyor. Yeşil rozet
+göstermek kullanıcıyı yanlış güvene sokar. Okunamayan disk listeden de düşmüyor.
+
+Kullanıcı "Reallocated Sector Count: 0x000000000000" yerine "Bozuk sektör yok"
+görüyor; ham değer bir tık uzakta, tabloda duruyor.
+
+Bileşik sıcaklık sağlık kararını veriyor; ek sensörler yalnızca gösteriliyor.
+Bileşik sıcaklık üreticiye özel bir hesap ve sensörlerin en yükseği olmak zorunda
+değil — sensör okumasını karara katmak yanlış alarm üretirdi.
+
+### Kapsam
+
+Kimlik bilgisi (model, kapasite, veri yolu, bellenim) yönetici olmadan da okunuyor;
+sağlık verisi diske komut göndermeyi gerektirdiği için yönetici istiyor. Uygulama
+zaten yönetici olarak açılıyor, komut satırında gerekiyorsa uyarı veriliyor.
+
+USB kutularının çoğu ATA komutlarını geçirmiyor. O diskler için "bu bağlantı
+üzerinden S.M.A.R.T. okunamıyor" deniyor; üreticiye özel USB köprüleri sonraki
+sürümlerde.
+
+Gerçek makinede doğrulandı: iki NVMe SSD okundu, sıcaklık Windows'un kendi
+ölçümüyle birebir tuttu.
+
+---
+
 ## [0.7.0-alpha] — 2026-08-13
 
 Program kaldırıcı çalışır durumda.

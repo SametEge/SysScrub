@@ -85,7 +85,8 @@ public sealed partial class MainWindowViewModel : ObservableObject
                 Title = "Disk sağlığı",
                 IconKey = "IconDiskHealth",
                 Description = "S.M.A.R.T. verisi, sıcaklık geçmişi, yazılan toplam veri ve kalan ömür tahmini — sade açıklamalarla.",
-                Phase = 6
+                Phase = 0,
+                TemplateKey = "DiskHealthPageTemplate"
             },
             new NavigationItem
             {

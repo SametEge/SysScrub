@@ -24,4 +24,13 @@
     <EmbeddedResource Include="..\..\data\rules\*.json" LogicalName="SysScrub.Core.Rules.Definitions.%(Filename).json" />
   </ItemGroup>
 
+  <!--
+    S.M.A.R.T. öznitelik tablosu da veri: aynı kimlik üreticiden üreticiye farklı
+    anlama geldiği için yorumlama koda gömülmüyor. Yeni üretici desteği bu dosyaya
+    satır eklemek demek.
+  -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\data\smart-attributes.json" LogicalName="SysScrub.Core.Disks.SmartAttributes.json" />
+  </ItemGroup>
+
 </Project>

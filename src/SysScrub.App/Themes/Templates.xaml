@@ -73,6 +73,10 @@
         <pages:ProgramsPage />
     </DataTemplate>
 
+    <DataTemplate x:Key="DiskHealthPageTemplate" DataType="{x:Type vm:NavigationItem}">
+        <pages:DiskHealthPage />
+    </DataTemplate>
+
     <DataTemplate x:Key="PlaceholderPageTemplate" DataType="{x:Type vm:NavigationItem}">
         <pages:ModulePlaceholderPage />
     </DataTemplate>
