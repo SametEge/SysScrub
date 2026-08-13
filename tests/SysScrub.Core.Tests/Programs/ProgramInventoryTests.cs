@@ -44,7 +44,7 @@ public sealed class ProgramInventoryTests
 
     [Fact]
     public void NoktasizPaketKimligiOlduguGibiKalir() =>
-        Assert.Equal("Claude", ProgramInventory.NameFromPackageId("Claude_1.28929.0.0_x64__pzs8sxrjxfjjc"));
+        Assert.Equal("Postman", ProgramInventory.NameFromPackageId("Postman_11.24.0.0_x64__pzs8sxrjxfjjc"));
 
     [Fact]
     public void PaketKimligindenYayinciCikarilir() =>
@@ -101,7 +101,7 @@ public sealed class ProgramInventoryTests
     {
         InstalledProgram store = Program(source: ProgramSource.Store, uninstall: null) with
         {
-            PackageFullName = "Claude_1.0.0.0_x64__abc"
+            PackageFullName = "Notepad_1.0.0.0_x64__abc"
         };
 
         Assert.True(store.CanUninstall);

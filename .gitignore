@@ -15,7 +15,6 @@ obj/
 build/out/
 
 # ---------------------------------------------------------------- Araçlar
-.claude/
 *.log
 TestResults/
 coverage*.xml
