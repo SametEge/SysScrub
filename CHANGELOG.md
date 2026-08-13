@@ -7,6 +7,53 @@ Release notları bu dosyanın ilgili sürüm bölümünden otomatik üretilir.
 
 ---
 
+## [0.7.0-alpha] — 2026-08-13
+
+Program kaldırıcı çalışır durumda.
+
+### Eklenenler
+
+- **Program envanteri** — Uninstall kayıtları (HKLM 64 ve 32 bit görünüm + HKCU) ve
+  Store paket deposu tek listede. `Win32_Product` WMI sınıfı **bilerek kullanılmıyor**:
+  sorgulandığında her MSI paketini yeniden yapılandırıyor, dakikalarca sürüyor ve
+  olay günlüğünü şişiriyor
+- **Gerçek boyut ölçümü** — kayıttaki `EstimatedSize` çoğu programda hiç yok, olanların
+  bir kısmı kurulum anından kalma. Kurulum klasörleri taranarak ölçülüyor. Ölçüm
+  listeyi bekletmiyor: envanter hemen geliyor, boyutlar arkada dolduruyor. Ölçülen
+  değer parlak, kayıttan gelen tahmin sönük gösteriliyor
+- **Tekil ve toplu kaldırma** — yayıncının sessiz komutu varsa o kullanılıyor,
+  MSI paketleri sessiz kaldırmaya çevriliyor
+- **Kaldırıcı dosyası kayıp uyarısı** — kaydı duran ama kaldırıcısı silinmiş
+  programlar işaretleniyor; kullanıcı düğmeye basıp hata almadan önce görüyor
+- **Kaldırma sonrası artık klasör** — kurulum klasörü yerinde kaldıysa boyutuyla
+  bildiriliyor ve tek tıkla Geri Dönüşüm Kutusu'na taşınabiliyor. Kalıcı silme değil:
+  yanlış klasörse geri alınabilir
+- **Arama, sıralama ve bileşen süzgeci** — ada/yayıncıya göre arama, boyut/ad/tarih
+  sıralaması, Windows'un gizlediği bileşenleri gösterme seçeneği
+- **`programs` komutu** — `sysscrub-cli programs`; `--size` gerçek boyutu ölçer,
+  `--all` gizli bileşenleri de listeler, `--search` süzer
+
+### Kaldırma sonucu çıkış koduna göre belirlenmiyor
+
+Kaldırıcıların bir kısmı işi alt sürece devredip hemen sıfır dönüyor, bir kısmı
+kullanıcı iptal ettiğinde de sıfır dönüyor. Tek güvenilir kanıt kaydın kaybolması;
+sonuç ona bakarak veriliyor.
+
+Süreç ağacının tamamı bekleniyor. Inno Setup kaldırıcıları kendini geçici klasöre
+kopyalayıp oradan çalıştırıyor ve hemen çıkıyor — yalnızca başlatılan süreç
+beklenirse kaldırma daha başlamadan "bitti" denirdi. Başlatılan süreç bir Windows
+iş nesnesine (job object) atanıyor, alt süreçler işi devralıyor ve işteki etkin
+süreç sayısı sıfırlanana kadar bekleniyor.
+
+Sessiz MSI kaldırmasına `/norestart` ekleniyor: varsayılan davranış bilgisayarı
+sormadan yeniden başlatabiliyor.
+
+### Düzeltmeler
+
+- Ayrıştırılamayan kaldırma komutu geçerlilik denetiminde hata veriyordu
+
+---
+
 ## [0.6.0-alpha] — 2026-08-13
 
 Başlangıç yöneticisi çalışır durumda.

@@ -26,6 +26,7 @@ internal static class Program
                 "registry" => await RegistryCommand.RunAsync(args),
                 "drivers" => await DriversCommand.RunAsync(args),
                 "startup" => await StartupCommand.RunAsync(args),
+                "programs" => await ProgramsCommand.RunAsync(args),
                 "history" => HistoryCommand.List(),
                 "undo" => HistoryCommand.Undo(args),
                 "version" => PrintVersion(),
@@ -53,6 +54,7 @@ internal static class Program
         Console.WriteLine("  registry            Ölü kayıt defteri girdilerini tarar (--apply ile temizler)");
         Console.WriteLine("  drivers             Donanım envanterini ve eski sürücüleri listeler");
         Console.WriteLine("  startup             Açılışta çalışan öğeleri listeler (--disable/--enable <ad>)");
+        Console.WriteLine("  programs            Kurulu programları listeler (--size ile gerçek boyut)");
         Console.WriteLine("  history             Geçmiş temizlikleri listeler");
         Console.WriteLine("  undo <kimlik>       Bir temizliği geri alır (karantinadan geri yükler)");
         Console.WriteLine("  version             Sürüm bilgisini yazdırır");

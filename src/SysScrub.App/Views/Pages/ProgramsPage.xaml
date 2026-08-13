@@ -1,0 +1,435 @@
+<UserControl x:Class="SysScrub.App.Views.Pages.ProgramsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:conv="clr-namespace:SysScrub.App.Converters"
+             xmlns:controls="clr-namespace:SysScrub.App.Controls"
+             xmlns:vm="clr-namespace:SysScrub.App.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance vm:ProgramsViewModel}">
+
+    <UserControl.Resources>
+        <conv:GeometryKeyConverter x:Key="GeometryKey" />
+        <conv:BoolToVisibilityConverter x:Key="BoolToVisibility" />
+        <conv:StringToVisibilityConverter x:Key="StringToVisibility" />
+        <conv:EmptyStringToVisibilityConverter x:Key="EmptyStringToVisibility" />
+
+        <!-- Sıralama düğmesi: seçili olan vurgu renginde -->
+        <Style x:Key="SortButton" TargetType="Button" BasedOn="{StaticResource SsSubtleButton}">
+            <Setter Property="MinHeight" Value="26" />
+            <Setter Property="Padding" Value="10,0" />
+            <Setter Property="FontSize" Value="11.5" />
+        </Style>
+
+        <!-- Program satırı -->
+        <DataTemplate x:Key="ProgramRowTemplate" DataType="{x:Type vm:ProgramRowViewModel}">
+            <Border Padding="14,11" Margin="0,0,0,6"
+                    CornerRadius="{StaticResource SsRadiusControl}"
+                    Background="{DynamicResource SsSurfaceRaised}"
+                    BorderBrush="{DynamicResource SsBorder}"
+                    BorderThickness="1">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Style.Triggers>
+                            <!-- Kaldırılan satır listede kalıyor ama sönükleşiyor. -->
+                            <DataTrigger Binding="{Binding IsRemoved}" Value="True">
+                                <Setter Property="Opacity" Value="0.45" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}"
+                              VerticalAlignment="Center" Margin="0,0,12,0"
+                              IsEnabled="{Binding CanUninstall}" />
+
+                    <Border Grid.Column="1" Width="36" Height="36" Margin="0,0,14,0"
+                            CornerRadius="{StaticResource SsRadiusSmall}"
+                            Background="{DynamicResource SsSurfaceHover}">
+                        <Path Data="{Binding IconKey, Converter={StaticResource GeometryKey}}"
+                              Fill="{DynamicResource SsTextSecondary}"
+                              Stretch="Uniform" Width="18" Height="18"
+                              HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+
+                    <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Name}" Style="{StaticResource SsBodyText}"
+                                       FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+
+                            <Border Style="{StaticResource SsBadge}" Margin="8,0,0,0" Padding="7,1"
+                                    Background="{DynamicResource SsSurfaceHover}"
+                                    Visibility="{Binding IsStore, Converter={StaticResource BoolToVisibility}}">
+                                <TextBlock Text="Store" FontSize="10.5"
+                                           Foreground="{DynamicResource SsTextSecondary}" />
+                            </Border>
+
+                            <Border Style="{StaticResource SsBadge}" Margin="6,0,0,0" Padding="7,1"
+                                    Background="{DynamicResource SsSurfaceHover}"
+                                    ToolTip="Windows bu kaydı gizliyor: çalışma zamanı, yama ya da bileşen."
+                                    Visibility="{Binding IsSystemComponent, Converter={StaticResource BoolToVisibility}}">
+                                <TextBlock Text="bileşen" FontSize="10.5"
+                                           Foreground="{DynamicResource SsTextSecondary}" />
+                            </Border>
+
+                            <!-- Kaydı duran ama kaldırıcısı kaybolmuş program -->
+                            <Border Style="{StaticResource SsBadge}" Margin="6,0,0,0" Padding="7,1"
+                                    Background="{DynamicResource SsCautionTint}"
+                                    ToolTip="Kaldırıcı dosyası bulunamadı. Program kayıtlı görünüyor ama buradan kaldırılamaz; kaydı elle temizlenmeli."
+                                    Visibility="{Binding UninstallerMissing, Converter={StaticResource BoolToVisibility}}">
+                                <TextBlock Text="kaldırıcı yok" FontSize="10.5" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource SsCaution}" />
+                            </Border>
+                        </StackPanel>
+
+                        <TextBlock Text="{Binding DetailLine}" Style="{StaticResource SsCaptionText}"
+                                   Margin="0,3,12,0" TextTrimming="CharacterEllipsis"
+                                   ToolTip="{Binding LocationLabel}" />
+
+                        <TextBlock Text="{Binding ResultMessage}" Style="{StaticResource SsCaptionText}"
+                                   Foreground="{DynamicResource SsCaution}"
+                                   Margin="0,3,0,0" TextWrapping="Wrap" MaxWidth="620"
+                                   HorizontalAlignment="Left"
+                                   Visibility="{Binding HasResult, Converter={StaticResource BoolToVisibility}}" />
+                    </StackPanel>
+
+                    <!-- Kurulum tarihi -->
+                    <TextBlock Grid.Column="3" Text="{Binding DateLabel}"
+                               Style="{StaticResource SsCaptionText}"
+                               VerticalAlignment="Center" Margin="12,0,18,0" MinWidth="72"
+                               TextAlignment="Right"
+                               Visibility="{Binding HasDate, Converter={StaticResource BoolToVisibility}}" />
+
+                    <!-- Boyut -->
+                    <StackPanel Grid.Column="4" VerticalAlignment="Center" Margin="0,0,18,0"
+                                MinWidth="86" HorizontalAlignment="Right">
+                        <TextBlock Text="{Binding SizeLabel}" HorizontalAlignment="Right"
+                                   FontSize="13" FontWeight="SemiBold">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource SsMonoText}">
+                                    <Style.Triggers>
+                                        <!-- Ölçülmemiş boyut kaydın tahmini; sönük gösteriliyor. -->
+                                        <DataTrigger Binding="{Binding IsSizeMeasured}" Value="False">
+                                            <Setter Property="Foreground" Value="{DynamicResource SsTextSecondary}" />
+                                            <Setter Property="FontWeight" Value="Normal" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
+
+                    <Button Grid.Column="5" Content="Kaldır"
+                            Style="{StaticResource SsSecondaryButton}"
+                            MinWidth="94" VerticalAlignment="Center"
+                            IsEnabled="{Binding CanUninstall}"
+                            ToolTip="{Binding ActionTooltip}"
+                            Command="{Binding DataContext.UninstallCommand,
+                                      RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                            CommandParameter="{Binding}" />
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid>
+      <Grid Margin="{StaticResource SsPagePadding}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- ==================== Başlık ==================== -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+            <TextBlock Text="Programlar" Style="{StaticResource SsDisplayText}" />
+            <TextBlock Style="{StaticResource SsSecondaryText}" Margin="0,6,0,0"
+                       Text="Kaldırmayı programın kendi kaldırıcısı yapar. Sonuç, kaydın gerçekten silinip silinmediğine bakarak doğrulanır — çıkış kodu güvenilir değil." />
+        </StackPanel>
+
+        <!-- ==================== Özet şeridi ==================== -->
+        <Border Grid.Row="1" Style="{StaticResource SsCard}" Margin="0,0,0,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Width="44" Height="44" Margin="0,0,16,0"
+                        CornerRadius="{StaticResource SsRadiusControl}"
+                        Background="{DynamicResource SsAccentTint}">
+                    <Path Data="{StaticResource IconPrograms}" Fill="{DynamicResource SsAccent}"
+                          Stretch="Uniform" Width="22" Height="22"
+                          HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding HeadlineText}" Style="{StaticResource SsTitleText}" />
+                    <TextBlock Text="{Binding HeadlineDetail}" Style="{StaticResource SsCaptionText}"
+                               Margin="0,3,0,0" TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Button Content="Yeniden oku"
+                            Style="{StaticResource SsSecondaryButton}"
+                            Command="{Binding LoadCommand}"
+                            Margin="0,0,8,0" MinWidth="126" />
+
+                    <Button Content="Seçilenleri kaldır"
+                            Style="{StaticResource SsPrimaryButton}"
+                            Command="{Binding UninstallSelectedCommand}"
+                            MinWidth="164" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ==================== Arama ve sıralama ==================== -->
+        <Grid Grid.Row="2" Margin="0,0,0,12"
+              Visibility="{Binding HasLoaded, Converter={StaticResource BoolToVisibility}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" MaxWidth="380" HorizontalAlignment="Left"
+                    CornerRadius="{StaticResource SsRadiusControl}"
+                    Background="{DynamicResource SsSurfaceRaised}"
+                    BorderBrush="{DynamicResource SsBorder}" BorderThickness="1"
+                    Padding="12,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Path Grid.Column="0" Data="{StaticResource IconSearch}"
+                          Fill="{DynamicResource SsTextSecondary}"
+                          Stretch="Uniform" Width="14" Height="14" VerticalAlignment="Center" />
+
+                    <Grid Grid.Column="1" Margin="10,0,0,0">
+                        <!-- WPF'te yer tutucu yazı yok; boşken arkada duran bir etiketle veriliyor. -->
+                        <TextBlock Text="Program veya yayıncı ara" Style="{StaticResource SsCaptionText}"
+                                   VerticalAlignment="Center" IsHitTestVisible="False"
+                                   Visibility="{Binding SearchText, Converter={StaticResource EmptyStringToVisibility}}" />
+
+                        <TextBox MinHeight="34" VerticalContentAlignment="Center"
+                                 Background="Transparent" BorderThickness="0"
+                                 Foreground="{DynamicResource SsText}"
+                                 CaretBrush="{DynamicResource SsAccent}"
+                                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Delay=150}" />
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Text="SIRALA" Style="{StaticResource SsSectionLabel}"
+                           VerticalAlignment="Center" Margin="0,0,10,0" />
+
+                <Button Content="Boyut" Command="{Binding SortByCommand}" CommandParameter="size">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource SortButton}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SortBySize}" Value="True">
+                                    <Setter Property="Foreground" Value="{DynamicResource SsAccentText}" />
+                                    <Setter Property="FontWeight" Value="SemiBold" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <Button Content="Ad" Command="{Binding SortByCommand}" CommandParameter="name">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource SortButton}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SortByName}" Value="True">
+                                    <Setter Property="Foreground" Value="{DynamicResource SsAccentText}" />
+                                    <Setter Property="FontWeight" Value="SemiBold" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <Button Content="Tarih" Command="{Binding SortByCommand}" CommandParameter="date">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource SortButton}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SortByDate}" Value="True">
+                                    <Setter Property="Foreground" Value="{DynamicResource SsAccentText}" />
+                                    <Setter Property="FontWeight" Value="SemiBold" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <Rectangle Style="{StaticResource SsSeparator}" Width="1" Height="18"
+                           Margin="10,0" VerticalAlignment="Center" />
+
+                <Button Style="{StaticResource SortButton}"
+                        Command="{Binding ToggleComponentsCommand}"
+                        ToolTip="Çalışma zamanları, yamalar ve Windows'un gizlediği diğer kayıtlar.">
+                    <TextBlock>
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Text" Value="Bileşenleri göster" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ShowComponents}" Value="True">
+                                        <Setter Property="Text" Value="Bileşenleri gizle" />
+                                        <Setter Property="Foreground" Value="{DynamicResource SsAccentText}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <!-- ==================== Liste ==================== -->
+        <Grid Grid.Row="3">
+            <!--
+                270+ satır olabiliyor: sanallaştırma olmadan kaydırma takılıyor.
+                ItemsControl varsayılan olarak sanallaştırmıyor, şablonu bu yüzden
+                ScrollViewer + VirtualizingStackPanel ile kuruluyor.
+            -->
+            <ItemsControl ItemsSource="{Binding Programs}"
+                          ItemTemplate="{StaticResource ProgramRowTemplate}"
+                          VirtualizingStackPanel.IsVirtualizing="True"
+                          VirtualizingStackPanel.VirtualizationMode="Recycling"
+                          Visibility="{Binding HasPrograms, Converter={StaticResource BoolToVisibility}}">
+                <ItemsControl.Template>
+                    <ControlTemplate TargetType="ItemsControl">
+                        <ScrollViewer CanContentScroll="True" VerticalScrollBarVisibility="Auto"
+                                      Padding="0,0,4,0">
+                            <ItemsPresenter />
+                        </ScrollViewer>
+                    </ControlTemplate>
+                </ItemsControl.Template>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+
+            <!-- Boş durum -->
+            <Border Style="{StaticResource SsCard}" Padding="40" MaxWidth="560"
+                    HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,40,0,0"
+                    Visibility="{Binding HasPrograms, Converter={StaticResource InverseBoolToVisibility}}">
+                <StackPanel HorizontalAlignment="Center">
+                    <Border Width="64" Height="64" CornerRadius="{StaticResource SsRadiusPanel}"
+                            Background="{DynamicResource SsSurfaceHover}" HorizontalAlignment="Center">
+                        <Path Data="{StaticResource IconPrograms}" Fill="{DynamicResource SsTextSecondary}"
+                              Stretch="Uniform" Width="30" Height="30"
+                              HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+
+                    <TextBlock Text="{Binding HeadlineText}" Style="{StaticResource SsSubtitleText}"
+                               HorizontalAlignment="Center" Margin="0,18,0,0" />
+
+                    <TextBlock Style="{StaticResource SsSecondaryText}" TextAlignment="Center" Margin="0,8,0,0"
+                               Text="Uninstall kayıtları ve Store paket deposu okunur. Kurulum klasörleri arkada ölçülür; boyut sütunu tahmin değil, taranmış gerçek değerdir." />
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- ==================== Artık klasör ==================== -->
+        <Border Grid.Row="4" Style="{StaticResource SsCard}" Margin="0,12,0,0"
+                Background="{DynamicResource SsCautionTint}"
+                Visibility="{Binding HasLeftover, Converter={StaticResource BoolToVisibility}}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Path Grid.Column="0" Style="{StaticResource SsIcon}"
+                      Data="{StaticResource IconStatusCaution}"
+                      Fill="{DynamicResource SsCaution}" VerticalAlignment="Center" />
+
+                <TextBlock Grid.Column="1" Text="{Binding LeftoverMessage}"
+                           Style="{StaticResource SsBodyText}"
+                           Margin="12,0,12,0" VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis" />
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Button Content="Bırak" Style="{StaticResource SsSubtleButton}"
+                            Command="{Binding DismissLeftoverCommand}" Margin="0,0,8,0" />
+
+                    <Button Content="Geri Dönüşüm Kutusu'na taşı"
+                            Style="{StaticResource SsSecondaryButton}"
+                            Command="{Binding RemoveLeftoverCommand}"
+                            ToolTip="Kalıcı silinmez; yanlış klasörse Geri Dönüşüm Kutusu'ndan geri alabilirsin." />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ==================== Durum ==================== -->
+        <Border Grid.Row="4" Margin="0,12,0,0"
+                Background="{DynamicResource SsSurfaceRaised}"
+                Visibility="{Binding StatusMessage, Converter={StaticResource StringToVisibility}}">
+            <Border.Style>
+                <Style TargetType="Border" BasedOn="{StaticResource SsCard}">
+                    <Style.Triggers>
+                        <!-- Artık klasör uyarısı varsa durum satırı ona yer bırakıyor. -->
+                        <DataTrigger Binding="{Binding HasLeftover}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+
+            <TextBlock Text="{Binding StatusMessage}" Style="{StaticResource SsBodyText}" TextWrapping="Wrap" />
+        </Border>
+      </Grid>
+
+      <!-- ==================== İşlem örtüsü ==================== -->
+      <Grid Background="{DynamicResource SsScrim}"
+            Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}">
+          <Border Style="{StaticResource SsCard}" Padding="40,36" MinWidth="380"
+                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                  Effect="{StaticResource SsShadowHigh}">
+              <StackPanel HorizontalAlignment="Center">
+                  <!-- Kaldırıcının ne kadar süreceğini bilmiyoruz; sahte yüzde göstermiyoruz. -->
+                  <controls:ScanRing Width="120" Height="120" Thickness="10"
+                                     IsIndeterminate="True"
+                                     TrackBrush="{DynamicResource SsSurfaceHover}"
+                                     ProgressBrush="{DynamicResource SsAccentGradient}" />
+
+                  <TextBlock Text="{Binding BusyTitle}" Style="{StaticResource SsTitleText}"
+                             HorizontalAlignment="Center" Margin="0,22,0,0" />
+
+                  <TextBlock Text="{Binding BusyDetail}" Style="{StaticResource SsSecondaryText}"
+                             HorizontalAlignment="Center" TextAlignment="Center"
+                             MaxWidth="320" Margin="0,6,0,0" />
+
+                  <Button Content="İptal" Style="{StaticResource SsSecondaryButton}"
+                          Command="{Binding CancelCommand}" HorizontalAlignment="Center"
+                          MinWidth="120" Margin="0,22,0,0" />
+
+                  <TextBlock Style="{StaticResource SsCaptionText}" HorizontalAlignment="Center"
+                             TextAlignment="Center" MaxWidth="300" Margin="0,10,0,0"
+                             Text="Kaldırıcı kendi penceresini açabilir. İptal, açık bir kaldırıcıyı kapatmaz; yalnızca sıradakileri durdurur." />
+              </StackPanel>
+          </Border>
+      </Grid>
+    </Grid>
+
+</UserControl>

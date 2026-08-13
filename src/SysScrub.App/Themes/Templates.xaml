@@ -69,6 +69,10 @@
         <pages:StartupPage />
     </DataTemplate>
 
+    <DataTemplate x:Key="ProgramsPageTemplate" DataType="{x:Type vm:NavigationItem}">
+        <pages:ProgramsPage />
+    </DataTemplate>
+
     <DataTemplate x:Key="PlaceholderPageTemplate" DataType="{x:Type vm:NavigationItem}">
         <pages:ModulePlaceholderPage />
     </DataTemplate>

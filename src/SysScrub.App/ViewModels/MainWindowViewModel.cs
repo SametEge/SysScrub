@@ -77,7 +77,8 @@ public sealed partial class MainWindowViewModel : ObservableObject
                 Title = "Programlar",
                 IconKey = "IconPrograms",
                 Description = "Kurulu programları toplu kaldırır, kaldırma sonrası artık dosya ve kayıtları tarar.",
-                Phase = 5
+                Phase = 0,
+                TemplateKey = "ProgramsPageTemplate"
             },
             new NavigationItem
             {

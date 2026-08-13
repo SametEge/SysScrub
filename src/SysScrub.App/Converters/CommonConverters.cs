@@ -24,6 +24,16 @@ public sealed class StringToVisibilityConverter : IValueConverter
         throw new NotSupportedException();
 }
 
+/// <summary>Boş metin → Visible. Arama kutusunun yer tutucu yazısı için.</summary>
+public sealed class EmptyStringToVisibilityConverter : IValueConverter
+{
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        string.IsNullOrEmpty(value as string) ? Visibility.Visible : Visibility.Collapsed;
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        throw new NotSupportedException();
+}
+
 /// <summary>Sayı sıfırdan büyükse Visible.</summary>
 public sealed class PositiveToVisibilityConverter : IValueConverter
 {

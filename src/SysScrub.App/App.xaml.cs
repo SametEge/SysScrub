@@ -10,6 +10,7 @@ using SysScrub.App.Views;
 using SysScrub.Core.Cleaning;
 using SysScrub.Core.Drivers;
 using SysScrub.Core.Machine;
+using SysScrub.Core.Programs;
 using SysScrub.Core.RegistryCleaning;
 using SysScrub.Core.Rules;
 using SysScrub.Core.Safety;
@@ -70,6 +71,11 @@ public partial class App : Application
                 services.AddSingleton<DriverBackup>();
                 services.AddSingleton<WindowsUpdateDriverSource>();
 
+                // Program kaldırıcı
+                services.AddSingleton<ProgramInventory>();
+                services.AddSingleton<ProgramSizeCalculator>();
+                services.AddSingleton<ProgramUninstaller>();
+
                 // Başlangıç zinciri
                 services.AddSingleton<StartupApprovedStore>();
                 services.AddSingleton<BootPerformance>();
@@ -88,6 +94,7 @@ public partial class App : Application
                 services.AddSingleton<DriversViewModel>();
                 services.AddSingleton<SoftwareUpdatesViewModel>();
                 services.AddSingleton<StartupViewModel>();
+                services.AddSingleton<ProgramsViewModel>();
                 services.AddSingleton<TimelineViewModel>();
                 services.AddTransient<DashboardViewModel>();
 
@@ -124,7 +131,8 @@ public partial class App : Application
                 e.Args.Contains("--regscan"),
                 e.Args.Contains("--devscan"),
                 e.Args.Contains("--wingetscan"),
-                e.Args.Contains("--startupscan"));
+                e.Args.Contains("--startupscan"),
+                e.Args.Contains("--programscan"));
         }
     }
 
@@ -140,12 +148,23 @@ public partial class App : Application
         bool registryScan = false,
         bool deviceScan = false,
         bool wingetScan = false,
-        bool startupScan = false)
+        bool startupScan = false,
+        bool programScan = false)
     {
         window.ContentRendered += (_, _) => Dispatcher.BeginInvoke(
             DispatcherPriority.ApplicationIdle,
             async () =>
             {
+                if (programScan)
+                {
+                    await Resolve<ProgramsViewModel>().LoadCommand.ExecuteAsync(null);
+
+                    // Boyut ölçümü arkada sürüyor; görüntüde dolu satırlar görünsün.
+                    await Task.Delay(3000);
+                    System.Windows.Input.CommandManager.InvalidateRequerySuggested();
+                    await Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
+                }
+
                 if (startupScan)
                 {
                     await Resolve<StartupViewModel>().LoadCommand.ExecuteAsync(null);
