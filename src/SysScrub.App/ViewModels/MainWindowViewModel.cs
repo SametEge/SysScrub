@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using SysScrub.App.Localization;
 using SysScrub.App.Services;
 
 namespace SysScrub.App.ViewModels;
@@ -16,101 +17,107 @@ public sealed partial class MainWindowViewModel : ObservableObject
     private NavigationItem? _selectedFooterItem;
 
     [ObservableProperty]
-    private string _themeLabel = "Sistem teması";
+    private string _themeLabel = LocalizationService.Instance["Theme_System"];
 
     public MainWindowViewModel(ThemeService theme)
     {
         _theme = theme;
 
+        LocalizationService.Instance.LanguageChanged += (_, _) =>
+        {
+            ThemeLabel = ThemeLabelFor(_theme.Mode);
+            OnPropertyChanged(nameof(VersionLabel));
+        };
+
         Items =
         [
             new NavigationItem
             {
-                Title = "Panel",
+                Id = "Panel",
                 TitleKey = "Nav_Dashboard",
                 IconKey = "IconDashboard",
-                Description = "Sistemin tek bakışta özeti: temizlenebilir alan, disk sağlığı, bekleyen güncellemeler ve akıllı öneriler.",
+                DescriptionKey = "Mod_Dashboard",
                 Phase = 0,
                 TemplateKey = "DashboardPageTemplate"
             },
             new NavigationItem
             {
-                Title = "Temizleyici",
+                Id = "Temizleyici",
                 TitleKey = "Nav_Cleaner",
                 IconKey = "IconCleaner",
-                Description = "Windows, tarayıcı ve uygulama artıklarını kural tabanlı tarar. Her silme karantinaya alınır ve geri alınabilir.",
+                DescriptionKey = "Mod_Cleaner",
                 Phase = 0,
                 TemplateKey = "CleanerPageTemplate"
             },
             new NavigationItem
             {
-                Title = "Registry",
+                Id = "Registry",
                 TitleKey = "Nav_Registry",
                 IconKey = "IconRegistry",
-                Description = "Ölü kayıt defteri girdilerini 12 ayrı tarayıcıyla bulur. Her işlem öncesi .reg yedeği ve geri yükleme noktası alınır.",
+                DescriptionKey = "Mod_Registry",
                 Phase = 0,
                 TemplateKey = "RegistryPageTemplate"
             },
             new NavigationItem
             {
-                Title = "Sürücüler",
+                Id = "Sürücüler",
                 TitleKey = "Nav_Drivers",
                 IconKey = "IconDrivers",
-                Description = "Donanım envanteri, eski sürücü tespiti ve güncelleme. Kaynaklar Microsoft ve üreticinin resmi kanalları.",
+                DescriptionKey = "Mod_Drivers",
                 Phase = 0,
                 TemplateKey = "DriversPageTemplate"
             },
             new NavigationItem
             {
-                Title = "Güncellemeler",
+                Id = "Güncellemeler",
                 TitleKey = "Nav_Updates",
                 IconKey = "IconUpdates",
-                Description = "Kurulu programların yeni sürümlerini winget üzerinden bulur ve toplu günceller.",
+                DescriptionKey = "Mod_Updates",
                 Phase = 0,
                 TemplateKey = "SoftwareUpdatesPageTemplate"
             },
             new NavigationItem
             {
-                Title = "Başlangıç",
+                Id = "Başlangıç",
                 TitleKey = "Nav_Startup",
                 IconKey = "IconStartup",
-                Description = "Açılışta çalışan her şey tek listede. Etkisi tahmin değil, olay günlüğünden okunan gerçek gecikme.",
+                DescriptionKey = "Mod_Startup",
                 Phase = 0,
                 TemplateKey = "StartupPageTemplate"
             },
             new NavigationItem
             {
-                Title = "Programlar",
+                Id = "Programlar",
                 TitleKey = "Nav_Programs",
                 IconKey = "IconPrograms",
-                Description = "Kurulu programları toplu kaldırır, kaldırma sonrası artık dosya ve kayıtları tarar.",
+                DescriptionKey = "Mod_Programs",
                 Phase = 0,
                 TemplateKey = "ProgramsPageTemplate"
             },
             new NavigationItem
             {
-                Title = "Disk sağlığı",
+                Id = "Disk sağlığı",
                 TitleKey = "Nav_DiskHealth",
                 IconKey = "IconDiskHealth",
-                Description = "S.M.A.R.T. verisi, sıcaklık geçmişi, yazılan toplam veri ve kalan ömür tahmini — sade açıklamalarla.",
+                DescriptionKey = "Mod_DiskHealth",
                 Phase = 0,
                 TemplateKey = "DiskHealthPageTemplate"
             },
             new NavigationItem
             {
-                Title = "Disk analizi",
+                Id = "Disk analizi",
                 TitleKey = "Nav_DiskAnalysis",
                 IconKey = "IconDiskAnalysis",
-                Description = "Alanı ne yiyor? Treemap görselleştirme, en büyük dosyalar ve yinelenen dosya bulucu.",
+                DescriptionKey = "Mod_DiskAnalysis",
                 Phase = 0,
                 TemplateKey = "DiskAnalysisPageTemplate"
             },
             new NavigationItem
             {
-                Title = "Zaman tüneli",
+                Id = "Zaman tüneli",
                 TitleKey = "Nav_Timeline",
                 IconKey = "IconTimeline",
-                Description = "Sistemde yapılan her değişikliğin kronolojik kaydı. Herhangi bir noktaya tek tıkla dönülür.",
+                DescriptionKey = "Mod_Timeline",
                 Phase = 0,
                 TemplateKey = "TimelinePageTemplate"
             }
@@ -120,10 +127,10 @@ public sealed partial class MainWindowViewModel : ObservableObject
         [
             new NavigationItem
             {
-                Title = "Ayarlar",
+                Id = "Ayarlar",
                 TitleKey = "Nav_Settings",
                 IconKey = "IconSettings",
-                Description = "Tema, dil, zamanlanmış görevler, karantina saklama süresi ve gelişmiş seçenekler.",
+                DescriptionKey = "Mod_Settings",
                 Phase = 0,
                 TemplateKey = "SettingsPageTemplate",
                 IsFooterItem = true
@@ -137,10 +144,16 @@ public sealed partial class MainWindowViewModel : ObservableObject
 
     public ObservableCollection<NavigationItem> FooterItems { get; }
 
-    public string VersionLabel { get; } =
-        typeof(MainWindowViewModel).Assembly.GetName().Version is { } v
-            ? $"sürüm {v.Major}.{v.Minor}.{v.Build}"
-            : "sürüm bilinmiyor";
+    public string VersionLabel => typeof(MainWindowViewModel).Assembly.GetName().Version is { } v
+        ? LocalizationService.Instance.Format("App_Version", $"{v.Major}.{v.Minor}.{v.Build}")
+        : string.Empty;
+
+    private static string ThemeLabelFor(AppThemeMode mode) => mode switch
+    {
+        AppThemeMode.Light => LocalizationService.Instance["Theme_Light"],
+        AppThemeMode.Dark => LocalizationService.Instance["Theme_Dark"],
+        _ => LocalizationService.Instance["Theme_System"]
+    };
 
     /// <summary>Sağda gösterilen modül: iki listeden hangisi seçiliyse o.</summary>
     public NavigationItem? CurrentItem => SelectedItem ?? SelectedFooterItem;
@@ -175,11 +188,6 @@ public sealed partial class MainWindowViewModel : ObservableObject
             _ => AppThemeMode.System
         };
 
-        ThemeLabel = _theme.Mode switch
-        {
-            AppThemeMode.Light => "Açık tema",
-            AppThemeMode.Dark => "Koyu tema",
-            _ => "Sistem teması"
-        };
+        ThemeLabel = ThemeLabelFor(_theme.Mode);
     }
 }

@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using SysScrub.Core.Cleaning;
+using SysScrub.App.Localization;
 using SysScrub.Core.Formatting;
 using SysScrub.Core.Rules;
 
@@ -59,10 +60,12 @@ public sealed partial class RuleNodeViewModel : ObservableObject
         : !WasScanned ? string.Empty : Bytes > 0 ? ByteSize.Format(Bytes) : "—";
 
     public string ElevationNote => IsBlockedByElevation
-        ? "Yönetici hakkı gerekiyor — uygulamayı yönetici olarak çalıştır."
+        ? LocalizationService.Instance["Msg_NeedsAdmin"]
         : string.Empty;
 
-    public string CountLabel => !WasScanned || FileCount == 0 ? string.Empty : $"{FileCount:N0} dosya";
+    public string CountLabel => !WasScanned || FileCount == 0
+        ? string.Empty
+        : LocalizationService.Instance.Format("Msg_FileCount", $"{FileCount:N0}");
 
     /// <summary>Tarandı ve bulgu yok: satır soluklaşır ama listeden kaybolmaz.</summary>
     public bool IsEmpty => WasScanned && FileCount == 0;
@@ -70,13 +73,13 @@ public sealed partial class RuleNodeViewModel : ObservableObject
     public bool HasBlockers => RunningBlockers.Count > 0;
 
     public string BlockersLabel => HasBlockers
-        ? $"Açık: {string.Join(", ", RunningBlockers)} — bazı dosyalar kilitli olabilir"
+        ? LocalizationService.Instance.Format("Msg_Blockers", string.Join(", ", RunningBlockers))
         : string.Empty;
 
     public string RiskLabel => Risk switch
     {
-        RiskLevel.Caution => "dikkat",
-        RiskLevel.Advanced => "gelişmiş",
+        RiskLevel.Caution => LocalizationService.Instance["Risk_Caution"],
+        RiskLevel.Advanced => LocalizationService.Instance["Risk_Advanced"],
         _ => string.Empty
     };
 

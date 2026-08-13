@@ -51,7 +51,7 @@
                             <TextBlock Text="SysScrub"
                                        Style="{StaticResource SsSubtitleText}"
                                        LineHeight="18" />
-                            <TextBlock Text="Windows bakım aracı"
+                            <TextBlock Text="{loc:Str App_Tagline}"
                                        Style="{StaticResource SsCaptionText}"
                                        FontSize="11" />
                         </StackPanel>

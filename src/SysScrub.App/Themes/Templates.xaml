@@ -27,7 +27,7 @@
                   VerticalAlignment="Center" />
 
             <TextBlock Grid.Column="1"
-                       Text="{Binding TitleKey, Converter={StaticResource Loc}}"
+                       Text="{Binding Title}"
                        Margin="12,0,0,0"
                        VerticalAlignment="Center"
                        TextTrimming="CharacterEllipsis" />

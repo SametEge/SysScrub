@@ -2,6 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:conv="clr-namespace:SysScrub.App.Converters"
+             xmlns:loc="clr-namespace:SysScrub.App.Localization"
              xmlns:vm="clr-namespace:SysScrub.App.ViewModels"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -23,15 +24,15 @@
         <StackPanel Grid.Row="0" Margin="0,0,0,20">
             <DockPanel>
                 <Button DockPanel.Dock="Right"
-                        Content="Yenile"
+                        Content="{loc:Str Btn_Refresh}"
                         Style="{StaticResource SsSecondaryButton}"
                         Command="{Binding RefreshCommand}"
                         VerticalAlignment="Bottom" />
 
                 <StackPanel>
-                    <TextBlock Text="Zaman tüneli" Style="{StaticResource SsDisplayText}" />
+                    <TextBlock Text="{loc:Str Nav_Timeline}" Style="{StaticResource SsDisplayText}" />
                     <TextBlock Style="{StaticResource SsSecondaryText}" Margin="0,6,0,0"
-                               Text="Sistemde yapılan her değişikliğin kaydı. Karantinaya alınan temizlikler buradan geri alınabilir." />
+                               Text="{loc:Str Tl_Subtitle}" />
                 </StackPanel>
             </DockPanel>
         </StackPanel>
@@ -58,7 +59,7 @@
                           Stretch="Uniform" Width="30" Height="30"
                           HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </Border>
-                <TextBlock Text="Geçmiş boş" Style="{StaticResource SsSubtitleText}"
+                <TextBlock Text="{loc:Str Tl_Empty}" Style="{StaticResource SsSubtitleText}"
                            HorizontalAlignment="Center" Margin="0,18,0,0" />
                 <TextBlock Text="{Binding EmptyMessage}" Style="{StaticResource SsSecondaryText}"
                            TextAlignment="Center" Margin="0,8,0,0" />
@@ -109,7 +110,7 @@
                                                Style="{StaticResource SsMetricValue}" FontSize="22"
                                                VerticalAlignment="Center" Margin="0,0,18,0" />
 
-                                    <Button Grid.Column="3" Content="Ayrıntı"
+                                    <Button Grid.Column="3" Content="{loc:Str Btn_Details}"
                                             Style="{StaticResource SsSubtleButton}"
                                             VerticalAlignment="Center"
                                             Margin="0,0,8,0"
@@ -117,7 +118,7 @@
                                                       RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                             CommandParameter="{Binding}" />
 
-                                    <Button Grid.Column="4" Content="Geri al"
+                                    <Button Grid.Column="4" Content="{loc:Str Btn_Undo}"
                                             Style="{StaticResource SsSecondaryButton}"
                                             VerticalAlignment="Center"
                                             Visibility="{Binding CanUndo, Converter={StaticResource BoolToVisibility}}"

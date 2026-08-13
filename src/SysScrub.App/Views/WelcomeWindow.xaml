@@ -149,9 +149,9 @@
                                     </Border>
 
                                     <StackPanel Grid.Column="1">
-                                        <TextBlock Text="{Binding TitleKey, Converter={StaticResource Loc}}"
+                                        <TextBlock Text="{Binding Title.Value}"
                                                    Style="{StaticResource SsBodyText}" FontWeight="SemiBold" />
-                                        <TextBlock Text="{Binding BodyKey, Converter={StaticResource Loc}}"
+                                        <TextBlock Text="{Binding Body.Value}"
                                                    Style="{StaticResource SsCaptionText}"
                                                    Margin="0,3,0,0" TextWrapping="Wrap" />
                                     </StackPanel>
@@ -182,9 +182,9 @@
                                     HorizontalAlignment="Left"
                                     Background="{DynamicResource SsSurfaceRaised}">
                                 <StackPanel>
-                                    <TextBlock Text="{Binding TitleKey, Converter={StaticResource Loc}}"
+                                    <TextBlock Text="{Binding Title.Value}"
                                                Style="{StaticResource SsBodyText}" FontWeight="SemiBold" />
-                                    <TextBlock Text="{Binding BodyKey, Converter={StaticResource Loc}}"
+                                    <TextBlock Text="{Binding Body.Value}"
                                                Style="{StaticResource SsCaptionText}"
                                                Margin="0,4,0,0" TextWrapping="Wrap" />
                                 </StackPanel>
@@ -206,7 +206,7 @@
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                                 <Ellipse Width="6" Height="6" Margin="0,8,12,0" VerticalAlignment="Top"
                                          Fill="{DynamicResource SsAccent}" />
-                                <TextBlock Text="{Binding Converter={StaticResource Loc}}"
+                                <TextBlock Text="{Binding Value}"
                                            Style="{StaticResource SsBodyText}"
                                            TextWrapping="Wrap" MaxWidth="660" />
                             </StackPanel>

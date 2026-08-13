@@ -28,10 +28,22 @@ public sealed partial class LanguageChoiceViewModel(LanguageOption option, bool 
 }
 
 /// <summary>Turdaki modül satırı.</summary>
-public sealed record ModuleIntro(string IconKey, string TitleKey, string BodyKey);
+public sealed record ModuleIntro(string IconKey, LocText Title, LocText Body)
+{
+    public ModuleIntro(string iconKey, string titleKey, string bodyKey)
+        : this(iconKey, new LocText(titleKey), new LocText(bodyKey))
+    {
+    }
+}
 
 /// <summary>Güvenlik adımındaki madde.</summary>
-public sealed record SafetyPoint(string TitleKey, string BodyKey);
+public sealed record SafetyPoint(LocText Title, LocText Body)
+{
+    public SafetyPoint(string titleKey, string bodyKey)
+        : this(new LocText(titleKey), new LocText(bodyKey))
+    {
+    }
+}
 
 /// <summary>
 /// İlk açılış turu.
@@ -101,8 +113,10 @@ public sealed partial class WelcomeViewModel : ObservableObject
         new("Ob_Safety_3_Title", "Ob_Safety_3_Body")
     ];
 
-    public IReadOnlyList<string> PrivacyPoints { get; } =
-        ["Ob_Privacy_1", "Ob_Privacy_2", "Ob_Privacy_3", "Ob_Privacy_4"];
+    public IReadOnlyList<LocText> PrivacyPoints { get; } =
+    [
+        new("Ob_Privacy_1"), new("Ob_Privacy_2"), new("Ob_Privacy_3"), new("Ob_Privacy_4")
+    ];
 
     // ------------------------------------------------------------------ adımlar
 

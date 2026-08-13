@@ -2,6 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:conv="clr-namespace:SysScrub.App.Converters"
+             xmlns:loc="clr-namespace:SysScrub.App.Localization"
              xmlns:controls="clr-namespace:SysScrub.App.Controls"
              xmlns:vm="clr-namespace:SysScrub.App.ViewModels"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -80,14 +81,14 @@
                     <!-- Kurulu / kullanılabilir -->
                     <StackPanel Grid.Column="3" VerticalAlignment="Center" Margin="16,0,20,0" MinWidth="230">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Kurulmuş: " Style="{StaticResource SsCaptionText}" />
+                            <TextBlock Text="{loc:Str Dr_Installed}" Style="{StaticResource SsCaptionText}" />
                             <TextBlock Text="{Binding InstalledLabel}" Style="{StaticResource SsMonoText}"
                                        FontSize="11.5" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Margin="0,3,0,0"
                                     ToolTip="{Binding AvailableTooltip}">
-                            <TextBlock Text="Kullanılabilir: " Style="{StaticResource SsCaptionText}" />
+                            <TextBlock Text="{loc:Str Dr_Available}" Style="{StaticResource SsCaptionText}" />
                             <TextBlock Text="{Binding AvailableLabel}" FontSize="11.5">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock" BasedOn="{StaticResource SsMonoText}">
@@ -104,11 +105,11 @@
                         </StackPanel>
                     </StackPanel>
 
-                    <Button Grid.Column="4" Content="Güncelle"
+                    <Button Grid.Column="4" Content="{loc:Str Dr_Update}"
                             Style="{StaticResource SsSecondaryButton}"
                             MinWidth="96" VerticalAlignment="Center"
                             IsEnabled="{Binding HasUpdate}"
-                            ToolTip="Kurulum Faz 4 ile geliyor: indirme, imza doğrulama, yedek ve geri alma zinciriyle birlikte." />
+                            ToolTip="{loc:Str Dr_UpdateTip}" />
                 </Grid>
             </Border>
         </DataTemplate>
@@ -125,9 +126,9 @@
 
         <!-- ==================== Başlık ==================== -->
         <StackPanel Grid.Row="0" Margin="0,0,0,16">
-            <TextBlock Text="Sürücüler" Style="{StaticResource SsDisplayText}" />
+            <TextBlock Text="{loc:Str Nav_Drivers}" Style="{StaticResource SsDisplayText}" />
             <TextBlock Style="{StaticResource SsSecondaryText}" Margin="0,6,0,0"
-                       Text="Güncelleme kaynağı Windows Update — buradan gelen her sürücü WHQL imzalı ve Microsoft tarafından bu donanıma uygun bulunmuş." />
+                       Text="{loc:Str Dr_Subtitle}" />
         </StackPanel>
 
         <!-- ==================== Özet şeridi ==================== -->
@@ -154,18 +155,18 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
-                    <Button Content="Yedekle"
+                    <Button Content="{loc:Str Dr_Backup}"
                             Style="{StaticResource SsSubtleButton}"
                             Command="{Binding BackupCommand}"
-                            ToolTip="Tüm üçüncü parti sürücüleri dışa aktarır. Yönetici hakkı gerekir."
+                            ToolTip="{loc:Str Dr_BackupTip}"
                             Margin="0,0,8,0" />
 
-                    <Button Content="Donanımı oku"
+                    <Button Content="{loc:Str Dr_ReadHardware}"
                             Style="{StaticResource SsSecondaryButton}"
                             Command="{Binding LoadCommand}"
                             Margin="0,0,8,0" MinWidth="126" />
 
-                    <Button Content="Şimdi güncelle"
+                    <Button Content="{loc:Str Dr_UpdateNow}"
                             Style="{StaticResource SsPrimaryButton}"
                             Command="{Binding CheckUpdatesCommand}"
                             MinWidth="150" />
@@ -193,9 +194,9 @@
                 <StackPanel Visibility="{Binding HasAttention, Converter={StaticResource BoolToVisibility}}">
                     <DockPanel Margin="2,0,2,10">
                         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                            <Button Content="Tümünü seç" Style="{StaticResource SsSubtleButton}"
+                            <Button Content="{loc:Str Btn_SelectAll}" Style="{StaticResource SsSubtleButton}"
                                     Command="{Binding SelectAllCommand}" MinHeight="26" Padding="9,0" FontSize="11.5" />
-                            <Button Content="Hiçbiri" Style="{StaticResource SsSubtleButton}"
+                            <Button Content="{loc:Str Btn_SelectNone}" Style="{StaticResource SsSubtleButton}"
                                     Command="{Binding SelectNoneCommand}" MinHeight="26" Padding="9,0" FontSize="11.5" />
                         </StackPanel>
 
@@ -261,7 +262,7 @@
                              HorizontalAlignment="Center" TextAlignment="Center"
                              MaxWidth="320" Margin="0,6,0,0" />
 
-                  <Button Content="İptal" Style="{StaticResource SsSecondaryButton}"
+                  <Button Content="{loc:Str Btn_Cancel}" Style="{StaticResource SsSecondaryButton}"
                           Command="{Binding CancelCommand}" HorizontalAlignment="Center"
                           MinWidth="120" Margin="0,22,0,0" />
               </StackPanel>

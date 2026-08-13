@@ -76,6 +76,16 @@ public sealed class LocalizationService : INotifyPropertyChanged
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
+    /// <summary>
+    /// Dil değişti.
+    ///
+    /// "Item[]" bildirimi yalnızca XAML'de sabit anahtarla kurulan bağlamaları
+    /// yeniliyor. Anahtarı veriden gelen metinler (menü başlıkları, liste satırları)
+    /// ve C# tarafında kurulan cümleler bu olayı dinlemek zorunda — yoksa dil
+    /// değişince ekranda eski dil kalıyor.
+    /// </summary>
+    public event EventHandler? LanguageChanged;
+
     public IReadOnlyList<LanguageOption> Languages { get; }
 
     /// <summary>Şu an kullanılan dil.</summary>
@@ -170,6 +180,7 @@ public sealed class LocalizationService : INotifyPropertyChanged
 
         // "Item[]" tüm dizin bağlamalarını yeniler.
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Item[]"));
+        LanguageChanged?.Invoke(this, EventArgs.Empty);
     }
 
     public LanguageOption? Find(string culture) =>

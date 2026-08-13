@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
+using SysScrub.App.Localization;
 using SysScrub.Core.Cleaning;
 using SysScrub.Core.Machine;
 using SysScrub.Core.RegistryCleaning;
@@ -60,7 +61,7 @@ public sealed partial class RegistryScannerNodeViewModel : ObservableObject
     public bool IsBlockedByElevation { get; }
 
     public string ElevationNote => IsBlockedByElevation
-        ? "Yönetici hakkı gerekiyor — uygulamayı yönetici olarak çalıştır."
+        ? LocalizationService.Instance["Msg_NeedsAdmin"]
         : string.Empty;
 
     public string CountLabel => !WasScanned ? string.Empty : Count > 0 ? $"{Count:N0} kayıt" : "temiz";

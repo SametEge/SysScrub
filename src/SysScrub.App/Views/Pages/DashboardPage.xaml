@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:controls="clr-namespace:SysScrub.App.Controls"
              xmlns:conv="clr-namespace:SysScrub.App.Converters"
+             xmlns:loc="clr-namespace:SysScrub.App.Localization"
              xmlns:vm="clr-namespace:SysScrub.App.ViewModels"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -23,7 +24,7 @@
 
             <!-- ==================== Başlık ==================== -->
             <StackPanel Grid.Row="0" Margin="0,0,0,24">
-                <TextBlock Text="Panel" Style="{StaticResource SsDisplayText}" />
+                <TextBlock Text="{loc:Str Nav_Dashboard}" Style="{StaticResource SsDisplayText}" />
                 <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
                     <TextBlock Text="{Binding OsLabel}" Style="{StaticResource SsSecondaryText}" />
                     <TextBlock Text="  ·  " Style="{StaticResource SsSecondaryText}" />
@@ -52,7 +53,7 @@
                 <!-- Tarama kartı — sayfanın ana eylemi -->
                 <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Style="{StaticResource SsCard}">
                     <StackPanel>
-                        <TextBlock Text="TEMİZLİK" Style="{StaticResource SsSectionLabel}" />
+                        <TextBlock Text="{loc:Str Db_Cleanup}" Style="{StaticResource SsSectionLabel}" />
 
                         <Grid Height="212" Margin="0,20,0,16">
                             <!-- Tarama sürerken gerçek ilerlemeyi gösterir, bitince tam tur olur. -->
@@ -83,7 +84,7 @@
                                    Text="{Binding ScanHint}" />
 
                         <!-- Taranmadan önce: tek eylem, taramayı başlat -->
-                        <Button Content="Taramayı başlat"
+                        <Button Content="{loc:Str Btn_StartScan}"
                                 Style="{StaticResource SsPrimaryButton}"
                                 MinHeight="{StaticResource SsControlHeightLarge}"
                                 Command="{Binding Cleaner.ScanCommand}"
@@ -91,12 +92,12 @@
 
                         <!-- Tarandıktan sonra: incelemeye geç, istersen yeniden tara -->
                         <StackPanel Visibility="{Binding HasScanned, Converter={StaticResource BoolToVisibility}}">
-                            <Button Content="Temizleyiciyi aç"
+                            <Button Content="{loc:Str Db_OpenCleaner}"
                                     Style="{StaticResource SsPrimaryButton}"
                                     MinHeight="{StaticResource SsControlHeightLarge}"
                                     Command="{Binding OpenCleanerCommand}" />
 
-                            <Button Content="Yeniden tara"
+                            <Button Content="{loc:Str Db_Rescan}"
                                     Style="{StaticResource SsSubtleButton}"
                                     Margin="0,8,0,0"
                                     Command="{Binding Cleaner.ScanCommand}" />
@@ -124,13 +125,13 @@
                                            FontSize="11"
                                            FontWeight="SemiBold" />
                             </Border>
-                            <TextBlock Text="SİSTEM DİSKİ" Style="{StaticResource SsSectionLabel}" />
+                            <TextBlock Text="{loc:Str Db_SystemDisk}" Style="{StaticResource SsSectionLabel}" />
                         </DockPanel>
 
                         <TextBlock Text="{Binding SystemDriveFree}"
                                    Style="{StaticResource SsMetricValue}"
                                    Margin="0,14,0,0" />
-                        <TextBlock Text="boş alan" Style="{StaticResource SsCaptionText}" />
+                        <TextBlock Text="{loc:Str Db_FreeSpace}" Style="{StaticResource SsCaptionText}" />
 
                         <ProgressBar Value="{Binding SystemDriveUsedRatio, Mode=OneWay}"
                                      Maximum="1"
@@ -147,12 +148,12 @@
                 <!-- Bellek -->
                 <Border Grid.Row="0" Grid.Column="4" Style="{StaticResource SsCard}">
                     <StackPanel>
-                        <TextBlock Text="BELLEK" Style="{StaticResource SsSectionLabel}" />
+                        <TextBlock Text="{loc:Str Db_Memory}" Style="{StaticResource SsSectionLabel}" />
 
                         <TextBlock Text="{Binding MemoryLabel}"
                                    Style="{StaticResource SsMetricValue}"
                                    Margin="0,14,0,0" />
-                        <TextBlock Text="kullanımda" Style="{StaticResource SsCaptionText}" />
+                        <TextBlock Text="{loc:Str Db_InUse}" Style="{StaticResource SsCaptionText}" />
 
                         <ProgressBar Value="{Binding MemoryUsedRatio, Mode=OneWay}"
                                      Maximum="1"
@@ -169,7 +170,7 @@
                 <!-- Sürücüler listesi -->
                 <Border Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3" Style="{StaticResource SsCard}">
                     <StackPanel>
-                        <TextBlock Text="DİSKLER" Style="{StaticResource SsSectionLabel}" Margin="0,0,0,12" />
+                        <TextBlock Text="{loc:Str Db_Drives}" Style="{StaticResource SsSectionLabel}" Margin="0,0,0,12" />
 
                         <ItemsControl ItemsSource="{Binding Drives}">
                             <ItemsControl.ItemTemplate>
@@ -252,14 +253,14 @@
                     <StackPanel Grid.Column="1" Margin="12,0,16,0" VerticalAlignment="Center">
                         <TextBlock Style="{StaticResource SsBodyText}"
                                    FontWeight="SemiBold"
-                                   Text="Yönetici hakkı olmadan çalışıyor" />
+                                   Text="{loc:Str Db_NoAdmin}" />
                         <TextBlock Style="{StaticResource SsCaptionText}"
                                    Margin="0,2,0,0"
-                                   Text="Windows Update önbelleği, sistem geçici dosyaları ve sürücü işlemleri bu hakkı ister — bunlar genelde en çok yer kazandıranlar." />
+                                   Text="{loc:Str Db_NoAdminBody}" />
                     </StackPanel>
 
                     <Button Grid.Column="2"
-                            Content="Yönetici olarak yeniden başlat"
+                            Content="{loc:Str Db_RestartAdmin}"
                             Style="{StaticResource SsSecondaryButton}"
                             VerticalAlignment="Center"
                             Command="{Binding RestartElevatedCommand}"

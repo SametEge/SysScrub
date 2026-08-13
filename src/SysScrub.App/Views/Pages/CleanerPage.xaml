@@ -2,6 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:conv="clr-namespace:SysScrub.App.Converters"
+             xmlns:loc="clr-namespace:SysScrub.App.Localization"
              xmlns:controls="clr-namespace:SysScrub.App.Controls"
              xmlns:cleaner="clr-namespace:SysScrub.App.ViewModels.Cleaner"
              xmlns:vm="clr-namespace:SysScrub.App.ViewModels"
@@ -30,9 +31,9 @@
 
         <!-- ==================== Başlık ==================== -->
         <StackPanel Grid.Row="0" Margin="0,0,0,20">
-            <TextBlock Text="Temizleyici" Style="{StaticResource SsDisplayText}" />
+            <TextBlock Text="{loc:Str Nav_Cleaner}" Style="{StaticResource SsDisplayText}" />
             <TextBlock Style="{StaticResource SsSecondaryText}" Margin="0,6,0,0"
-                       Text="Tarama hiçbir şey silmez. Ne silineceğine listeden sen karar verirsin; silinenler karantinaya gider ve geri alınabilir." />
+                       Text="{loc:Str Cl_Subtitle}" />
         </StackPanel>
 
         <!-- ==================== Durum şeridi ==================== -->
@@ -47,13 +48,13 @@
                 <!-- Sol: bulunan / seçilen -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
                     <StackPanel Margin="0,0,32,0">
-                        <TextBlock Text="BULUNAN" Style="{StaticResource SsSectionLabel}" />
+                        <TextBlock Text="{loc:Str Lbl_Found}" Style="{StaticResource SsSectionLabel}" />
                         <TextBlock Text="{Binding FoundLabel}" Style="{StaticResource SsMetricValue}"
                                    FontSize="26" Margin="0,4,0,0" />
                     </StackPanel>
 
                     <StackPanel>
-                        <TextBlock Text="SEÇİLİ" Style="{StaticResource SsSectionLabel}" />
+                        <TextBlock Text="{loc:Str Lbl_Selected}" Style="{StaticResource SsSectionLabel}" />
                         <TextBlock Text="{Binding SelectedLabel}" Style="{StaticResource SsMetricValue}"
                                    FontSize="26" Margin="0,4,0,0"
                                    Foreground="{DynamicResource SsAccentText}" />
@@ -74,19 +75,19 @@
 
                 <!-- Sağ: eylemler -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
-                    <Button Content="İptal"
+                    <Button Content="{loc:Str Btn_Cancel}"
                             Style="{StaticResource SsSecondaryButton}"
                             Command="{Binding CancelCommand}"
                             Margin="0,0,8,0"
                             Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}" />
 
-                    <Button Content="Taramayı başlat"
+                    <Button Content="{loc:Str Btn_StartScan}"
                             Style="{StaticResource SsSecondaryButton}"
                             Command="{Binding ScanCommand}"
                             Margin="0,0,8,0"
                             MinWidth="140" />
 
-                    <Button Content="Seçilenleri temizle"
+                    <Button Content="{loc:Str Cl_CleanSelected}"
                             Style="{StaticResource SsPrimaryButton}"
                             Command="{Binding CleanCommand}"
                             MinWidth="160" />
@@ -102,17 +103,17 @@
                 <Border DockPanel.Dock="Top" Padding="16,12"
                         BorderBrush="{DynamicResource SsBorder}" BorderThickness="0,0,0,1">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Seçim:" Style="{StaticResource SsCaptionText}"
+                        <TextBlock Text="{loc:Str Lbl_Selection}" Style="{StaticResource SsCaptionText}"
                                    VerticalAlignment="Center" Margin="0,0,10,0" />
-                        <Button Content="Önerilen" Style="{StaticResource SsSubtleButton}"
+                        <Button Content="{loc:Str Btn_Recommended}" Style="{StaticResource SsSubtleButton}"
                                 Command="{Binding SelectRecommendedCommand}" MinHeight="28" Padding="10,0" FontSize="12" />
-                        <Button Content="Tümü" Style="{StaticResource SsSubtleButton}"
+                        <Button Content="{loc:Str Btn_All}" Style="{StaticResource SsSubtleButton}"
                                 Command="{Binding SelectAllCommand}" MinHeight="28" Padding="10,0" FontSize="12" />
-                        <Button Content="Hiçbiri" Style="{StaticResource SsSubtleButton}"
+                        <Button Content="{loc:Str Btn_SelectNone}" Style="{StaticResource SsSubtleButton}"
                                 Command="{Binding SelectNoneCommand}" MinHeight="28" Padding="10,0" FontSize="12" />
 
                         <TextBlock Style="{StaticResource SsCaptionText}" VerticalAlignment="Center" Margin="20,0,0,0"
-                                   Text="Yönetici hakkı olmadan bazı sistem kuralları atlanır."
+                                   Text="{loc:Str Cl_AdminNote}"
                                    Visibility="{Binding IsElevated, Converter={StaticResource InverseBoolToVisibility}}" />
                     </StackPanel>
                 </Border>
@@ -222,7 +223,7 @@
                                                                                         Margin="6,0,0,0" Padding="7,1"
                                                                                         Background="{DynamicResource SsSurfaceHover}"
                                                                                         Visibility="{Binding RequiresAdmin, Converter={StaticResource BoolToVisibility}}">
-                                                                                    <TextBlock Text="yönetici" FontSize="10.5"
+                                                                                    <TextBlock Text="{loc:Str Lbl_Admin}" FontSize="10.5"
                                                                                                Foreground="{DynamicResource SsTextSecondary}" />
                                                                                 </Border>
                                                                             </StackPanel>
@@ -304,7 +305,7 @@
                     <TextBlock Text="{Binding ResultDetail}" Style="{StaticResource SsCaptionText}" Margin="0,2,0,0" />
                 </StackPanel>
 
-                <Button Grid.Column="2" Content="Geri al"
+                <Button Grid.Column="2" Content="{loc:Str Btn_Undo}"
                         Style="{StaticResource SsSecondaryButton}"
                         Command="{Binding UndoCommand}"
                         VerticalAlignment="Center"
@@ -362,14 +363,14 @@
                              MaxWidth="320"
                              Margin="0,10,0,0" />
 
-                  <Button Content="İptal"
+                  <Button Content="{loc:Str Btn_Cancel}"
                           Style="{StaticResource SsSecondaryButton}"
                           Command="{Binding CancelCommand}"
                           HorizontalAlignment="Center"
                           MinWidth="120"
                           Margin="0,22,0,0" />
 
-                  <TextBlock Text="İptal edersen o ana kadar silinenler karantinada kalır, geri alabilirsin."
+                  <TextBlock Text="{loc:Str Cl_CancelNote}"
                              Style="{StaticResource SsCaptionText}"
                              HorizontalAlignment="Center"
                              TextAlignment="Center"

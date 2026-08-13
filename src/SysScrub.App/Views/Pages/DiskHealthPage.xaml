@@ -2,6 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:conv="clr-namespace:SysScrub.App.Converters"
+             xmlns:loc="clr-namespace:SysScrub.App.Localization"
              xmlns:controls="clr-namespace:SysScrub.App.Controls"
              xmlns:vm="clr-namespace:SysScrub.App.ViewModels"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -115,12 +116,12 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0">
-                <TextBlock Text="Disk sağlığı" Style="{StaticResource SsDisplayText}" />
+                <TextBlock Text="{loc:Str Nav_DiskHealth}" Style="{StaticResource SsDisplayText}" />
                 <TextBlock Style="{StaticResource SsSecondaryText}" Margin="0,6,0,0"
-                           Text="Veri diskin kendisinden okunur; diske hiçbir şey yazılmaz. Okunamayan disk listeden düşmez — neden okunamadığı yazar." />
+                           Text="{loc:Str Dh_Subtitle}" />
             </StackPanel>
 
-            <Button Grid.Column="1" Content="Yeniden oku"
+            <Button Grid.Column="1" Content="{loc:Str Btn_Reload}"
                     Style="{StaticResource SsSecondaryButton}"
                     Command="{Binding LoadCommand}"
                     VerticalAlignment="Bottom" MinWidth="126" />
@@ -135,7 +136,7 @@
                       Fill="{DynamicResource SsCaution}" VerticalAlignment="Center" />
                 <TextBlock Style="{StaticResource SsBodyText}" Margin="12,0,0,0"
                            VerticalAlignment="Center" TextWrapping="Wrap"
-                           Text="S.M.A.R.T. verisi diske komut göndermeyi gerektiriyor, bu da yönetici hakkı demek. Uygulamayı yönetici olarak açtığında sağlık verisi görünür." />
+                           Text="{loc:Str Dh_AdminNote}" />
             </StackPanel>
         </Border>
 
@@ -174,7 +175,7 @@
                                 <TextBlock Text="{Binding HealthPercentLabel}"
                                            Style="{StaticResource SsMetricValue}" FontSize="30"
                                            HorizontalAlignment="Center" />
-                                <TextBlock Text="kalan ömür" Style="{StaticResource SsCaptionText}"
+                                <TextBlock Text="{loc:Str Dh_LifeLeft}" Style="{StaticResource SsCaptionText}"
                                            HorizontalAlignment="Center" Margin="0,1,0,0"
                                            Visibility="{Binding HasHealthPercent, Converter={StaticResource BoolToVisibility}}" />
                             </StackPanel>
@@ -244,10 +245,10 @@
                                 <TextBlock>
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock">
-                                            <Setter Property="Text" Value="Tüm öznitelikleri göster" />
+                                            <Setter Property="Text" Value="{loc:Str Dh_ShowAll}" />
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding ShowAllAttributes}" Value="True">
-                                                    <Setter Property="Text" Value="Yalnızca anlamlı olanlar" />
+                                                    <Setter Property="Text" Value="{loc:Str Dh_ShowMeaningful}" />
                                                     <Setter Property="Foreground" Value="{DynamicResource SsAccentText}" />
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -256,7 +257,7 @@
                                 </TextBlock>
                             </Button>
 
-                            <TextBlock Text="S.M.A.R.T. ÖZNİTELİKLERİ" Style="{StaticResource SsSectionLabel}"
+                            <TextBlock Text="{loc:Str Dh_Attributes}" Style="{StaticResource SsSectionLabel}"
                                        VerticalAlignment="Center" />
                         </DockPanel>
 
@@ -309,7 +310,7 @@
                                                 <TextBlock Text=" / " Style="{StaticResource SsCaptionText}" />
                                                 <TextBlock Text="{Binding Worst}" Style="{StaticResource SsMonoText}"
                                                            FontSize="11.5" MinWidth="30" />
-                                                <TextBlock Text="  eşik " Style="{StaticResource SsCaptionText}" />
+                                                <TextBlock Text="{loc:Str Dh_Threshold}" Style="{StaticResource SsCaptionText}" />
                                                 <TextBlock Text="{Binding Threshold}" Style="{StaticResource SsMonoText}"
                                                            FontSize="11.5" MinWidth="26" />
                                             </StackPanel>
@@ -344,7 +345,7 @@
                            HorizontalAlignment="Center" Margin="0,18,0,0" />
 
                 <TextBlock Style="{StaticResource SsSecondaryText}" TextAlignment="Center" Margin="0,8,0,0"
-                           Text="NVMe sağlık günlüğü ve ATA S.M.A.R.T. tablosu doğrudan diskten okunur. Sıcaklık, yazılan toplam veri, kalan ömür ve yedek blok durumu burada görünür." />
+                           Text="{loc:Str Dh_Empty}" />
             </StackPanel>
         </Border>
 
@@ -368,12 +369,12 @@
                                      TrackBrush="{DynamicResource SsSurfaceHover}"
                                      ProgressBrush="{DynamicResource SsAccentGradient}" />
 
-                  <TextBlock Text="Diskler okunuyor" Style="{StaticResource SsTitleText}"
+                  <TextBlock Text="{loc:Str Dh_Reading}" Style="{StaticResource SsTitleText}"
                              HorizontalAlignment="Center" Margin="0,22,0,0" />
 
                   <TextBlock Style="{StaticResource SsSecondaryText}" HorizontalAlignment="Center"
                              TextAlignment="Center" MaxWidth="300" Margin="0,6,0,0"
-                             Text="Her diske sağlık sorgusu gönderiliyor..." />
+                             Text="{loc:Str Dh_ReadingBody}" />
               </StackPanel>
           </Border>
       </Grid>

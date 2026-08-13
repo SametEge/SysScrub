@@ -7,6 +7,36 @@ Release notları bu dosyanın ilgili sürüm bölümünden otomatik üretilir.
 
 ---
 
+## [0.12.0-alpha] — 2026-08-13
+
+Dil değişimi artık gerçekten her sayfada çalışıyor.
+
+### Düzeltmeler
+
+- **Dil değişince sol menü ve sayfa başlıkları Türkçe kalıyordu.** Sebebi: anahtarı
+  veriden gelen bağlamalar (menü, liste satırları) dönüştürücü kullanıyordu ve
+  dönüştürücü dil değişimini haber alamıyor. Artık bu nesneler değişimi dinleyip
+  kendilerini yeniliyor
+- Ayarlar alt listede olduğu için `--page` anahtarı onu bulamıyordu
+
+### Eklenenler
+
+- **11 sayfanın tamamı çeviriye taşındı** — başlıklar, alt başlıklar, düğmeler,
+  bölüm etiketleri, boş durum metinleri, ipuçları ve işlem örtüleri
+- **Kural grubu adları** (`Geçici dosyalar`, `Önbellekler`, `Eski Windows kurulumu` …)
+  katalogdan çevriliyor. Kullanıcının kendi eklediği kurallar bozulmuyor: katalogda
+  karşılığı yoksa ham ad gösteriliyor
+- **Risk rozetleri** (`güvenli` / `dikkat` / `gelişmiş`) ve yönetici uyarıları çevrildi
+- Alt bardaki tema adı ve sürüm etiketi de dile uyuyor
+
+### Kapsam
+
+Sayfaların iskeleti altı dilde tam. Görünüm modellerinin ürettiği özet cümleleri
+(“25 öğe açılışta çalışıyor”, “2 disk okundu” gibi) hâlâ Türkçe — sıradaki adım.
+Kapsam yüzdesi Ayarlar'da yazıyor.
+
+---
+
 ## [0.11.0-alpha] — 2026-08-13
 
 Çok dilli altyapı ve arayüzü anlatan ilk açılış turu.

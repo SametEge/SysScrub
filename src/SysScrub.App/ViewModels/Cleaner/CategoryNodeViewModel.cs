@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using SysScrub.App.Localization;
 using SysScrub.Core.Formatting;
 using SysScrub.Core.Rules;
 
@@ -10,11 +11,30 @@ public sealed partial class GroupNodeViewModel : ObservableObject
 {
     public GroupNodeViewModel(string name, IReadOnlyList<RuleNodeViewModel> rules)
     {
-        Name = name;
+        SourceName = name;
         Rules = new ObservableCollection<RuleNodeViewModel>(rules);
+
+        LocalizationService.Instance.LanguageChanged += (_, _) => OnPropertyChanged(nameof(Name));
     }
 
-    public string Name { get; }
+    /// <summary>Kural dosyasındaki ham grup adı; çeviri anahtarı bundan üretiliyor.</summary>
+    public string SourceName { get; }
+
+    /// <summary>
+    /// Gösterilen ad. Grup adları kural dosyasında tek dilde duruyor; katalogda
+    /// karşılığı varsa çevrilmiş hâli, yoksa ham adı gösteriliyor. Böylece
+    /// kullanıcının kendi eklediği kurallar da bozulmadan görünüyor.
+    /// </summary>
+    public string Name
+    {
+        get
+        {
+            string key = $"Grp_{SourceName}";
+            string translated = LocalizationService.Instance[key];
+
+            return translated == key ? SourceName : translated;
+        }
+    }
 
     public ObservableCollection<RuleNodeViewModel> Rules { get; }
 

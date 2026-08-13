@@ -177,7 +177,7 @@ public partial class App : Application
             }
 
             bool Matches(NavigationItem candidate) =>
-                candidate.Title.Equals(pageTitle, StringComparison.OrdinalIgnoreCase);
+                candidate.Id.Equals(pageTitle, StringComparison.OrdinalIgnoreCase);
         }
 
         window.Show();

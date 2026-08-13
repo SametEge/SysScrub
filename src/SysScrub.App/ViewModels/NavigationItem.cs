@@ -1,24 +1,39 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using SysScrub.App.Localization;
+
 namespace SysScrub.App.ViewModels;
 
 /// <summary>
 /// Yan menüdeki bir modül. Faz numarası, o modülün henüz gelmediğini dürüstçe göstermek için var —
 /// kullanıcı boş bir ekranla karşılaşıp uygulamanın bozuk olduğunu düşünmesin.
 /// </summary>
-public sealed class NavigationItem
+public sealed partial class NavigationItem : ObservableObject
 {
-    /// <summary>
-    /// Kararlı kimlik. Ekranda gösterilmiyor — çeviri anahtarı bunun için ayrı
-    /// duruyor ki dil değişince kod içi eşleştirmeler bozulmasın.
-    /// </summary>
-    public required string Title { get; init; }
+    public NavigationItem() =>
+        LocalizationService.Instance.LanguageChanged += (_, _) =>
+        {
+            OnPropertyChanged(nameof(Title));
+            OnPropertyChanged(nameof(Description));
+        };
 
-    /// <summary>Menüde gösterilen çevrilmiş adın anahtarı.</summary>
+    /// <summary>
+    /// Kararlı kimlik. Ekranda gösterilmiyor; kod içi eşleştirmeler (ekran görüntüsü
+    /// anahtarı, günlük kayıtları) bunu kullanıyor ki dil değişince bozulmasınlar.
+    /// </summary>
+    public required string Id { get; init; }
+
+    /// <summary>Menüde gösterilen ad; dil değişince kendini yeniliyor.</summary>
     public required string TitleKey { get; init; }
+
+    public string Title => LocalizationService.Instance[TitleKey];
 
     /// <summary>Themes/Icons.xaml içindeki Geometry anahtarı.</summary>
     public required string IconKey { get; init; }
 
-    public required string Description { get; init; }
+    /// <summary>Modülün ne yaptığını anlatan cümlenin anahtarı.</summary>
+    public required string DescriptionKey { get; init; }
+
+    public string Description => LocalizationService.Instance[DescriptionKey];
 
     /// <summary>Bu modülün tamamlanacağı faz. 0 = hazır.</summary>
     public int Phase { get; init; }

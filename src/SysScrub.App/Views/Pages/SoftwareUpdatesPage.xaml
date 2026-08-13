@@ -2,6 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:conv="clr-namespace:SysScrub.App.Converters"
+             xmlns:loc="clr-namespace:SysScrub.App.Localization"
              xmlns:controls="clr-namespace:SysScrub.App.Controls"
              xmlns:vm="clr-namespace:SysScrub.App.ViewModels"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -25,9 +26,9 @@
 
         <!-- ==================== Başlık ==================== -->
         <StackPanel Grid.Row="0" Margin="0,0,0,16">
-            <TextBlock Text="Güncellemeler" Style="{StaticResource SsDisplayText}" />
+            <TextBlock Text="{loc:Str Nav_Updates}" Style="{StaticResource SsDisplayText}" />
             <TextBlock Style="{StaticResource SsSecondaryText}" Margin="0,6,0,0"
-                       Text="Kurulu programların yeni sürümlerini winget üzerinden bulur. Her paket kendi yayıncısının kaynağından indirilir." />
+                       Text="{loc:Str Up_Subtitle}" />
         </StackPanel>
 
         <!-- ==================== Özet şeridi ==================== -->
@@ -54,12 +55,12 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
-                    <Button Content="Denetle"
+                    <Button Content="{loc:Str Up_Check}"
                             Style="{StaticResource SsSecondaryButton}"
                             Command="{Binding CheckCommand}"
                             Margin="0,0,8,0" MinWidth="110" />
 
-                    <Button Content="Seçilenleri güncelle"
+                    <Button Content="{loc:Str Up_UpdateSelected}"
                             Style="{StaticResource SsPrimaryButton}"
                             Command="{Binding UpdateSelectedCommand}"
                             MinWidth="176" />
@@ -73,13 +74,13 @@
                 <DockPanel Margin="2,0,2,10"
                            Visibility="{Binding HasUpdates, Converter={StaticResource BoolToVisibility}}">
                     <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                        <Button Content="Tümünü seç" Style="{StaticResource SsSubtleButton}"
+                        <Button Content="{loc:Str Btn_SelectAll}" Style="{StaticResource SsSubtleButton}"
                                 Command="{Binding SelectAllCommand}" MinHeight="26" Padding="9,0" FontSize="11.5" />
-                        <Button Content="Hiçbiri" Style="{StaticResource SsSubtleButton}"
+                        <Button Content="{loc:Str Btn_SelectNone}" Style="{StaticResource SsSubtleButton}"
                                 Command="{Binding SelectNoneCommand}" MinHeight="26" Padding="9,0" FontSize="11.5" />
                     </StackPanel>
 
-                    <TextBlock Text="GÜNCELLENEBİLİR" Style="{StaticResource SsSectionLabel}"
+                    <TextBlock Text="{loc:Str Up_Updatable}" Style="{StaticResource SsSectionLabel}"
                                VerticalAlignment="Center" />
                 </DockPanel>
 
@@ -117,7 +118,7 @@
                                             <Border Style="{StaticResource SsBadge}" Margin="6,0,0,0" Padding="7,1"
                                                     Background="{DynamicResource SsGoodTint}"
                                                     Visibility="{Binding IsDone, Converter={StaticResource BoolToVisibility}}">
-                                                <TextBlock Text="güncellendi" FontSize="10.5" FontWeight="SemiBold"
+                                                <TextBlock Text="{loc:Str Up_Updated}" FontSize="10.5" FontWeight="SemiBold"
                                                            Foreground="{DynamicResource SsGood}" />
                                             </Border>
                                         </StackPanel>
@@ -148,7 +149,7 @@
                                                    VerticalAlignment="Center" />
                                     </StackPanel>
 
-                                    <Button Grid.Column="3" Content="Güncelle"
+                                    <Button Grid.Column="3" Content="{loc:Str Dr_Update}"
                                             Style="{StaticResource SsSecondaryButton}"
                                             MinWidth="96" VerticalAlignment="Center"
                                             Command="{Binding DataContext.UpdateOneCommand,
@@ -177,7 +178,7 @@
                                    HorizontalAlignment="Center" Margin="0,18,0,0" />
 
                         <TextBlock Style="{StaticResource SsSecondaryText}" TextAlignment="Center" Margin="0,8,0,0"
-                                   Text="Denetle düğmesine bastığında kurulu programlar winget kaynaklarıyla karşılaştırılır." />
+                                   Text="{loc:Str Up_Empty}" />
                     </StackPanel>
                 </Border>
             </StackPanel>
@@ -215,13 +216,13 @@
                              HorizontalAlignment="Center" TextAlignment="Center"
                              MaxWidth="320" Margin="0,6,0,0" />
 
-                  <Button Content="İptal" Style="{StaticResource SsSecondaryButton}"
+                  <Button Content="{loc:Str Btn_Cancel}" Style="{StaticResource SsSecondaryButton}"
                           Command="{Binding CancelCommand}" HorizontalAlignment="Center"
                           MinWidth="120" Margin="0,22,0,0" />
 
                   <TextBlock Style="{StaticResource SsCaptionText}" HorizontalAlignment="Center"
                              TextAlignment="Center" MaxWidth="300" Margin="0,10,0,0"
-                             Text="İptal, süren kurulumu kesmez; yalnızca sıradaki paketleri durdurur." />
+                             Text="{loc:Str Up_CancelNote}" />
               </StackPanel>
           </Border>
       </Grid>
