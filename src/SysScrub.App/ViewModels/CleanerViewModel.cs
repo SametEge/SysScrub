@@ -7,6 +7,7 @@ using SysScrub.Core.Cleaning;
 using SysScrub.Core.Formatting;
 using SysScrub.Core.Machine;
 using SysScrub.Core.Rules;
+using SysScrub.Core.Settings;
 
 namespace SysScrub.App.ViewModels;
 
@@ -34,6 +35,7 @@ public sealed partial class CleanerViewModel : ObservableObject
     private readonly QuarantineStore _quarantine;
     private readonly HistoryStore _history;
     private readonly SystemInfoService _systemInfo;
+    private readonly SettingsStore _settings;
     private readonly ILogger<CleanerViewModel> _logger;
 
     private CancellationTokenSource? _cancellation;
@@ -91,8 +93,10 @@ public sealed partial class CleanerViewModel : ObservableObject
         QuarantineStore quarantine,
         HistoryStore history,
         SystemInfoService systemInfo,
+        SettingsStore settings,
         ILogger<CleanerViewModel> logger)
     {
+        _settings = settings;
         _ruleSet = ruleSet;
         _scanner = scanner;
         _cleaner = cleaner;
@@ -228,7 +232,12 @@ public sealed partial class CleanerViewModel : ObservableObject
 
         try
         {
-            _lastClean = await _cleaner.CleanAsync(selection, new CleanOptions(), progress, _cancellation.Token);
+            _lastClean = await _cleaner.CleanAsync(
+                selection,
+                // Karantina saklama süresi Ayarlar'dan geliyor.
+                new CleanOptions { QuarantineRetention = _settings.Current.QuarantineRetention },
+                progress,
+                _cancellation.Token);
 
             Stage = CleanerStage.Finished;
             BuildResultText(_lastClean);

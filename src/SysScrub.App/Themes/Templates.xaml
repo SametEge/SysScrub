@@ -81,6 +81,10 @@
         <pages:DiskAnalysisPage />
     </DataTemplate>
 
+    <DataTemplate x:Key="SettingsPageTemplate" DataType="{x:Type vm:NavigationItem}">
+        <pages:SettingsPage />
+    </DataTemplate>
+
     <DataTemplate x:Key="PlaceholderPageTemplate" DataType="{x:Type vm:NavigationItem}">
         <pages:ModulePlaceholderPage />
     </DataTemplate>

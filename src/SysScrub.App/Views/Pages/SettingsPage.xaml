@@ -1,0 +1,325 @@
+<UserControl x:Class="SysScrub.App.Views.Pages.SettingsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:conv="clr-namespace:SysScrub.App.Converters"
+             xmlns:vm="clr-namespace:SysScrub.App.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance vm:SettingsViewModel}">
+
+    <UserControl.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVisibility" />
+        <conv:StringToVisibilityConverter x:Key="StringToVisibility" />
+
+        <!-- Tema seçim düğmesi: seçili olan vurgu renginde -->
+        <Style x:Key="ChoiceButton" TargetType="Button" BasedOn="{StaticResource SsSubtleButton}">
+            <Setter Property="MinWidth" Value="112" />
+            <Setter Property="Margin" Value="0,0,8,0" />
+        </Style>
+
+        <!-- Ayar satırı: solda ad ve açıklama, sağda denetim -->
+        <Style x:Key="SettingRow" TargetType="Border">
+            <Setter Property="Padding" Value="18,15" />
+            <Setter Property="Margin" Value="0,0,0,6" />
+            <Setter Property="CornerRadius" Value="{StaticResource SsRadiusControl}" />
+            <Setter Property="Background" Value="{DynamicResource SsSurfaceRaised}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SsBorder}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="{StaticResource SsPagePadding}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- ==================== Başlık ==================== -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+            <TextBlock Text="Ayarlar" Style="{StaticResource SsDisplayText}" />
+            <TextBlock Style="{StaticResource SsSecondaryText}" Margin="0,6,0,0"
+                       Text="Hesap yok, telemetri yok, reklam yok. Hiçbir veri bilgisayarından çıkmıyor — buradaki her ayar yalnızca bu makinede geçerli." />
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="0,0,6,0">
+            <StackPanel MaxWidth="900" HorizontalAlignment="Left">
+
+                <!-- ==================== Görünüm ==================== -->
+                <TextBlock Text="GÖRÜNÜM" Style="{StaticResource SsSectionLabel}" Margin="2,0,0,10" />
+
+                <Border Style="{StaticResource SettingRow}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,20,0">
+                            <TextBlock Text="Tema" Style="{StaticResource SsBodyText}" FontWeight="SemiBold" />
+                            <TextBlock Text="Sistem seçeneği Windows'un açık/koyu ayarını anında takip eder."
+                                       Style="{StaticResource SsCaptionText}" Margin="0,3,0,0" TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                            <Button Content="Sistem" Command="{Binding SetThemeCommand}" CommandParameter="system">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource ChoiceButton}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsSystemTheme}" Value="True">
+                                                <Setter Property="Background" Value="{DynamicResource SsAccentTint}" />
+                                                <Setter Property="Foreground" Value="{DynamicResource SsAccentText}" />
+                                                <Setter Property="FontWeight" Value="SemiBold" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+
+                            <Button Content="Açık" Command="{Binding SetThemeCommand}" CommandParameter="light">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource ChoiceButton}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsLightTheme}" Value="True">
+                                                <Setter Property="Background" Value="{DynamicResource SsAccentTint}" />
+                                                <Setter Property="Foreground" Value="{DynamicResource SsAccentText}" />
+                                                <Setter Property="FontWeight" Value="SemiBold" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+
+                            <Button Content="Koyu" Command="{Binding SetThemeCommand}" CommandParameter="dark" Margin="0">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource ChoiceButton}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsDarkTheme}" Value="True">
+                                                <Setter Property="Background" Value="{DynamicResource SsAccentTint}" />
+                                                <Setter Property="Foreground" Value="{DynamicResource SsAccentText}" />
+                                                <Setter Property="FontWeight" Value="SemiBold" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Border Style="{StaticResource SettingRow}">
+                    <StackPanel>
+                        <TextBlock Text="Dil" Style="{StaticResource SsBodyText}" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding LanguageNotice}" Style="{StaticResource SsCaptionText}"
+                                   Margin="0,3,0,0" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+
+                <!-- ==================== Güvenlik ==================== -->
+                <TextBlock Text="GÜVENLİK" Style="{StaticResource SsSectionLabel}" Margin="2,20,0,10" />
+
+                <Border Style="{StaticResource SettingRow}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,20,0">
+                            <TextBlock Text="Geri yükleme noktası oluştur"
+                                       Style="{StaticResource SsBodyText}" FontWeight="SemiBold" />
+                            <TextBlock Text="Registry temizliği ve sürücü kurulumu öncesinde sistem geri yükleme noktası alınır. Kapatman önerilmez: bu, uygulamanın kendi yedeklerinden bağımsız ikinci güvenlik ağı."
+                                       Style="{StaticResource SsCaptionText}" Margin="0,3,0,0" TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <CheckBox Grid.Column="1" VerticalAlignment="Center"
+                                  IsChecked="{Binding CreateRestorePoint}" />
+                    </Grid>
+                </Border>
+
+                <Border Style="{StaticResource SettingRow}">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,20,0">
+                                <TextBlock Text="Karantina saklama süresi"
+                                           Style="{StaticResource SsBodyText}" FontWeight="SemiBold" />
+                                <TextBlock Text="Silinen dosyalar bu süre boyunca saklanır ve Zaman tüneli'nden tek tıkla geri yüklenebilir. Süre dolunca kalıcı olarak silinirler."
+                                           Style="{StaticResource SsCaptionText}" Margin="0,3,0,0" TextWrapping="Wrap" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                <Slider Width="180" VerticalAlignment="Center"
+                                        Minimum="1" Maximum="90" TickFrequency="1"
+                                        IsSnapToTickEnabled="True"
+                                        Value="{Binding RetentionDays}" />
+
+                                <TextBlock Text="{Binding RetentionLabel}" Style="{StaticResource SsMonoText}"
+                                           VerticalAlignment="Center" Margin="14,0,0,0" MinWidth="58" />
+                            </StackPanel>
+                        </Grid>
+
+                        <Rectangle Style="{StaticResource SsSeparator}" Height="1" Margin="0,14,0,12" />
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,20,0">
+                                <TextBlock Text="{Binding QuarantineSummary}"
+                                           Style="{StaticResource SsBodyText}" />
+                                <TextBlock Text="{Binding QuarantinePath}" Style="{StaticResource SsMonoText}"
+                                           FontSize="11" Margin="0,3,0,0" TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <Button Content="Klasörü aç" Style="{StaticResource SsSubtleButton}"
+                                        Command="{Binding OpenQuarantineFolderCommand}" Margin="0,0,8,0" />
+
+                                <Button Content="Süresi dolanları sil"
+                                        Style="{StaticResource SsSecondaryButton}"
+                                        Command="{Binding PurgeQuarantineCommand}"
+                                        IsEnabled="{Binding HasQuarantine}"
+                                        ToolTip="Yalnızca saklama süresini aşmış kayıtlar silinir. Bu işlem geri alınamaz." />
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- ==================== Zamanlanmış bakım ==================== -->
+                <TextBlock Text="ZAMANLANMIŞ BAKIM" Style="{StaticResource SsSectionLabel}" Margin="2,20,0,10" />
+
+                <Border Style="{StaticResource SettingRow}">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,20,0">
+                                <TextBlock Text="Haftalık otomatik temizlik"
+                                           Style="{StaticResource SsBodyText}" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding MaintenanceDetail}"
+                                           Style="{StaticResource SsCaptionText}" Margin="0,3,0,0"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+
+                            <CheckBox Grid.Column="1" VerticalAlignment="Center"
+                                      IsChecked="{Binding ScheduledCleanup}"
+                                      IsEnabled="{Binding CanSchedule}" />
+                        </Grid>
+
+                        <TextBlock Text="{Binding ScheduleBlockedReason}"
+                                   Style="{StaticResource SsCaptionText}"
+                                   Foreground="{DynamicResource SsCaution}"
+                                   Margin="0,10,0,0" TextWrapping="Wrap"
+                                   Visibility="{Binding HasScheduleBlockedReason, Converter={StaticResource BoolToVisibility}}" />
+
+                        <Rectangle Style="{StaticResource SsSeparator}" Height="1" Margin="0,14,0,12" />
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,20,0">
+                                <TextBlock Text="Çalışma saati" Style="{StaticResource SsBodyText}" />
+                                <TextBlock Text="Görev pil gücünde çalışmaz ve kaçırılan çalışma bilgisayar açılınca telafi edilir."
+                                           Style="{StaticResource SsCaptionText}" Margin="0,3,0,0" TextWrapping="Wrap" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                <Slider Width="180" VerticalAlignment="Center"
+                                        Minimum="0" Maximum="23" TickFrequency="1"
+                                        IsSnapToTickEnabled="True"
+                                        Value="{Binding ScheduledHour}" />
+
+                                <TextBlock Text="{Binding ScheduleLabel}" Style="{StaticResource SsCaptionText}"
+                                           VerticalAlignment="Center" Margin="14,0,0,0" MinWidth="150" />
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- ==================== Veri ==================== -->
+                <TextBlock Text="VERİ VE GÜNLÜKLER" Style="{StaticResource SsSectionLabel}" Margin="2,20,0,10" />
+
+                <Border Style="{StaticResource SettingRow}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,20,0">
+                            <TextBlock Text="Veri klasörü" Style="{StaticResource SsBodyText}" FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding DataDirectory}" Style="{StaticResource SsMonoText}"
+                                       FontSize="11" Margin="0,3,0,0" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Text="{Binding StorageModeLabel}" Style="{StaticResource SsCaptionText}"
+                                       Margin="0,5,0,0" TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                            <Button Content="Günlükler" Style="{StaticResource SsSubtleButton}"
+                                    Command="{Binding OpenLogsFolderCommand}" Margin="0,0,8,0" />
+
+                            <Button Content="Veri klasörünü aç" Style="{StaticResource SsSecondaryButton}"
+                                    Command="{Binding OpenDataFolderCommand}" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- ==================== Hakkında ==================== -->
+                <TextBlock Text="HAKKINDA" Style="{StaticResource SsSectionLabel}" Margin="2,20,0,10" />
+
+                <Border Style="{StaticResource SettingRow}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,20,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="SysScrub" Style="{StaticResource SsBodyText}" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding VersionLabel, StringFormat=  sürüm {0}}"
+                                           Style="{StaticResource SsMonoText}" FontSize="11.5"
+                                           VerticalAlignment="Center" Margin="6,0,0,0" />
+                            </StackPanel>
+
+                            <TextBlock Text="{Binding SystemLabel}" Style="{StaticResource SsCaptionText}"
+                                       Margin="0,4,0,0" />
+
+                            <TextBlock Text="MIT lisansı  ·  hesap yok  ·  telemetri yok  ·  reklam yok"
+                                       Style="{StaticResource SsCaptionText}" Margin="0,4,0,0" />
+                        </StackPanel>
+
+                        <Button Grid.Column="1" Content="Yenile" Style="{StaticResource SsSubtleButton}"
+                                Command="{Binding RefreshCommand}" VerticalAlignment="Center" />
+                    </Grid>
+                </Border>
+
+                <TextBlock Text="{Binding SettingsFilePath, StringFormat=Ayar dosyası: {0}}"
+                           Style="{StaticResource SsCaptionText}" Margin="2,12,0,0"
+                           TextTrimming="CharacterEllipsis" />
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- ==================== Durum ==================== -->
+        <Border Grid.Row="2" Style="{StaticResource SsCard}" Margin="0,14,0,0"
+                Background="{DynamicResource SsSurfaceRaised}"
+                Visibility="{Binding StatusMessage, Converter={StaticResource StringToVisibility}}">
+            <TextBlock Text="{Binding StatusMessage}" Style="{StaticResource SsBodyText}" TextWrapping="Wrap" />
+        </Border>
+    </Grid>
+
+</UserControl>

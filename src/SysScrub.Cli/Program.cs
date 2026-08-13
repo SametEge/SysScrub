@@ -29,6 +29,7 @@ internal static class Program
                 "programs" => await ProgramsCommand.RunAsync(args),
                 "disk" => await DiskCommand.RunAsync(args),
                 "analyze" => await AnalyzeCommand.RunAsync(args),
+                "schedule" => ScheduleCommand.Run(args),
                 "history" => HistoryCommand.List(),
                 "undo" => HistoryCommand.Undo(args),
                 "version" => PrintVersion(),
@@ -59,6 +60,7 @@ internal static class Program
         Console.WriteLine("  programs            Kurulu programları listeler (--size ile gerçek boyut)");
         Console.WriteLine("  disk                Disk sağlığını ve S.M.A.R.T. verisini okur (yönetici gerekir)");
         Console.WriteLine("  analyze <yol>       Alanı ne yiyor: klasör, dosya ve tür dağılımı (--duplicates)");
+        Console.WriteLine("  schedule            Haftalık bakım görevi (--on [--hour 3] / --off, yönetici gerekir)");
         Console.WriteLine("  history             Geçmiş temizlikleri listeler");
         Console.WriteLine("  undo <kimlik>       Bir temizliği geri alır (karantinadan geri yükler)");
         Console.WriteLine("  version             Sürüm bilgisini yazdırır");

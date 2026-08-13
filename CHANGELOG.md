@@ -7,6 +7,53 @@ Release notları bu dosyanın ilgili sürüm bölümünden otomatik üretilir.
 
 ---
 
+## [0.10.0-alpha] — 2026-08-13
+
+Ayarlar ekranı çalışır durumda. Artık hiçbir modül yer tutucu değil.
+
+### Eklenenler
+
+- **Ayar kalıcılığı** — `%ProgramData%\SysScrub\settings.json`. İnsan tarafından
+  okunabilir JSON: teknisyen elle düzenleyebilsin ve bir kurulumdan diğerine
+  taşıyabilsin. Yazma atomik (geçici dosyaya yazılıp yerine taşınıyor)
+- **Tema tercihi** — Sistem / Açık / Koyu, kalıcı. Açılışta ilk çizimden önce
+  uygulanıyor, tema atlaması olmuyor
+- **Karantina saklama süresi** — 1–90 gün, temizlik motoruna gerçekten geçiyor.
+  Karantina boyutu ve çalıştırma sayısı ekranda; süresi dolanları silme düğmesi
+- **Geri yükleme noktası anahtarı** — registry temizliğine gerçekten bağlı,
+  varsayılan açık
+- **Haftalık otomatik bakım** — gerçek bir Görev Zamanlayıcı kaydı. Pil gücünde
+  çalışmaz, kaçırılan çalışma telafi edilir, saat seçilebilir
+- **`schedule` komutu** — `sysscrub-cli schedule --on [--hour 3]` / `--off`;
+  kurulum betikleri ve uzaktan yönetim için
+
+### Neden Run kaydı değil de Zamanlanmış Görev
+
+Temizlik yönetici hakkı istiyor. Run kaydıyla açılışta çalıştırmak her seferinde
+UAC penceresi demek olurdu. "En yüksek ayrıcalıklarla" işaretli bir görev
+kullanıcıyı rahatsız etmeden yetkiyle çalışıyor.
+
+Görev arayüzü değil komut satırı sürümünü çağırıyor: kullanıcı bilgisayarda
+olmasa da penceresiz çalışması gerekiyor.
+
+### Gösterilip de bağlanmamış tek bir kontrol yok
+
+Yapamadığımızı gizlemiyoruz: altı dil planlıyken bugün yalnızca Türkçe var ve
+ekran bunu açıkça yazıyor. Boş bir dil listesi koymak, olmayan bir özelliği
+varmış gibi göstermek olurdu.
+
+Yönetici hakkı yokken zamanlanmış görev anahtarı kapalı ve nedeni yazıyor.
+
+### Düzeltmeler
+
+- Görev Zamanlayıcı "görev bulunamadı" durumunu `FileNotFoundException` ile
+  bildiriyor, `COMException` ile değil. Yalnızca ikincisi yakalandığı için görev
+  kurulu olmayan her makinede Ayarlar ekranı çökerdi — test yakaladı
+- `--page` geliştirme anahtarı yalnızca ana listeye bakıyordu, alt listedeki
+  Ayarlar'ı bulamıyordu
+
+---
+
 ## [0.9.0-alpha] — 2026-08-13
 
 Disk analizi çalışır durumda. Planlanan tüm v1 modülleri artık ayakta.

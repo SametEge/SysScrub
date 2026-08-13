@@ -6,6 +6,7 @@ using SysScrub.Core.Cleaning;
 using SysScrub.Core.Machine;
 using SysScrub.Core.RegistryCleaning;
 using SysScrub.Core.Rules;
+using SysScrub.Core.Settings;
 
 namespace SysScrub.App.ViewModels;
 
@@ -120,6 +121,7 @@ public sealed partial class RegistryViewModel : ObservableObject
     private readonly RegistryScanEngine _scanner;
     private readonly RegistryCleanEngine _cleaner;
     private readonly HistoryStore _history;
+    private readonly SettingsStore _settings;
     private readonly ILogger<RegistryViewModel> _logger;
 
     private CancellationTokenSource? _cancellation;
@@ -167,11 +169,13 @@ public sealed partial class RegistryViewModel : ObservableObject
         RegistryCleanEngine cleaner,
         HistoryStore history,
         SystemInfoService systemInfo,
+        SettingsStore settings,
         ILogger<RegistryViewModel> logger)
     {
         _scanner = scanner;
         _cleaner = cleaner;
         _history = history;
+        _settings = settings;
         _logger = logger;
 
         IsElevated = systemInfo.Capture().IsElevated;
@@ -291,7 +295,11 @@ public sealed partial class RegistryViewModel : ObservableObject
         try
         {
             _lastClean = await _cleaner.CleanAsync(
-                selection, new RegistryCleanOptions(), progress, _cancellation.Token);
+                selection,
+                // Geri yükleme noktası tercihi Ayarlar'dan geliyor; varsayılan açık.
+                new RegistryCleanOptions { CreateRestorePoint = _settings.Current.CreateRestorePoint },
+                progress,
+                _cancellation.Token);
 
             Stage = CleanerStage.Finished;
             BuildResultText(_lastClean);

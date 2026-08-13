@@ -113,7 +113,8 @@ public sealed partial class MainWindowViewModel : ObservableObject
                 Title = "Ayarlar",
                 IconKey = "IconSettings",
                 Description = "Tema, dil, zamanlanmış görevler, karantina saklama süresi ve gelişmiş seçenekler.",
-                Phase = 9,
+                Phase = 0,
+                TemplateKey = "SettingsPageTemplate",
                 IsFooterItem = true
             }
         ];

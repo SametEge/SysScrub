@@ -16,6 +16,7 @@ using SysScrub.Core.Programs;
 using SysScrub.Core.RegistryCleaning;
 using SysScrub.Core.Rules;
 using SysScrub.Core.Safety;
+using SysScrub.Core.Settings;
 using SysScrub.Core.Software;
 using SysScrub.Core.Startup;
 
@@ -55,6 +56,10 @@ public partial class App : Application
                 services.AddSingleton<SystemInfoService>();
                 services.AddSingleton<ThemeService>();
                 services.AddSingleton<ElevationService>();
+
+                // Ayarlar
+                services.AddSingleton<SettingsStore>();
+                services.AddSingleton<ScheduledMaintenance>();
 
                 // Temizlik zinciri: kural kümesi bir kez yüklenir, motorlar onu paylaşır.
                 services.AddSingleton<PathResolver>();
@@ -107,6 +112,7 @@ public partial class App : Application
                 services.AddSingleton<ProgramsViewModel>();
                 services.AddSingleton<DiskHealthViewModel>();
                 services.AddSingleton<DiskAnalysisViewModel>();
+                services.AddSingleton<SettingsViewModel>();
                 services.AddSingleton<TimelineViewModel>();
                 services.AddTransient<DashboardViewModel>();
 
@@ -117,7 +123,11 @@ public partial class App : Application
         DispatcherUnhandledException += OnDispatcherUnhandledException;
         AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
 
-        Resolve<ThemeService>().Initialize();
+        // Kaydedilmiş tema tercihini uygula, sonra başlat: ilk çizimden önce
+        // doğru palet yerinde olsun, açılışta tema atlaması olmasın.
+        ThemeService theme = Resolve<ThemeService>();
+        theme.Mode = SettingsViewModel.ToThemeMode(Resolve<SettingsStore>().Current.Theme);
+        theme.Initialize();
 
         Log.Information("SysScrub başlatıldı, sürüm {Version}", GetType().Assembly.GetName().Version);
 
@@ -126,9 +136,19 @@ public partial class App : Application
         if (WindowCapture.PageFromArgs(e.Args) is { } pageTitle)
         {
             MainWindowViewModel viewModel = Resolve<MainWindowViewModel>();
-            viewModel.SelectedItem = viewModel.Items
-                .FirstOrDefault(i => i.Title.Equals(pageTitle, StringComparison.OrdinalIgnoreCase))
-                ?? viewModel.SelectedItem;
+
+            // Ayarlar alt listede duruyor; yalnızca ana listeye bakmak onu bulamıyordu.
+            if (viewModel.Items.FirstOrDefault(Matches) is { } item)
+            {
+                viewModel.SelectedItem = item;
+            }
+            else if (viewModel.FooterItems.FirstOrDefault(Matches) is { } footer)
+            {
+                viewModel.SelectedFooterItem = footer;
+            }
+
+            bool Matches(NavigationItem candidate) =>
+                candidate.Title.Equals(pageTitle, StringComparison.OrdinalIgnoreCase);
         }
 
         window.Show();
