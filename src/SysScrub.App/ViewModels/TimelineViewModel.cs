@@ -182,6 +182,7 @@ public sealed partial class TimelineViewModel : ObservableObject
         HistoryItemOutcome.RecycleBin => "geri dönüşüm kutusunda",
         HistoryItemOutcome.ScheduledForReboot => "yeniden başlatmada silinecek",
         HistoryItemOutcome.SkippedByGuard => "güvenlik denetimi atladı",
+        HistoryItemOutcome.Changed => "değiştirildi",
         _ => "silinemedi"
     };
 }

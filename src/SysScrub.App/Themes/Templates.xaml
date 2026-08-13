@@ -65,6 +65,10 @@
         <pages:SoftwareUpdatesPage />
     </DataTemplate>
 
+    <DataTemplate x:Key="StartupPageTemplate" DataType="{x:Type vm:NavigationItem}">
+        <pages:StartupPage />
+    </DataTemplate>
+
     <DataTemplate x:Key="PlaceholderPageTemplate" DataType="{x:Type vm:NavigationItem}">
         <pages:ModulePlaceholderPage />
     </DataTemplate>

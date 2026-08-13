@@ -69,7 +69,8 @@ public sealed partial class MainWindowViewModel : ObservableObject
                 Title = "Başlangıç",
                 IconKey = "IconStartup",
                 Description = "Açılışta çalışan her şey tek listede. Etkisi tahmin değil, olay günlüğünden okunan gerçek gecikme.",
-                Phase = 5
+                Phase = 0,
+                TemplateKey = "StartupPageTemplate"
             },
             new NavigationItem
             {

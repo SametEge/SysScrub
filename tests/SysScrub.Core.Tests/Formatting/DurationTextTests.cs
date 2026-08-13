@@ -1,3 +1,4 @@
+using System.Globalization;
 using SysScrub.Core.Formatting;
 using Xunit;
 
@@ -5,6 +6,30 @@ namespace SysScrub.Core.Tests.Formatting;
 
 public sealed class DurationTextTests
 {
+    // ------------------------------------------------------------------ kısa gecikmeler
+
+    [Fact]
+    public void SaniyeAltiMilisaniyeOlarakYazilir() =>
+        Assert.Equal("420 ms", DurationText.FromMilliseconds(420));
+
+    [Fact]
+    public void SaniyeGecinceOndalikliSaniyeYazilir() =>
+        Assert.Equal(
+            $"{1.3.ToString("N1", CultureInfo.CurrentCulture)} sn",
+            DurationText.FromMilliseconds(1300));
+
+    /// <summary>On saniyeden sonra ondalık bilgi taşımıyor, gürültü yapıyor.</summary>
+    [Fact]
+    public void OnSaniyeUstundeOndalikAtilir() =>
+        Assert.Equal("12 sn", DurationText.FromMilliseconds(12400));
+
+    [Fact]
+    public void OlcumYoksaBosMetinDoner()
+    {
+        Assert.Equal(string.Empty, DurationText.FromMilliseconds(0));
+        Assert.Equal(string.Empty, DurationText.FromMilliseconds(-5));
+    }
+
     [Fact]
     public void GunVarsaGunVeSaatGosterilir() =>
         Assert.Equal("3 gün 4 saat", DurationText.Humanize(new TimeSpan(3, 4, 30, 0)));

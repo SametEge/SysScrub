@@ -78,7 +78,13 @@ public enum HistoryItemOutcome
     RecycleBin,
     ScheduledForReboot,
     SkippedByGuard,
-    Failed
+    Failed,
+
+    // Yeni değerler sona eklenir: geçmiş dosyalarında sayı olarak saklanıyorlar,
+    // araya girmek eski kayıtların anlamını değiştirir.
+
+    /// <summary>Silinmedi, durumu değiştirildi (başlangıç öğesi açma/kapama gibi).</summary>
+    Changed
 }
 
 /// <summary>

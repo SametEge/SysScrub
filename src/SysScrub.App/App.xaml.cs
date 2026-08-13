@@ -14,6 +14,7 @@ using SysScrub.Core.RegistryCleaning;
 using SysScrub.Core.Rules;
 using SysScrub.Core.Safety;
 using SysScrub.Core.Software;
+using SysScrub.Core.Startup;
 
 namespace SysScrub.App;
 
@@ -69,6 +70,12 @@ public partial class App : Application
                 services.AddSingleton<DriverBackup>();
                 services.AddSingleton<WindowsUpdateDriverSource>();
 
+                // Başlangıç zinciri
+                services.AddSingleton<StartupApprovedStore>();
+                services.AddSingleton<BootPerformance>();
+                services.AddSingleton<StartupInventory>();
+                services.AddSingleton<StartupManager>();
+
                 // Registry zinciri
                 services.AddSingleton<RegistryGuard>();
                 services.AddSingleton<SystemRestorePoint>();
@@ -80,6 +87,7 @@ public partial class App : Application
                 services.AddSingleton<RegistryViewModel>();
                 services.AddSingleton<DriversViewModel>();
                 services.AddSingleton<SoftwareUpdatesViewModel>();
+                services.AddSingleton<StartupViewModel>();
                 services.AddSingleton<TimelineViewModel>();
                 services.AddTransient<DashboardViewModel>();
 
@@ -115,7 +123,8 @@ public partial class App : Application
                 e.Args.Contains("--busyshot"),
                 e.Args.Contains("--regscan"),
                 e.Args.Contains("--devscan"),
-                e.Args.Contains("--wingetscan"));
+                e.Args.Contains("--wingetscan"),
+                e.Args.Contains("--startupscan"));
         }
     }
 
@@ -130,12 +139,23 @@ public partial class App : Application
         bool captureWhileBusy = false,
         bool registryScan = false,
         bool deviceScan = false,
-        bool wingetScan = false)
+        bool wingetScan = false,
+        bool startupScan = false)
     {
         window.ContentRendered += (_, _) => Dispatcher.BeginInvoke(
             DispatcherPriority.ApplicationIdle,
             async () =>
             {
+                if (startupScan)
+                {
+                    await Resolve<StartupViewModel>().LoadCommand.ExecuteAsync(null);
+
+                    await Task.Delay(250);
+                    System.Windows.Input.CommandManager.InvalidateRequerySuggested();
+                    await Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
+                }
+
+
                 if (wingetScan)
                 {
                     await Resolve<SoftwareUpdatesViewModel>().CheckCommand.ExecuteAsync(null);

@@ -25,6 +25,7 @@ internal static class Program
                 "clean" => await CleanCommand.RunAsync(args),
                 "registry" => await RegistryCommand.RunAsync(args),
                 "drivers" => await DriversCommand.RunAsync(args),
+                "startup" => await StartupCommand.RunAsync(args),
                 "history" => HistoryCommand.List(),
                 "undo" => HistoryCommand.Undo(args),
                 "version" => PrintVersion(),
@@ -51,12 +52,13 @@ internal static class Program
         Console.WriteLine("  clean               Temizler. --apply verilmezse yalnızca ne olacağını gösterir");
         Console.WriteLine("  registry            Ölü kayıt defteri girdilerini tarar (--apply ile temizler)");
         Console.WriteLine("  drivers             Donanım envanterini ve eski sürücüleri listeler");
+        Console.WriteLine("  startup             Açılışta çalışan öğeleri listeler (--disable/--enable <ad>)");
         Console.WriteLine("  history             Geçmiş temizlikleri listeler");
         Console.WriteLine("  undo <kimlik>       Bir temizliği geri alır (karantinadan geri yükler)");
         Console.WriteLine("  version             Sürüm bilgisini yazdırır");
         Console.WriteLine();
         Console.WriteLine("Seçenekler:");
-        Console.WriteLine("  --all               Varsayılan kapalı kuralları da dahil et");
+        Console.WriteLine("  --all               Varsayılan kapalı kuralları / kapalı başlangıç öğelerini de dahil et");
         Console.WriteLine("  --apply             clean komutunda gerçekten sil (varsayılan: kuru çalıştırma)");
         Console.WriteLine("  --yes               Onay sorma");
         Console.WriteLine("  --verbose           Ayrıntı göster (kural kökleri / en büyük dosyalar)");

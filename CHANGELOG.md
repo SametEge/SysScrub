@@ -7,6 +7,41 @@ Release notları bu dosyanın ilgili sürüm bölümünden otomatik üretilir.
 
 ---
 
+## [0.6.0-alpha] — 2026-08-13
+
+Başlangıç yöneticisi çalışır durumda.
+
+### Eklenenler
+
+- **Başlangıç envanteri** — açılışta çalışan her şey tek listede: HKCU/HKLM Run ve
+  RunOnce (32 ve 64 bit görünüm), kullanıcı ve ortak Başlangıç klasörleri, oturum
+  açma tetikleyicili zamanlanmış görevler, otomatik başlayan Microsoft dışı servisler.
+  Görev Yöneticisi son iki grubu göstermiyor; oysa yavaş açılışın sebebi çoğu zaman onlar
+- **Gerçek açılış gecikmesi** — etki sütunu tahmin değil. Windows her açılışta hangi
+  uygulamanın ne kadar geciktirdiğini Tanılama-Performans günlüğüne yazıyor (olay 101);
+  son 200 açılışın ortalaması okunuyor. Günlük okunamazsa sütun boş kalır, uydurma
+  bir değer üretilmez
+- **Hedefi kaybolmuş öğe tespiti** — çalıştırdığı dosya artık olmayan kayıtlar
+  işaretleniyor; Windows her açılışta boşuna arıyor demek
+- **`startup` komutu** — `sysscrub-cli startup` listeler, `--all` kapalıları da
+  gösterir, `--disable`/`--enable <ad>` değiştirir
+- **Dolaylı dize çözümleyici** — servis adları registry'de `@dosya.dll,-245` biçiminde
+  kaynak göstergesi olarak duruyor; çözülmezse kullanıcı servis adı yerine onu görür
+
+### Devre dışı bırakma kaydı silmez
+
+Görev Yöneticisi bir öğeyi kapatırken Run kaydını silmez; ayrı bir `StartupApproved`
+anahtarına 12 baytlık bir durum yazar. Biz de aynısını yapıyoruz. İki faydası var:
+kayıt yerinde kaldığı için işlem her zaman geri alınabilir, ve Görev Yöneticisi ile
+senkron kalıyoruz — iki araç birbirini ezmiyor.
+
+Servisler yalnızca gösteriliyor. Bir servisin başlangıç türünü değiştirmek bambaşka
+bir risk sınıfı ve sistem kararlılığını doğrudan etkileyebiliyor.
+
+Her açma/kapama zaman tüneline yazılıyor.
+
+---
+
 ## [0.5.0-alpha] — 2026-08-12
 
 Yazılım güncelleyici çalışır durumda ve sürücü listesi yeniden düzenlendi.

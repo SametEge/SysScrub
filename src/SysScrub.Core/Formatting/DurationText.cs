@@ -1,8 +1,34 @@
+using System.Globalization;
+
 namespace SysScrub.Core.Formatting;
 
 /// <summary>Süreleri okunabilir Türkçe metne çevirir. Arayüz ve komut satırı aynı biçimi kullanır.</summary>
 public static class DurationText
 {
+    /// <summary>
+    /// Kısa gecikme gösterimi: "420 ms", "1,3 sn", "12 sn".
+    /// Açılış gecikmeleri milisaniye geliyor ve saniyeye yuvarlamak farkı siliyor.
+    /// </summary>
+    public static string FromMilliseconds(int milliseconds)
+    {
+        if (milliseconds <= 0)
+        {
+            return string.Empty;
+        }
+
+        if (milliseconds < 1000)
+        {
+            return $"{milliseconds} ms";
+        }
+
+        double seconds = milliseconds / 1000d;
+
+        // 10 saniyeden sonra ondalık bilgi taşımıyor.
+        return seconds >= 10
+            ? $"{Math.Round(seconds).ToString("N0", CultureInfo.CurrentCulture)} sn"
+            : $"{seconds.ToString("N1", CultureInfo.CurrentCulture)} sn";
+    }
+
     /// <summary>"3 gün 4 saat", "2 saat 19 dakika", "7 dakika", "42 saniye".</summary>
     public static string Humanize(TimeSpan duration)
     {
