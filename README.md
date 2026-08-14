@@ -2,192 +2,191 @@
 
 <img src="docs/assets/banner.png" alt="SysScrub" width="100%">
 
-**Windows bakım, sürücü güncelleme ve disk sağlığı — tek uygulamada.**
+**Windows maintenance, driver updates and disk health — in one app.**
 
-[![Sürüm](https://img.shields.io/github/v/release/SametEge/SysScrub?include_prereleases&label=s%C3%BCr%C3%BCm&color=FF6B2C)](https://github.com/SametEge/SysScrub/releases/latest)
-[![Lisans](https://img.shields.io/badge/lisans-MIT-FF6B2C)](LICENSE)
-[![Derleme](https://github.com/SametEge/SysScrub/actions/workflows/ci.yml/badge.svg)](https://github.com/SametEge/SysScrub/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/SametEge/SysScrub?include_prereleases&color=FF6B2C)](https://github.com/SametEge/SysScrub/releases/latest)
+[![License](https://img.shields.io/badge/license-MIT-FF6B2C)](LICENSE)
+[![Build](https://github.com/SametEge/SysScrub/actions/workflows/ci.yml/badge.svg)](https://github.com/SametEge/SysScrub/actions/workflows/ci.yml)
 
-### [⬇ Son sürümü indir](https://github.com/SametEge/SysScrub/releases/latest)
+### [⬇ Download the latest release](https://github.com/SametEge/SysScrub/releases/latest)
 
-[English](README.en.md)
+[Türkçe](README.tr.md)
 
 </div>
 
 ---
 
-<img src="docs/assets/screens/dashboard.png" alt="SysScrub paneli" width="100%">
+<img src="docs/assets/screens/dashboard.png" alt="SysScrub dashboard" width="100%">
 
-## Ne işe yarar
+## What it does
 
-Üç ayrı programın işini, gerçekten tasarlanmış tek bir arayüzde topluyor.
+Three separate programs' worth of work, in one interface that was actually designed.
 
 | | |
 |---|---|
-| 🧹 **Temizleyici** | Windows, tarayıcı ve uygulama artıklarını kural tabanlı tarar. Sildiği her şey karantinaya gider, tek tıkla geri gelir. |
-| 🗂 **Registry** | Hedefi kaybolmuş kayıtlar için on iki tarayıcı. Hiçbir şey silinmeden önce `.reg` yedeği ve geri yükleme noktası alınır. |
-| ⚙️ **Sürücüler** | Donanımını tanır, eski sürücüleri bulur. Güncellemeler Windows Update'ten gelir — WHQL imzalı ve Microsoft tarafından o donanım için onaylanmış. |
-| 📥 **Güncellemeler** | winget üzerinden kurulu programların yeni sürümleri. Her paket kendi üreticisinin kaynağından iner. |
-| 🚀 **Başlangıç** | Açılışta çalışan her şey tek listede. Kapatma Windows'un kendi mekanizmasını kullanır, Görev Yöneticisi ile senkron kalır. |
-| 📦 **Programlar** | Toplu kaldırma. Sonuç, kaydın gerçekten kaybolup kaybolmadığına bakılarak doğrulanır — çıkış kodu güvenilir değil. |
-| 💽 **Disk sağlığı** | S.M.A.R.T. ve NVMe sağlık verisini okur: sıcaklık, açık kalma süresi, yazılan toplam veri, kalan ömür. Ham değerin yanında ne anlama geldiğini de yazar. |
-| 📊 **Disk analizi** | Alanı ne yiyor? Treemap görünümü, en büyük dosyalar ve üç aşamalı yinelenen dosya bulucu. |
-| 🕓 **Zaman tüneli** | Uygulamanın sistemde yaptığı her değişiklik tek bir kronolojik kayıtta. İstediğin noktaya geri dön. |
+| 🧹 **Cleaner** | Rule-driven scan of Windows, browser and application leftovers. Everything deleted goes to quarantine and comes back with one click. |
+| 🗂 **Registry** | Twelve scanners for entries whose target has disappeared. A `.reg` backup and a restore point are taken before anything is removed. |
+| ⚙️ **Drivers** | Identifies your hardware and finds outdated drivers. Updates come from Windows Update — WHQL-signed and cleared by Microsoft for your hardware. |
+| 📥 **Updates** | Newer versions of installed programs through winget. Every package is downloaded from its own publisher's source. |
+| 🚀 **Startup** | Everything that runs at boot, in one list. Disabling uses Windows' own mechanism, so it stays in sync with Task Manager. |
+| 📦 **Programs** | Batch uninstall. The result is verified by checking whether the entry actually disappeared — the exit code isn't reliable. |
+| 💽 **Disk health** | Reads S.M.A.R.T. and NVMe health data: temperature, power-on hours, total bytes written, remaining life. Next to the raw value it tells you what it means. |
+| 📊 **Disk analysis** | What's eating your space? Treemap view, largest files, and a three-stage duplicate finder. |
+| 🕓 **Timeline** | Every change the app made to your system, in one chronological record. Undo from any point. |
 
-## Neden bir tane daha temizleyici
+## Why another cleaner
 
-Mevcutların hepsinde rahatsız edici bir şey var: abartılı kazanç sayıları, geri alınamayan
-silmeler, arka planda şişen servisler, ücretli sürüm duvarları, telemetri.
+Every existing one does something irritating: inflated "space saved" numbers, deletions you
+can't undo, bloated background services, paywalls, telemetry.
 
-SysScrub'ın duruşu:
+Where SysScrub stands:
 
-- **Tarama hiçbir şey silmez.** Her modül önce okur, ne bulduğunu ve neden bulduğunu gösterir,
-  bekler. Neyin gideceğine sen karar verirsin.
-- **Hiçbir şey geri alınamaz değil.** Temizlik, registry, sürücü, başlangıç — her değişiklik
-  tek bir zaman tünelinde tutulur, herhangi bir noktaya dönülür.
-- **Sayılar gerçek.** Kazanılan alan tahmin edilmez, işlem öncesi ve sonrası diskten ölçülür.
-  Uydurma "sistem %40 hızlandı" yok.
-- **Bilmediğinde bilmediğini söyler.** S.M.A.R.T. verisi okunamayan bir disk listeden
-  kaybolmaz ve yeşil rozet almaz — neden okunamadığını yazar.
-- **Hesap yok, reklam yok, telemetri yok, ücretli sürüm yok.**
+- **Scanning never deletes.** Every module reads first, shows you what it found and why, and
+  waits. You decide what goes.
+- **Nothing is irreversible.** Cleaning, registry, drivers, startup — every change lives in a
+  single timeline you can roll back from.
+- **The numbers are real.** Space reclaimed is measured on disk before and after, not
+  estimated. No invented "your system is 40% faster".
+- **When it doesn't know, it says so.** A drive whose S.M.A.R.T. can't be read doesn't vanish
+  from the list and doesn't get a green badge — it says why it couldn't be read.
+- **No account, no ads, no telemetry, no paid tier.**
 
 ---
 
-## Modüller
+## The modules
 
-### Temizleyici
+### Cleaner
 
-<img src="docs/assets/screens/cleaner.png" alt="Temizleyici" width="100%">
+<img src="docs/assets/screens/cleaner.png" alt="Cleaner" width="100%">
 
-Windows, tarayıcılar, uygulamalar, oyun platformları, geliştirici araçları ve gizlilik
-izlerini kapsayan 48 kural. Her biri neyi sildiğini ve sonucunun ne olacağını yazar —
-rahatsız edici kısımlar dâhil ("Windows.old silinince önceki Windows sürümüne geri
-dönülemez").
+48 rules across Windows, browsers, applications, gaming platforms, developer tools and
+privacy traces. Each one states what it removes and what the consequence is — including the
+uncomfortable parts ("once Windows.old is removed you can no longer roll back to the previous
+Windows version").
 
-Kurallar **koda gömülü değil, veri**: [`data/rules/*.json`](data/rules) içinde yaşıyorlar.
-Yeni bir temizlik hedefi eklemek JSON eklemek demek, programı değiştirmek değil.
+Rules are **data, not code**: they live in [`data/rules/*.json`](data/rules). Adding a new
+cleaning target means adding a JSON entry, not changing the program.
 
-Tek bir dosya silinmeden önce bir güvenlik denetiminden geçiyor: korumalı Windows klasörleri,
-belgelerin, bağlantı noktaları (junction ve symlink asla takip edilmez) ve bulut yer tutucusu
-dosyalar reddediliyor. Düz bir temp klasörü dışındaki her şey önce karantinaya gidiyor.
+Before a single file is deleted it passes a safety check that refuses protected Windows
+directories, your documents, reparse points (junctions and symlinks are never followed), and
+cloud placeholder files. Anything outside a plain temp folder goes to quarantine first.
 
 ### Registry
 
-<img src="docs/assets/screens/registry.png" alt="Registry temizleyici" width="100%">
+<img src="docs/assets/screens/registry.png" alt="Registry cleaner" width="100%">
 
-On iki tarayıcı: paylaşılan DLL sayaçları, dosya uzantıları, ProgID ve CLSID kayıtları, COM
-bileşenleri, tip kütüphaneleri, kabuk uzantıları, kaldırma girdileri, uygulama yolları,
-başlangıç kayıtları, MUICache, yükleyici klasörleri ve ses olayları.
+Twelve scanners: shared DLL counters, file associations, ProgID and CLSID entries, COM
+servers, type libraries, shell extensions, uninstall entries, application paths, startup
+entries, MUICache, installer folders and sound events.
 
-Her bulgu tam anahtar yolunu **ve neden ölü sayıldığını** gösteriyor. Silmeden önce etkilenen
-her anahtarın `.reg` dışa aktarımı yazılıyor, üstüne bir sistem geri yükleme noktası
-alınıyor. Yedek başarısız olursa hiçbir şey silinmiyor.
+Every finding shows the full key path **and why it's considered dead**. A `.reg` export of
+every affected key is written before deletion, plus a system restore point. If the backup
+fails, nothing is deleted.
 
-Windows'un çalışması için gereken anahtarlar — servisler, DriverStore, WinSxS, bileşen
-bakımı, .NET, Defender — sabit kodlu bir dokunulmaz listede.
+Keys Windows needs to run — services, DriverStore, WinSxS, component servicing, .NET,
+Defender — are on a hard-coded never-touch list.
 
-### Sürücüler
+### Drivers
 
-<img src="docs/assets/screens/drivers.png" alt="Sürücü güncelleme" width="100%">
+<img src="docs/assets/screens/drivers.png" alt="Driver updates" width="100%">
 
-SetupAPI ile donanım envanteri, ardından kaynak olarak Windows Update. Liste iki dürüst
-gruba ayrılıyor: Windows Update'in gerçekten yenisini sunduğu sürücüler ve iki yıldan eski
-olup hiçbir kaynağın yenisini sunmadığı sürücüler. İkinci gruba "güncel değil" değil, "eski
-olabilir" deniyor — çünkü bilmiyoruz.
+Hardware inventory via SetupAPI, then Windows Update as the source. The list separates two
+honest categories: drivers Windows Update actually offers a newer version for, and drivers
+older than two years that no source offers an update for. The second group is labelled
+"possibly outdated" — not "outdated", because we don't know.
 
-Hiçbir şey kurulmadan önce tüm üçüncü parti sürücüler tek tıkla bir yedek klasörüne
-aktarılabiliyor.
+All third-party drivers can be exported to a backup folder with one click before anything is
+installed.
 
-### Disk sağlığı
+### Disk health
 
-<img src="docs/assets/screens/disk-health.png" alt="Disk sağlığı" width="100%">
+<img src="docs/assets/screens/disk-health.png" alt="Disk health" width="100%">
 
-NVMe sağlık günlüğü (sayfa 0x02) ve ATA S.M.A.R.T. doğrudan diskten okunuyor. Sıcaklık, açık
-kalma süresi, açılma sayısı, yazılan toplam veri, kalan ömür, yedek bloklar, güvensiz
-kapanmalar, düzeltilemeyen hatalar — her birinin yanında sade bir okuma ile.
+NVMe health log (page 0x02) and ATA S.M.A.R.T. read directly from the drive. Temperature,
+power-on hours, power cycles, total bytes written, remaining life, spare blocks, unsafe
+shutdowns, uncorrectable errors — with a plain-language reading next to each.
 
-Üreticiye özel öznitelik anlamları [`data/smart-attributes.json`](data/smart-attributes.json)
-içinde; yeni bir üreticiyi desteklemek kod değişikliği değil, tablo satırı eklemek.
+Vendor-specific attribute meanings live in [`data/smart-attributes.json`](data/smart-attributes.json),
+so supporting a new manufacturer is a table row, not a code change.
 
-### Disk analizi
+### Disk analysis
 
-<img src="docs/assets/screens/disk-analysis.png" alt="Disk analizi" width="100%">
+<img src="docs/assets/screens/disk-analysis.png" alt="Disk analysis" width="100%">
 
-Tüm diskin squarified treemap görünümü, en büyük dosyalar ve dosya türü dağılımı. Salt
-okunur: hiçbir dosya silinmiyor, hatta açılmıyor. Bulut dosyaları indirilmiyor — diskte yer
-kaplamadıkları için sayılmıyorlar da. Okunamayan klasörler sessizce atlanmıyor, sayılıp
-bildiriliyor.
+Squarified treemap of the whole drive, largest files, and file-type breakdown. Read-only: no
+file is deleted or even opened. Cloud files aren't downloaded — since they take no space on
+disk, they aren't counted either. Folders that couldn't be read are counted and reported
+rather than silently skipped.
 
-Yinelenen dosya bulucu üç aşamada karşılaştırıyor — boyut, sonra ilk ve son 4 KB, sonra tam
-SHA-256 — böylece yalnızca zorunlu olduğu kadarını hash'liyor.
+The duplicate finder compares in three stages — size, then the first and last 4 KB, then a
+full SHA-256 — so it only hashes what it has to.
 
-### Başlangıç ve Programlar
+### Startup and Programs
 
-<img src="docs/assets/screens/startup.png" alt="Başlangıç yöneticisi" width="100%">
+<img src="docs/assets/screens/startup.png" alt="Startup manager" width="100%">
 
-Run ve RunOnce anahtarları (her iki registry görünümü), başlangıç klasörleri, oturum açma
-tetikleyicili zamanlanmış görevler ve Microsoft dışı otomatik başlayan servisler. Kapatma,
-Görev Yöneticisi'nin kullandığı `StartupApproved` deposuna yazıyor; ikisi asla çelişmiyor.
-Açılış gecikmesi tahmin değil, Windows'un Diagnostics-Performance olay günlüğünden okunan
-gerçek ölçüm.
+Run and RunOnce keys (both registry views), startup folders, logon-triggered scheduled tasks
+and non-Microsoft auto-start services. Disabling writes to the same `StartupApproved` store
+Task Manager uses, so the two never disagree. Boot delay isn't guessed — it's the measured
+value from Windows' Diagnostics-Performance event log.
 
-Kaldırıcı, her programın kendi kaldırma programını çalıştırıyor ve sonucu registry kaydının
-gerçekten kaybolup kaybolmadığına bakarak doğruluyor.
+The uninstaller runs each program's own uninstaller and then verifies the result by checking
+whether the registry entry actually disappeared.
 
-### Zaman tüneli
+### Timeline
 
-<img src="docs/assets/screens/timeline.png" alt="Zaman tüneli" width="100%">
+<img src="docs/assets/screens/timeline.png" alt="Timeline" width="100%">
 
-Her çalıştırma kaydediliyor: ne silindi, kaç bayt, hangi kural, geri alınabilir mi.
-Karantinaya alınan temizlikler tek tıkla geri geliyor.
+Every run is recorded: what was removed, how many bytes, which rule, and whether it can be
+undone. Quarantined cleanups restore with one click.
 
 ---
 
-## Kurulum
+## Install
 
-**Kurulumlu:** [Releases](https://github.com/SametEge/SysScrub/releases/latest) sayfasından
-`SysScrub-Setup-*.exe` dosyasını indirip çalıştır.
+**Installer:** grab `SysScrub-Setup-*.exe` from
+[Releases](https://github.com/SametEge/SysScrub/releases/latest) and run it.
 
-**Taşınabilir:** `SysScrub-*-portable-x64.zip` dosyasını çıkart ve çalıştır — kurulum
-gerekmez. Klasörün yanına boş bir `portable.flag` dosyası koyarsan uygulama tüm ayar ve
-günlüklerini kendi klasöründe tutar, sisteme hiçbir şey yazmaz (USB'den çalıştırmak için).
+**Portable:** extract `SysScrub-*-portable-x64.zip` and run it — no installation needed.
+Drop an empty `portable.flag` file next to the executable and the app keeps all settings and
+logs in its own folder, writing nothing to the system (useful from a USB stick).
 
-> **SmartScreen uyarısı:** Uygulama kod imzalama sertifikasıyla imzalı olmadığı için Windows
-> "bilinmeyen yayıncı" uyarısı verir. *Daha fazla bilgi → Yine de çalıştır* ile geçebilirsin.
-> Kaynak kodun tamamı burada; istersen kendin derleyebilirsin.
+> **SmartScreen warning:** the app isn't signed with a code-signing certificate, so Windows
+> shows an "unknown publisher" warning. Use *More info → Run anyway*. All source is here if
+> you'd rather build it yourself.
 
-**Gereksinimler:** Windows 10 1809 veya üstü (64-bit). Kurulum paketi eksikse .NET 8 Masaüstü
-Çalışma Zamanı'nı indirmeyi önerir; taşınabilir self-contained sürüm hiçbir ön koşul istemez.
+**Requirements:** Windows 10 1809 or newer (64-bit). The installer offers to fetch the .NET 8
+Desktop Runtime if it's missing; the self-contained portable build needs no prerequisites.
 
-Uygulama yönetici hakkıyla çalışır — Windows Update önbelleği, servis durdurma ve S.M.A.R.T.
-okuma bunsuz mümkün değil.
+The app runs elevated — the Windows Update cache, stopping services and reading S.M.A.R.T.
+aren't possible otherwise.
 
-**Güncellemeler** günde bir kez bu deponun yayınlarına bakılarak denetlenir ve Ayarlar
-ekranından kurulur. İnen paket, yayınla birlikte gelen `SHA256SUMS.txt` ile doğrulanır; özet
-tutmazsa dosya silinir ve hiçbir şey çalıştırılmaz. Denetim yalnızca bir sürüm numarası okur,
-hiçbir şey göndermez — kapatılabilir.
+**Updates** are checked once a day against this repository's releases and can be installed
+from the Settings screen. The downloaded package is verified against the `SHA256SUMS.txt`
+published with the release; if the hash doesn't match, the file is deleted and nothing runs.
+The check reads a version number and sends nothing — it can be turned off.
 
-## Diller
+## Languages
 
-Arayüz **Türkçe, İngilizce, Almanca, Japonca, Korece ve Basitleştirilmiş Çince** olarak
-geliyor; 48 temizleme kuralının açıklamaları dâhil. İlk açılışta dil Windows ayarından
-seçilir; istediğin zaman değiştirilir ve yeniden başlatmadan anında uygulanır.
+The interface ships in **Turkish, English, German, Japanese, Korean and Simplified Chinese**,
+including all 48 cleaning rule descriptions. On first run the language is picked from your
+Windows setting; it can be changed at any time and applies immediately, without a restart.
 
-Kataloglar [`data/i18n/`](data/i18n) altında düz JSON — bir dile katkı vermek tek dosya
-göndermek demek. Almanca, Japonca, Korece ve Çince çeviriler anadil incelemesi bekliyor.
+Catalogs are plain JSON in [`data/i18n/`](data/i18n) — contributing a language means sending
+one file. The German, Japanese, Korean and Chinese translations are awaiting native review.
 
-## Durum
+## Status
 
-Aktif geliştirme aşamasında, şu an `0.14.0-alpha`. Dokuz modül çalışıyor ve gerçek sistem
-verisi okuyor. Eksik kalanlar [docs/ROADMAP.md](docs/ROADMAP.md) içinde dürüstçe listeli:
+Under active development, currently at `0.14.0-alpha`. Nine modules are functional and read
+real system data. What's still missing is listed honestly in [docs/ROADMAP.md](docs/ROADMAP.md):
 
-| Yapıldı | Henüz değil |
+| Done | Not yet |
 |---|---|
-| Temizleyici · Registry · Sürücüler · Yazılım güncelleyici | Arka plan modu ve sistem tepsisi |
-| Başlangıç · Programlar · Disk sağlığı · Disk analizi | Komut paleti (Ctrl+K) |
-| Zaman tüneli · altı dil · otomatik güncelleme | Windows Update dışındaki sürücü kaynakları |
+| Cleaner · Registry · Drivers · Software updates | Background mode and system tray |
+| Startup · Programs · Disk health · Disk analysis | Command palette (Ctrl+K) |
+| Timeline · six languages · auto-update | Driver sources beyond Windows Update |
 
-## Kaynaktan derleme
+## Building from source
 
 ```powershell
 git clone https://github.com/SametEge/SysScrub.git
@@ -196,38 +195,39 @@ dotnet build
 dotnet run --project src/SysScrub.App
 ```
 
-`dist/` klasörünü ve kurulum paketini üretmek için:
+To produce `dist/` and the installer:
 
 ```powershell
 ./build/publish.ps1 -SelfContained
 ```
 
-Kurulum paketi için [Inno Setup 6](https://jrsoftware.org/isdl.php) gerekir
-(`winget install JRSoftware.InnoSetup`). Kurulu değilse o adım atlanır, taşınabilir çıktılar
-yine üretilir.
+The installer step needs [Inno Setup 6](https://jrsoftware.org/isdl.php)
+(`winget install JRSoftware.InnoSetup`). Without it that step is skipped and the portable
+outputs are still produced.
 
-## Proje yapısı
+## Layout
 
 ```
-src/SysScrub.Core    motor — tarama, güvenlik, sürücü ve disk katmanları, sıfır UI bağımlılığı
-src/SysScrub.App     WPF arayüz, tasarım sistemi, çeviri
-src/SysScrub.Cli     zamanlanmış/sessiz temizlik ve teknisyen raporu
-tests/               495 test: güvenlik denetimi, kural motoru, S.M.A.R.T. ayrıştırma, kataloglar
-data/rules           temizleme kuralları, JSON
-data/i18n            arayüz çevirileri, JSON
-build/               yayın betikleri ve sürüm numarası
-installer/           Inno Setup betiği ve sihirbaz görselleri
+src/SysScrub.Core    engine — scanning, safety, driver and disk layers, zero UI dependencies
+src/SysScrub.App     WPF interface, design system, localisation
+src/SysScrub.Cli     scheduled/silent cleaning and technician report
+tests/               495 tests: safety guard, rule engine, S.M.A.R.T. parsing, catalogs
+data/rules           cleaning rules as JSON
+data/i18n            interface translations as JSON
+build/               release scripts and version number
+installer/           Inno Setup script and wizard images
 ```
 
-## Katkı
+## Contributing
 
-Hata bildirimi ve öneriler için [issue açabilirsin](https://github.com/SametEge/SysScrub/issues).
+Bug reports and suggestions are welcome as
+[issues](https://github.com/SametEge/SysScrub/issues).
 
-İki şey için hiç C# gerekmiyor:
+Two things need no C# at all:
 
-- **Temizleme kuralı** — [`data/rules/`](data/rules) altına bir JSON girdisi ekle
-- **Çeviri** — [`data/i18n/`](data/i18n) içindeki tek bir dosyayı düzenle
+- **A cleaning rule** — add a JSON entry to [`data/rules/`](data/rules)
+- **A translation** — edit one file in [`data/i18n/`](data/i18n)
 
-## Lisans
+## License
 
-[MIT](LICENSE) · Üçüncü taraf bildirimleri için [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)
+[MIT](LICENSE) · Third-party notices in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)
