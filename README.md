@@ -10,7 +10,7 @@
 
 ### [⬇ Download the latest release](https://github.com/SametEge/SysScrub/releases/latest)
 
-[Türkçe](README.tr.md)
+[Türkçe](README.tr.md) · [Deutsch](README.de.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [简体中文](README.zh-Hans.md)
 
 </div>
 
@@ -211,7 +211,7 @@ outputs are still produced.
 src/SysScrub.Core    engine — scanning, safety, driver and disk layers, zero UI dependencies
 src/SysScrub.App     WPF interface, design system, localisation
 src/SysScrub.Cli     scheduled/silent cleaning and technician report
-tests/               495 tests: safety guard, rule engine, S.M.A.R.T. parsing, catalogs
+tests/               496 tests: safety guard, rule engine, S.M.A.R.T. parsing, catalogs
 data/rules           cleaning rules as JSON
 data/i18n            interface translations as JSON
 build/               release scripts and version number

@@ -10,7 +10,7 @@
 
 ### [⬇ Son sürümü indir](https://github.com/SametEge/SysScrub/releases/latest)
 
-[English](README.md)
+[English](README.md) · [Deutsch](README.de.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [简体中文](README.zh-Hans.md)
 
 </div>
 
@@ -212,7 +212,7 @@ yine üretilir.
 src/SysScrub.Core    motor — tarama, güvenlik, sürücü ve disk katmanları, sıfır UI bağımlılığı
 src/SysScrub.App     WPF arayüz, tasarım sistemi, çeviri
 src/SysScrub.Cli     zamanlanmış/sessiz temizlik ve teknisyen raporu
-tests/               495 test: güvenlik denetimi, kural motoru, S.M.A.R.T. ayrıştırma, kataloglar
+tests/               496 test: güvenlik denetimi, kural motoru, S.M.A.R.T. ayrıştırma, kataloglar
 data/rules           temizleme kuralları, JSON
 data/i18n            arayüz çevirileri, JSON
 build/               yayın betikleri ve sürüm numarası
