@@ -21,6 +21,11 @@ public sealed class ChecksumList
     {
         var hashes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
+        // PowerShell'in "-Encoding utf8" çıktısı BOM ile başlıyor ve .NET onu
+        // boşluk saymıyor; kırpmadan ilk satırın özeti 65 karakter görünüp
+        // atlanırdı. Yayını üreten iş akışı da aynı biçimi yazıyor.
+        content = content.TrimStart('﻿');
+
         foreach (string line in content.Split('\n'))
         {
             ReadOnlySpan<char> trimmed = line.AsSpan().Trim();

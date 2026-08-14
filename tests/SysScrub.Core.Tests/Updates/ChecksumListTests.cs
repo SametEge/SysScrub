@@ -57,6 +57,22 @@ public class ChecksumListTests
         Assert.NotNull(list.Find("kurulum.exe"));
     }
 
+    /// <summary>
+    /// Yayını üreten iş akışı listeyi PowerShell'in "-Encoding utf8" biçiminde
+    /// yazıyor; dosya BOM ile başlıyor ve .NET onu boşluk saymadığı için
+    /// kırpılmazsa ilk satırın özeti okunamıyor.
+    /// </summary>
+    [Fact]
+    public void Bayt_sirasi_isareti_ilk_satiri_bozmaz()
+    {
+        ChecksumList list = ChecksumList.Parse(
+            "﻿E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855  ilk.exe\n" +
+            "9F86D081884C7D659A2FEAA0C55AD015A3BF4F1B2B0B822CD15D6C15B0F00A08  ikinci.exe");
+
+        Assert.Equal(2, list.Count);
+        Assert.NotNull(list.Find("ilk.exe"));
+    }
+
     [Fact]
     public void Windows_satir_sonlari_temizlenir()
     {
